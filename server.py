@@ -23,6 +23,7 @@ import api
 import live
 import rcc
 import rbxapi
+import admin
 
 ROOT = Path(__file__).resolve().parent
 PAGES = ROOT / "pages"
@@ -168,10 +169,14 @@ def inject_nav(html: str, user: dict | None) -> str:
     nav_out = (PARTIALS / "nav_out.html").read_text(encoding="utf-8", errors="replace")
     sprite = (PARTIALS / "icons_sprite.html").read_text(encoding="utf-8", errors="replace")
     if user:
+        admin_link = ""
+        if admin.is_admin(user):
+            admin_link = '<a class="settings-drop-item" href="/admin">Admin</a>'
         nav = (
             nav_in.replace("{{USERNAME}}", user["username"])
             .replace("{{ROBUX}}", str(user.get("robux") or 0))
             .replace("{{USER_ID}}", str(user["id"]))
+            .replace("{{ADMIN_LINK}}", admin_link)
         )
     else:
         nav = nav_out
@@ -331,6 +336,20 @@ class Handler(BaseHTTPRequestHandler):
     # ----- Roblox client + site API -----
     def api(self, method, path, low, q):
         user = self.current_user()
+        if user:
+            user = admin.refresh_user(user)
+
+        adm = admin.handle(method, path, low, q, user, self)
+        if adm is False:
+            return False
+        if adm is not None:
+            return adm
+
+        if user and admin.is_blocked(user) and low not in ("/logout", "/login/logout.ashx"):
+            accept = (self.headers.get("Accept") or "").lower()
+            if low.startswith("/api/") or "application/json" in accept:
+                return json_bytes({"error": "banned", "message": admin.block_reason(user)}, 403)
+            return admin.blocked_page(user)
 
         api_hit = api.handle(method, path, low, q, user, self)
         if api_hit is not None:
@@ -344,6 +363,9 @@ class Handler(BaseHTTPRequestHandler):
             u = db.verify_user(form.get("username", ""), form.get("password", ""))
             if not u:
                 return text_bytes("Invalid username or password", status=401)
+            u = admin.refresh_user(u)
+            if admin.is_blocked(u):
+                return admin.blocked_page(u)
             sid = db.create_session(u["id"])
             self.redirect("/home-loggedin.html", set_cookie=sid)
             return False
@@ -487,6 +509,8 @@ class Handler(BaseHTTPRequestHandler):
             for k in ("username", "status", "blurb", "birthday", "gender"):
                 if k in form:
                     profile[k] = form.get(k)
+            if "username" in profile and not admin.can_set_username(user, profile.get("username")):
+                profile.pop("username", None)
             if profile:
                 db.update_user(user["id"], **profile)
             updates = {}
@@ -1050,6 +1074,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def serve_page(self, path):
         user = self.current_user()
+        if user:
+            user = admin.refresh_user(user)
         # static data files
         rel = path.lstrip("/")
         if rel.startswith("static/") or rel.startswith("data/"):
@@ -1058,6 +1084,13 @@ class Handler(BaseHTTPRequestHandler):
                 ctype = mimetypes.guess_type(str(fp))[0] or "application/octet-stream"
                 self.send_raw(200, ctype, fp.read_bytes())
                 return
+        if user and admin.is_blocked(user):
+            c = self._cookies()
+            if ".ROBLOSECURITY" in c:
+                db.delete_session(c[".ROBLOSECURITY"].value)
+            status, ctype, data = admin.blocked_page(user)
+            self.send_raw(status, ctype, data, {"Set-Cookie": ".ROBLOSECURITY=; Path=/; Max-Age=0"})
+            return
         page = pick_page(path, user)
         if not page.exists() or not page.is_file():
             # try without -loggedin fallback
@@ -1084,6 +1117,7 @@ class Handler(BaseHTTPRequestHandler):
             qs = parse_qs(parsed.query)
             q = {k: v[0] if v else "" for k, v in qs.items()}
             html = live.prepare(html, page.name, user, q)
+            html = admin.inject_site_alert(html)
             # wire forms
             html = html.replace(
                 '<form class="login-form" name="loginForm">',

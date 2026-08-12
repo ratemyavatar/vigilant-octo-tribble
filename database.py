@@ -193,6 +193,29 @@ def init():
         );
         """
     )
+    _col("users", "banned", "banned INTEGER DEFAULT 0")
+    _col("users", "ban_reason", "ban_reason TEXT DEFAULT ''")
+    _col("users", "ban_internal", "ban_internal TEXT DEFAULT ''")
+    _col("users", "ban_until", "ban_until INTEGER DEFAULT 0")
+    _col("users", "is_staff", "is_staff INTEGER DEFAULT 0")
+    _col("users", "account_locked", "account_locked INTEGER DEFAULT 0")
+    _col("users", "staff_role", "staff_role TEXT DEFAULT ''")
+    cur.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS admin_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            actor_id INTEGER,
+            action TEXT,
+            target TEXT,
+            detail TEXT,
+            created_at INTEGER
+        );
+        CREATE TABLE IF NOT EXISTS site_kv (
+            k TEXT PRIMARY KEY,
+            v TEXT
+        );
+        """
+    )
     con.commit()
     con.close()
 
