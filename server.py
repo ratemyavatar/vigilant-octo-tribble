@@ -92,6 +92,52 @@ def rewrite_thumbs(html: str, user: dict | None) -> str:
     return html
 
 
+def rewrite_offsite(html: str, logged_in: bool) -> str:
+    """Keep in-site nav from leaving for roblox.com."""
+    s = "-loggedin.html" if logged_in else ".html"
+    pairs = [
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/privacy[^\"'\\s>]*", "privacy" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/terms[^\"'\\s>]*", "terms" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/help[^\"'\\s>]*", "help" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/help[^\"'\\s>]*", "help" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/search/users[^\"'\\s>]*", "search" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/search/groups[^\"'\\s>]*", "groups" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/discover[^\"'\\s>]*", "discover" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/catalog[^\"'\\s>]*", "catalog" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/develop[^\"'\\s>]*", "create" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/premium/membership[^\"'\\s>]*", "premium" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/upgrades/robux[^\"'\\s>]*", "robux" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/groups[^\"'\\s>]*", "groups" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/My/Groups[^\"'\\s>]*", "groups" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/groups[^\"'\\s>]*", "groups" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/character[^\"'\\s>]*", "avatar" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/avatar[^\"'\\s>]*", "avatar" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/account[^\"'\\s>]*", "settings" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/messages[^\"'\\s>]*", "messages" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/users/friends[^\"'\\s>]*", "friends" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/users/[^\"'\\s>]*/profile[^\"'\\s>]*", "profile" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/newlogin[^\"'\\s>]*", "login.html"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/login[^\"'\\s>]*", "login.html"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/home[^\"'\\s>]*", "home" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/games/\d+[^\"'\\s>]*", "game" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/games[^\"'\\s>]*", "games" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/giftcards[^\"'\\s>]*", "giftcards" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/places/create[^\"'\\s>]*", "create" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/My/Money\.aspx[^\"'\\s>]*", "trades" + s),
+        (r"https?://forum\.roblox\.com[^\"'\\s>]*", "blog" + s),
+        (r"https?://wiki\.roblox\.com[^\"'\\s>]*", "help" + s),
+        (r"https?://create\.roblox\.com[^\"'\\s>]*", "create" + s),
+        (r"https?://developer\.roblox\.com[^\"'\\s>]*", "help" + s),
+        (r"https?://corp\.roblox\.com[^\"'\\s>]*", "about" + s),
+        (r"https?://en\.help\.roblox\.com[^\"'\\s>]*", "help" + s),
+        (r"https?://blog\.roblox\.com[^\"'\\s>]*", "blog" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/?", "home" + s),
+    ]
+    for pat, dest in pairs:
+        html = re.sub(pat, dest, html, flags=re.I)
+    return html
+
+
 def render_png(kind: str, key: str) -> bytes:
     """On-site render file, or placeholder if RCC is down / file missing."""
     kind = kind.lower()
@@ -664,6 +710,7 @@ class Handler(BaseHTTPRequestHandler):
             html = data.decode("utf-8", "replace")
             html = inject_nav(html, user)
             html = rewrite_thumbs(html, user)
+            html = rewrite_offsite(html, user is not None)
             # wire forms
             html = html.replace(
                 '<form class="login-form" name="loginForm">',
