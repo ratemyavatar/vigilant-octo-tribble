@@ -87,7 +87,10 @@ def page(title, inner, extra_head=""):
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    </div>
   </div>
 </div>
 <div class="container-main" id="container-main">

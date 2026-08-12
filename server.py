@@ -169,6 +169,7 @@ def inject_nav(html: str, user: dict | None) -> str:
         nav = (
             nav_in.replace("{{USERNAME}}", user["username"])
             .replace("{{ROBUX}}", str(user.get("robux") or 0))
+            .replace("{{USER_ID}}", str(user["id"]))
         )
     else:
         nav = nav_out
