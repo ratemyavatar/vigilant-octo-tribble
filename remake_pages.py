@@ -138,7 +138,14 @@ HOME = """<div class="col-xs-12 home-header">
 <a href="/profile-loggedin.html" class="avatar avatar-headshot-lg">
 <img alt="avatar" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" id="home-avatar-thumb" class="avatar-card-image">
 </a>
-<div class="home-header-content"><h1><a href="/profile-loggedin.html">Hello, {{USERNAME}}!</a></h1></div>
+<div class="home-header-content">
+<h1><a href="/profile-loggedin.html">Hello, {{USERNAME}}!</a></h1>
+<p class="profile-status text-lead">{{STATUS}}</p>
+<form class="status-update-form" method="post" action="/settings/update">
+<input class="input-field" name="status" maxlength="140" placeholder="What are you up to?">
+<button type="submit" class="btn-secondary-xs">Share</button>
+</form>
+</div>
 </div>
 <div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3><a href="friends.html" class="btn-secondary-xs">See All</a></div>
@@ -157,8 +164,15 @@ DISCOVER = """<div class="games-list-container">
 
 FRIENDS = """<div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3></div>
-<div class="section-content"><ul class="hlist friend-list"></ul>
-<p class="list-content">No Search Results Found</p></div>
+<div class="section-content">
+<form method="post" action="/friends/add" class="add-friend-form">
+<label class="form-label" for="friend-username">Add a Friend</label>
+<input class="input-field" id="friend-username" name="username" placeholder="Username">
+<button type="submit" class="btn-primary-md">Add Friend</button>
+</form>
+<ul class="hlist friend-list"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>
 </div>"""
 
 CATALOG = """<div class="container-header"><h1>Catalog</h1></div>
@@ -171,8 +185,19 @@ PROFILE = """<div class="section profile-header">
 <div class="section-content">
 <img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
 <h2 class="profile-name">{{PROFILE_NAME}}</h2>
+<p class="text-label profile-display">@{{PROFILE_NAME}}</p>
+<p class="profile-status text-lead">{{PROFILE_STATUS}}</p>
 <div>{{ADD_FRIEND}}</div>
+<ul class="profile-stats-container">
+<li class="profile-stat"><p class="text-label">Friends</p><p class="text-lead">{{FRIEND_COUNT}}</p></li>
+<li class="profile-stat"><p class="text-label">Place Visits</p><p class="text-lead">{{PLACE_VISITS}}</p></li>
+<li class="profile-stat"><p class="text-label">Join Date</p><p class="text-lead">{{PROFILE_JOINED}}</p></li>
+</ul>
 </div></div>
+<div class="section">
+<div class="container-header"><h3>About</h3></div>
+<div class="section-content"><p class="list-content profile-blurb">{{PROFILE_BLURB}}</p></div>
+</div>
 <div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3></div>
 <div class="section-content"><ul class="hlist friend-list"></ul></div>
@@ -191,15 +216,15 @@ GAME = """<div class="game-main-content">
 <div class="game-creator"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
 <div class="game-play-button-container">
 <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
-<a class="btn-primary-lg" href="/play?placeId={{GAME_ID}}">Play</a>
+<a class="btn-primary-lg rbx-play-button" href="#" data-placeid="{{GAME_ID}}">Play</a>
 </div></div></div></div>
 <div class="section game-about-container">
 <div class="container-header"><h3>Description</h3></div>
 <div class="section-content">
 <pre class="game-description linkify">{{GAME_DESC}}</pre>
 <ul class="game-stats-container">
-<li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">0</p></li>
-<li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">0</p></li>
+<li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
+<li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
 <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
 <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
 <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
@@ -233,13 +258,17 @@ AVATAR = """<div class="container-header"><h1>Avatar</h1></div>
 <div class="section-content"><h2>Wardrobe</h2><ul class="hlist item-cards" id="wardrobe-list"></ul>
 <p class="list-content">No Search Results Found</p></div>"""
 
-MESSAGES = """<div class="container-header"><h3>Messages</h3></div>
-<div class="section-content"><ul class="vlist feeds"></ul>
+MESSAGES = """<div class="container-header"><h3>Inbox</h3></div>
+<div class="section-content"><ul class="vlist feeds"></ul></div>
+<div class="container-header"><h3>New Message</h3></div>
+<div class="section-content">
 <form method="post" action="/messages/send">
 <label class="form-label">To</label>
 <input class="input-field" name="username" placeholder="Username">
+<label class="form-label">Subject</label>
+<input class="input-field" name="subject" placeholder="Subject">
 <label class="form-label">Message</label>
-<input class="input-field" name="body" placeholder="Message">
+<textarea class="text-box text-area-medium" name="body" rows="4" placeholder="Write a message"></textarea>
 <button type="submit" class="btn-primary-md">Send</button>
 </form></div>"""
 
@@ -254,19 +283,151 @@ GROUPS = """<div class="container-header"><h1>Groups</h1></div>
 <button type="submit" class="btn-primary-md">Create Group</button>
 </form></div>"""
 
-SETTINGS = """<h1 class="user-account-header">My Settings</h1>
+SETTINGS = """<h1 class="user-account-header">Settings</h1>
+<div id="user-account" class="rbx-tabs-horizontal">
+<ul id="horizontal-tabs" class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#account-info" data-tab="account-info">Account Info</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#security" data-tab="security">Security</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#privacy" data-tab="privacy">Privacy</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#billing" data-tab="billing">Billing</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#notifications" data-tab="notifications">Notifications</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#parental-controls" data-tab="parental-controls">Parental Controls</a></li>
+</ul>
+<div class="tab-content rbx-tab-content">
+<div id="account-info" class="tab-pane settings-tab-pane active">
 <form id="settingsForm" method="post" action="/settings/update">
-<label class="form-label" for="username">Username:</label>
-<input class="text-box text-box-medium" id="username" name="username" type="text" value="{{USERNAME}}">
-<label class="form-label" for="status">Status:</label>
-<input class="text-box text-box-medium" id="status" name="status" type="text" value="{{STATUS}}">
-<label class="form-label" for="blurb">About:</label>
-<textarea class="text-box text-area-medium" id="blurb" name="blurb" rows="4">{{BLURB}}</textarea>
-<button type="submit" class="btn-primary-md" id="finishButton">Save</button>
-</form>"""
+<input type="hidden" name="tab" value="account-info">
+<div class="section-content">
+<h3>Account Info</h3>
+<div class="form-group"><label class="form-label" for="username">Username</label>
+<input class="text-box text-box-medium" id="username" name="username" type="text" value="{{USERNAME}}"></div>
+<div class="form-group"><label class="form-label" for="display_name">Display Name</label>
+<input class="text-box text-box-medium" id="display_name" name="display_name" type="text" value="{{DISPLAY_NAME}}"></div>
+<div class="form-group"><label class="form-label" for="email">Email</label>
+<input class="text-box text-box-medium" id="email" name="email" type="email" value="{{EMAIL}}" placeholder="Saved on this server only">
+<p class="list-content">This is not sent to roblox.com.</p></div>
+<div class="form-group"><label class="form-label" for="status">Status</label>
+<input class="text-box text-box-medium" id="status" name="status" type="text" maxlength="140" value="{{STATUS}}"></div>
+<div class="form-group"><label class="form-label" for="blurb">About</label>
+<textarea class="text-box text-area-medium" id="blurb" name="blurb" rows="4">{{BLURB}}</textarea></div>
+</div>
+<div class="section-content">
+<h3>Personal</h3>
+<div class="form-group"><label class="form-label" for="birthday">Birthday</label>
+<input class="text-box text-box-medium" id="birthday" name="birthday" type="text" value="{{BIRTHDAY}}"></div>
+<div class="form-group"><label class="form-label" for="gender">Gender</label>
+<select class="input-field rbx-select" id="gender" name="gender">{{GENDER_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="language">Language</label>
+<select class="input-field rbx-select" id="language" name="language">{{LANGUAGE_OPTS}}</select></div>
+<button type="submit" class="btn-primary-md" id="settingsSave">Save</button>
+</div>
+</form>
+</div>
+<div id="security" class="tab-pane settings-tab-pane">
+<div class="section-content">
+<h3>Password</h3>
+<form id="passwordForm" method="post" action="/settings/password">
+<div class="form-group"><label class="form-label" for="current_password">Current Password</label>
+<input class="text-box text-box-medium" id="current_password" name="current_password" type="password" autocomplete="current-password"></div>
+<div class="form-group"><label class="form-label" for="new_password">New Password</label>
+<input class="text-box text-box-medium" id="new_password" name="new_password" type="password" autocomplete="new-password"></div>
+<button type="submit" class="btn-primary-md">Change Password</button>
+</form>
+</div>
+<form method="post" action="/settings/update">
+<input type="hidden" name="tab" value="security">
+<div class="section-content">
+<h3>2-Step Verification</h3>
+<label class="form-label checkbox-row"><input type="checkbox" name="two_step" value="1" {{TWO_STEP_CHECKED}}> Require extra check on this account</label>
+<p class="list-content">Stored on this server only. No email or SMS is sent.</p>
+</div>
+<div class="section-content">
+<h3>Where You're Logged In</h3>
+<p class="list-content">Active sessions: {{SESSION_COUNT}}</p>
+</div>
+<button type="submit" class="btn-primary-md">Save</button>
+</form>
+<form method="post" action="/settings/sessions/logout" class="section-content">
+<button type="submit" class="btn-secondary-md">Log Out of All Other Sessions</button>
+</form>
+</div>
+<div id="privacy" class="tab-pane settings-tab-pane">
+<form method="post" action="/settings/update">
+<input type="hidden" name="tab" value="privacy">
+<div class="section-content">
+<h3>Communication</h3>
+<div class="form-group"><label class="form-label" for="who_message">Who can message me?</label>
+<select class="input-field rbx-select" id="who_message" name="who_message">{{WHO_MESSAGE_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="who_chat_app">Who can chat with me in app?</label>
+<select class="input-field rbx-select" id="who_chat_app" name="who_chat_app">{{WHO_CHAT_APP_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="who_chat_game">Who can chat with me in experiences?</label>
+<select class="input-field rbx-select" id="who_chat_game" name="who_chat_game">{{WHO_CHAT_GAME_OPTS}}</select></div>
+</div>
+<div class="section-content">
+<h3>Other Settings</h3>
+<div class="form-group"><label class="form-label" for="who_join">Who can join me in experiences?</label>
+<select class="input-field rbx-select" id="who_join" name="who_join">{{WHO_JOIN_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="who_inventory">Who can see my inventory?</label>
+<select class="input-field rbx-select" id="who_inventory" name="who_inventory">{{WHO_INVENTORY_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="who_trade">Who can trade with me?</label>
+<select class="input-field rbx-select" id="who_trade" name="who_trade">{{WHO_TRADE_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="who_friends">Who can see my friends list?</label>
+<select class="input-field rbx-select" id="who_friends" name="who_friends">{{WHO_FRIENDS_OPTS}}</select></div>
+<button type="submit" class="btn-primary-md">Save</button>
+</div>
+</form>
+</div>
+<div id="billing" class="tab-pane settings-tab-pane">
+<div class="section-content">
+<h3>Subscriptions</h3>
+<p class="list-content">Premium is not sold on this private server.</p>
+<p class="list-content">Robux balance: <span class="text-robux">R$ {{ROBUX}}</span></p>
+<p class="list-content">No live payments. This page does not take cards.</p>
+<a class="btn-secondary-md" href="/promocodes-loggedin.html">Redeem Code</a>
+<a class="btn-secondary-md" href="/robux-loggedin.html">Robux</a>
+</div>
+</div>
+<div id="notifications" class="tab-pane settings-tab-pane">
+<form method="post" action="/settings/update">
+<input type="hidden" name="tab" value="notifications">
+<div class="section-content">
+<h3>Notification Stream</h3>
+<label class="form-label checkbox-row"><input type="checkbox" name="notify_messages" value="1" {{NOTIFY_MESSAGES_CHECKED}}> Messages</label>
+<label class="form-label checkbox-row"><input type="checkbox" name="notify_friends" value="1" {{NOTIFY_FRIENDS_CHECKED}}> Friend requests</label>
+<label class="form-label checkbox-row"><input type="checkbox" name="notify_trades" value="1" {{NOTIFY_TRADES_CHECKED}}> Trades</label>
+<label class="form-label checkbox-row"><input type="checkbox" name="notify_updates" value="1" {{NOTIFY_UPDATES_CHECKED}}> Experience updates</label>
+<button type="submit" class="btn-primary-md">Save</button>
+</div>
+</form>
+</div>
+<div id="parental-controls" class="tab-pane settings-tab-pane">
+<form method="post" action="/settings/update">
+<input type="hidden" name="tab" value="parental-controls">
+<div class="section-content">
+<h3>Account Restrictions</h3>
+<label class="form-label checkbox-row"><input type="checkbox" name="account_restrictions" value="1" {{RESTRICTIONS_CHECKED}}> Limit to milder experiences</label>
+<div class="form-group"><label class="form-label" for="content_maturity">Content maturity</label>
+<select class="input-field rbx-select" id="content_maturity" name="content_maturity">{{MATURITY_OPTS}}</select></div>
+<div class="form-group"><label class="form-label" for="monthly_spend">Monthly spending limit</label>
+<select class="input-field rbx-select" id="monthly_spend" name="monthly_spend">{{SPEND_OPTS}}</select></div>
+</div>
+<div class="section-content">
+<h3>Account PIN</h3>
+<p class="list-content">{{PIN_STATUS}}</p>
+<div class="form-group"><label class="form-label" for="new_pin">Set or change PIN</label>
+<input class="text-box text-box-medium" id="new_pin" name="new_pin" type="password" inputmode="numeric" autocomplete="off"></div>
+<label class="form-label checkbox-row"><input type="checkbox" name="clear_pin" value="1"> Turn PIN off</label>
+<button type="submit" class="btn-primary-md">Save</button>
+</div>
+</form>
+</div>
+</div>
+</div>"""
 
 INVENTORY = """<div class="container-header"><h3>Inventory</h3></div>
-<div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards"></ul></div>"""
+<div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards"></ul></div>
+<div class="section-content"><h2>Items</h2><ul class="hlist item-cards"></ul>
+<p class="list-content">No Search Results Found</p></div>"""
 
 TRADES = """<div class="container-header"><h1>Trade</h1></div>
 <div class="section-content"><h3>Inventory</h3><ul class="hlist item-cards"></ul>

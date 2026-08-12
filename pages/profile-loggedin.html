@@ -12,7 +12,10 @@
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
@@ -21,8 +24,19 @@
 <div class="section-content">
 <img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
 <h2 class="profile-name">{{PROFILE_NAME}}</h2>
+<p class="text-label profile-display">@{{PROFILE_NAME}}</p>
+<p class="profile-status text-lead">{{PROFILE_STATUS}}</p>
 <div>{{ADD_FRIEND}}</div>
+<ul class="profile-stats-container">
+<li class="profile-stat"><p class="text-label">Friends</p><p class="text-lead">{{FRIEND_COUNT}}</p></li>
+<li class="profile-stat"><p class="text-label">Place Visits</p><p class="text-lead">{{PLACE_VISITS}}</p></li>
+<li class="profile-stat"><p class="text-label">Join Date</p><p class="text-lead">{{PROFILE_JOINED}}</p></li>
+</ul>
 </div></div>
+<div class="section">
+<div class="container-header"><h3>About</h3></div>
+<div class="section-content"><p class="list-content profile-blurb">{{PROFILE_BLURB}}</p></div>
+</div>
 <div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3></div>
 <div class="section-content"><ul class="hlist friend-list"></ul></div>

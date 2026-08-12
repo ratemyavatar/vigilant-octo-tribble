@@ -201,10 +201,17 @@ def friend_card(user: dict, suffix: str) -> str:
     ) % (uid, suffix, uid, name, name, uid, name)
 
 
-def item_card(asset: dict) -> str:
+def item_card(asset: dict, buy: bool = False) -> str:
     aid = asset["id"]
     name = esc(asset.get("name") or "Item")
     price = int(asset.get("price") or 0)
+    extra = ""
+    if buy:
+        extra = (
+            '<form method="post" action="/catalog/buy" class="item-buy-form">'
+            '<input type="hidden" name="id" value="%s">'
+            '<button type="submit" class="btn-primary-xs">Buy</button></form>' % aid
+        )
     return (
         '<li class="list-item item-card">'
         '<div class="item-card-container">'
@@ -216,8 +223,8 @@ def item_card(asset: dict) -> str:
         "</a>"
         '<div class="text-overflow item-card-price">'
         '<span class="icon-robux-16x16"></span><span class="text-robux">%s</span>'
-        "</div></div></li>"
-    ) % (aid, name, name, name, price)
+        "</div>%s</div></li>"
+    ) % (aid, name, name, name, price, extra)
 
 
 def people_card(user: dict, suffix: str) -> str:
@@ -273,8 +280,8 @@ def fill_friends(html: str, friends: list, suffix: str) -> str:
     return html
 
 
-def fill_catalog(html: str, assets: list) -> str:
-    cards = "".join(item_card(a) for a in assets)
+def fill_catalog(html: str, assets: list, buy: bool = False) -> str:
+    cards = "".join(item_card(a, buy=buy) for a in assets)
     html = replace_ul_inner(html, "item-cards", cards)
     if cards:
         html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
@@ -299,15 +306,72 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{MAX_PLAYERS}}", str(maxp))
     html = html.replace("{{GENRE}}", genre)
     html = html.replace("{{CREATED}}", created)
+    html = html.replace("{{VISITS}}", str(int(place.get("visits") or 0)))
+    html = html.replace("{{PLAYING}}", "0")
     html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
+    return html
+
+
+def _opts(choices, current) -> str:
+    out = []
+    for c in choices:
+        sel = " selected" if str(c) == str(current) else ""
+        out.append('<option value="%s"%s>%s</option>' % (esc(c), sel, esc(c)))
+    return "".join(out)
+
+
+def _checked(val) -> str:
+    return "checked" if val else ""
+
+
+def fill_settings(html: str, user: dict) -> str:
+    s = db.get_user_settings(user)
+    privacy = ["Everyone", "Friends", "No one"]
+    html = html.replace("{{DISPLAY_NAME}}", esc(s.get("display_name") or user.get("username") or ""))
+    html = html.replace("{{EMAIL}}", esc(s.get("email") or ""))
+    html = html.replace("{{BIRTHDAY}}", esc(user.get("birthday") or ""))
+    html = html.replace("{{ROBUX}}", str(user.get("robux") or 0))
+    html = html.replace("{{SESSION_COUNT}}", str(db.session_count(user["id"])))
+    html = html.replace("{{PIN_STATUS}}", "PIN is on." if user.get("pin_hash") else "PIN is off.")
+    html = html.replace("{{GENDER_OPTS}}", _opts(["Male", "Female", "Prefer not to say"], user.get("gender") or "Male"))
+    html = html.replace("{{LANGUAGE_OPTS}}", _opts(["English", "Spanish", "Portuguese", "French", "German"], s.get("language") or "English"))
+    html = html.replace("{{WHO_MESSAGE_OPTS}}", _opts(privacy, s.get("who_message")))
+    html = html.replace("{{WHO_CHAT_APP_OPTS}}", _opts(privacy, s.get("who_chat_app")))
+    html = html.replace("{{WHO_CHAT_GAME_OPTS}}", _opts(privacy, s.get("who_chat_game")))
+    html = html.replace("{{WHO_JOIN_OPTS}}", _opts(privacy, s.get("who_join")))
+    html = html.replace("{{WHO_INVENTORY_OPTS}}", _opts(privacy, s.get("who_inventory")))
+    html = html.replace("{{WHO_TRADE_OPTS}}", _opts(privacy, s.get("who_trade")))
+    html = html.replace("{{WHO_FRIENDS_OPTS}}", _opts(privacy, s.get("who_friends")))
+    html = html.replace("{{MATURITY_OPTS}}", _opts(["Minimal", "Mild", "Moderate", "Restricted"], s.get("content_maturity")))
+    html = html.replace("{{SPEND_OPTS}}", _opts(["None", "0", "10", "25", "50", "100"], s.get("monthly_spend")))
+    html = html.replace("{{TWO_STEP_CHECKED}}", _checked(s.get("two_step")))
+    html = html.replace("{{RESTRICTIONS_CHECKED}}", _checked(s.get("account_restrictions")))
+    html = html.replace("{{NOTIFY_MESSAGES_CHECKED}}", _checked(s.get("notify_messages")))
+    html = html.replace("{{NOTIFY_FRIENDS_CHECKED}}", _checked(s.get("notify_friends")))
+    html = html.replace("{{NOTIFY_TRADES_CHECKED}}", _checked(s.get("notify_trades")))
+    html = html.replace("{{NOTIFY_UPDATES_CHECKED}}", _checked(s.get("notify_updates")))
+    html = html.replace("{{BLURB}}", esc(user.get("blurb") or ""))
+    html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
+    html = html.replace('value="{{USERNAME}}"', 'value="%s"' % esc(user["username"]))
+    html = html.replace("{{USERNAME}}", esc(user["username"]))
     return html
 
 
 def fill_profile(html: str, viewed: dict, friends: list, places: list, suffix: str) -> str:
     name = esc(viewed.get("username") or "")
     uid = viewed["id"]
+    s = db.get_user_settings(viewed)
+    joined = datetime.utcfromtimestamp(int(viewed.get("created_at") or time.time())).strftime("%m/%d/%Y")
+    blurb = esc(viewed.get("blurb") or "This user has no description.")
+    status = esc(viewed.get("status") or "")
     html = html.replace("{{PROFILE_NAME}}", name)
     html = html.replace("{{PROFILE_ID}}", str(uid))
+    html = html.replace("{{PROFILE_STATUS}}", status)
+    html = html.replace("{{PROFILE_BLURB}}", blurb)
+    html = html.replace("{{PROFILE_JOINED}}", joined)
+    html = html.replace("{{FRIEND_COUNT}}", str(len(friends)))
+    html = html.replace("{{PLACE_VISITS}}", str(db.user_place_visits(uid)))
+    html = html.replace("{{DISPLAY_NAME}}", esc(s.get("display_name") or name))
     html = re.sub(
         r'(<h2 class="profile-name"[^>]*>)(.*?)(</h2>)',
         lambda m: m.group(1) + name + m.group(3),
@@ -372,12 +436,118 @@ SITE_JS = r"""
       this.classList.add('selected');
     });
   }
-  var plays = document.querySelectorAll('.VisitButtonPlayGLI a, a.btn-primary-lg');
-  for (var p = 0; p < plays.length; p++) {
-    var wrap = plays[p].closest('[placeid]');
-    if (wrap && wrap.getAttribute('placeid') && (!plays[p].getAttribute('href') || plays[p].getAttribute('href') === '#')) {
-      plays[p].setAttribute('href', '/play?placeId=' + wrap.getAttribute('placeid'));
+  var tabLinks = document.querySelectorAll('[data-tab]');
+  var panes = document.querySelectorAll('.settings-tab-pane');
+  function showTab(id) {
+    if (!id) return;
+    for (var i = 0; i < panes.length; i++) panes[i].classList.toggle('active', panes[i].id === id);
+    for (var j = 0; j < tabLinks.length; j++) {
+      var on = tabLinks[j].getAttribute('data-tab') === id;
+      tabLinks[j].classList.toggle('active', on);
+      var li = tabLinks[j].closest('.rbx-tab');
+      if (li) li.classList.toggle('active', on);
     }
+    if (history.replaceState) history.replaceState(null, '', '#' + id);
+  }
+  for (var tb = 0; tb < tabLinks.length; tb++) {
+    tabLinks[tb].addEventListener('click', function (e) {
+      e.preventDefault();
+      showTab(this.getAttribute('data-tab'));
+    });
+  }
+  if (panes.length && location.hash) showTab(location.hash.replace('#', ''));
+
+  function ensurePlayModal() {
+    if (document.getElementById('rbx-play-modal')) return;
+    var box = document.createElement('div');
+    box.id = 'rbx-play-modal';
+    box.className = 'modal-container';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.innerHTML = '<div class="modal-backdrop" id="rbx-play-backdrop"></div>'
+      + '<div class="modal-window">'
+      + '<div class="modal-header"><h3>Starting ROBLOX</h3>'
+      + '<button type="button" class="modal-close" id="rbx-play-close" aria-label="Close">x</button></div>'
+      + '<div class="modal-body"><p class="list-content" id="rbx-play-status">ROBLOX is now loading. Get ready!</p>'
+      + '<p class="text-lead" id="rbx-play-name"></p></div>'
+      + '<div class="modal-btns">'
+      + '<a class="btn-secondary-md" href="/download.html">Download</a> '
+      + '<button type="button" class="btn-primary-md" id="rbx-play-retry">Retry</button> '
+      + '<button type="button" class="btn-secondary-md" id="rbx-play-cancel">Cancel</button>'
+      + '</div></div>';
+    document.body.appendChild(box);
+  }
+  var lastPlaceId = '';
+  function closePlayModal() {
+    var m = document.getElementById('rbx-play-modal');
+    if (m) m.classList.remove('open');
+  }
+  function fireUri(uri) {
+    var a = document.createElement('a');
+    a.href = uri;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  function launchPlace(placeId) {
+    if (!placeId) return;
+    lastPlaceId = String(placeId);
+    ensurePlayModal();
+    var modal = document.getElementById('rbx-play-modal');
+    var status = document.getElementById('rbx-play-status');
+    var nameEl = document.getElementById('rbx-play-name');
+    if (modal) modal.classList.add('open');
+    if (status) status.textContent = 'ROBLOX is now loading. Get ready!';
+    if (nameEl) nameEl.textContent = 'Place ' + lastPlaceId;
+    fetch('/play?placeId=' + encodeURIComponent(lastPlaceId) + '&json=1', {
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function (r) {
+      if (r.status === 401) { window.location.href = '/signup.html'; return null; }
+      return r.json();
+    }).then(function (data) {
+      if (!data) return;
+      if (!data.ok || !data.uri) {
+        if (status) status.textContent = data.error || 'Could not start the client.';
+        return;
+      }
+      if (nameEl && data.placeName) nameEl.textContent = data.placeName;
+      fireUri(data.uri);
+      if (status) status.textContent = 'If the client did not open, install it from Download, then press Retry.';
+    }).catch(function () {
+      if (status) status.textContent = 'Could not start the client.';
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t) return;
+    if (t.id === 'rbx-play-close' || t.id === 'rbx-play-cancel' || t.id === 'rbx-play-backdrop') {
+      closePlayModal();
+      return;
+    }
+    if (t.id === 'rbx-play-retry') {
+      launchPlace(lastPlaceId);
+      return;
+    }
+    var play = t.closest ? t.closest('.rbx-play-button, .VisitButtonPlayGLI a, a[href*="/play"]') : null;
+    if (!play) return;
+    var href = play.getAttribute('href') || '';
+    var pid = play.getAttribute('data-placeid') || play.getAttribute('placeid') || '';
+    var wrap = play.closest('[placeid]');
+    if (!pid && wrap) pid = wrap.getAttribute('placeid');
+    if (!pid && href.indexOf('placeId=') >= 0) {
+      var m = href.match(/placeId=(\d+)/i);
+      if (m) pid = m[1];
+    }
+    if (!pid && href.indexOf('/play') < 0 && !play.classList.contains('rbx-play-button')) return;
+    e.preventDefault();
+    launchPlace(pid);
+  });
+  var launchQ = /(?:\\?|&)launch=1(?:&|$)/.exec(location.search);
+  if (launchQ) {
+    var idm = location.search.match(/[?&]id=(\d+)/);
+    if (idm) launchPlace(idm[1]);
   }
 
   var wrapEl = document.getElementById('wrap');
@@ -449,6 +619,7 @@ SITE_JS = r"""
       closeNav();
       if (setMenu) setMenu.classList.remove('open');
       if (loginBar) loginBar.classList.remove('open');
+      closePlayModal();
     }
   });
 })();
@@ -471,17 +642,22 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
     if "home" in name and user:
         html = html.replace("Hello!", "Hello, {{USERNAME}}!")
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
+        html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
         html = fill_friends(html, friends, suffix)
     if "friend" in name:
         html = fill_friends(html, friends, suffix)
     if "catalog" in name or "inventory" in name or "trade" in name:
-        owned = db.list_inventory(user["id"]) if user and "inventory" in name else assets
+        owned = db.list_inventory(user["id"]) if user and ("inventory" in name or "trade" in name) else assets
         if "inventory" in name:
-            html = fill_catalog(html, owned)
+            wearing = db.list_wearing(user["id"]) if user else []
+            html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in wearing), count=1)
+            html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in owned), count=1)
+            if owned:
+                html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
         elif "trade" in name:
             html = fill_catalog(html, owned if user else [])
         else:
-            html = fill_catalog(html, assets)
+            html = fill_catalog(html, assets, buy=True)
     if name.startswith("game") and "games" not in name:
         pid = 0
         try:
@@ -559,8 +735,13 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         for m in notes:
             items.append(
                 '<li class="list-item"><div class="list-body"><h2>%s</h2>'
+                '<p class="text-label">From %s</p>'
                 '<p class="list-content">%s</p></div></li>'
-                % (esc(m.get("from_name") or ""), esc(m.get("body") or ""))
+                % (
+                    esc(m.get("subject") or "(no subject)"),
+                    esc(m.get("from_name") or ""),
+                    esc(m.get("body") or ""),
+                )
             )
         html = replace_ul_inner(html, "feeds", "".join(items))
         if user and '<form method="post" action="/messages/send"' not in html:
@@ -600,9 +781,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 1,
             )
     if "setting" in name and user:
-        html = html.replace("{{BLURB}}", esc(user.get("blurb") or ""))
-        html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
-        html = html.replace('value="{{USERNAME}}"', 'value="%s"' % esc(user["username"]))
+        html = fill_settings(html, user)
     if "avatar" in name and user:
         wearing = db.list_wearing(user["id"])
         owned = db.list_inventory(user["id"])

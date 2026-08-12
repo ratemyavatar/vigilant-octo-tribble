@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import secrets
 import sqlite3
@@ -160,6 +161,8 @@ def init():
             cur.execute("ALTER TABLE %s ADD COLUMN %s" % (table, decl))
     _col("users", "status", "status TEXT DEFAULT ''")
     _col("users", "blurb", "blurb TEXT DEFAULT ''")
+    _col("users", "settings", "settings TEXT DEFAULT '{}'")
+    _col("users", "pin_hash", "pin_hash TEXT DEFAULT ''")
     _col("places", "visits", "visits INTEGER DEFAULT 0")
     _col("messages", "subject", "subject TEXT DEFAULT ''")
     _col("messages", "is_read", "is_read INTEGER DEFAULT 0")
@@ -446,6 +449,125 @@ def public_user(row):
         "blurb": row.get("blurb") or "",
         "created_at": row.get("created_at") or 0,
     }
+
+
+
+DEFAULT_SETTINGS = {
+    "display_name": "",
+    "email": "",
+    "language": "English",
+    "who_message": "Friends",
+    "who_chat_app": "Friends",
+    "who_chat_game": "Everyone",
+    "who_join": "Everyone",
+    "who_inventory": "Everyone",
+    "who_trade": "Friends",
+    "who_friends": "Everyone",
+    "two_step": False,
+    "account_restrictions": False,
+    "content_maturity": "Minimal",
+    "monthly_spend": "None",
+    "notify_messages": True,
+    "notify_friends": True,
+    "notify_trades": True,
+    "notify_updates": False,
+}
+
+
+def get_user_settings(user):
+    out = dict(DEFAULT_SETTINGS)
+    raw = (user or {}).get("settings") or ""
+    if raw:
+        try:
+            data = json.loads(raw)
+            if isinstance(data, dict):
+                for k in DEFAULT_SETTINGS:
+                    if k in data:
+                        out[k] = data[k]
+        except Exception:
+            pass
+    if not out.get("display_name"):
+        out["display_name"] = (user or {}).get("username") or ""
+    return out
+
+
+def save_user_settings(user_id, updates):
+    user = get_user(user_id)
+    if not user:
+        return None
+    cur = get_user_settings(user)
+    for k, v in (updates or {}).items():
+        if k in DEFAULT_SETTINGS:
+            cur[k] = v
+    con = connect()
+    con.execute("UPDATE users SET settings=? WHERE id=?", (json.dumps(cur), user_id))
+    con.commit()
+    con.close()
+    return get_user_settings(get_user(user_id))
+
+
+def update_password(user_id, current, new):
+    user = get_user(user_id)
+    if not user or not new:
+        return False
+    if not _check(current or "", user["password_hash"]):
+        return False
+    con = connect()
+    con.execute("UPDATE users SET password_hash=? WHERE id=?", (_hash(new), user_id))
+    con.commit()
+    con.close()
+    return True
+
+
+def set_pin(user_id, pin):
+    pin = (pin or "").strip()
+    con = connect()
+    if not pin:
+        con.execute("UPDATE users SET pin_hash='' WHERE id=?", (user_id,))
+    else:
+        con.execute("UPDATE users SET pin_hash=? WHERE id=?", (_hash(pin), user_id))
+    con.commit()
+    con.close()
+
+
+def check_pin(user_id, pin):
+    user = get_user(user_id)
+    if not user:
+        return False
+    stored = user.get("pin_hash") or ""
+    if not stored:
+        return True
+    return _check(pin or "", stored)
+
+
+def session_count(user_id):
+    con = connect()
+    row = con.execute(
+        "SELECT COUNT(*) AS c FROM sessions WHERE user_id=? AND expires_at>?",
+        (user_id, int(time.time())),
+    ).fetchone()
+    con.close()
+    return int(row["c"] or 0) if row else 0
+
+
+def delete_other_sessions(user_id, keep_sid):
+    con = connect()
+    if keep_sid:
+        con.execute("DELETE FROM sessions WHERE user_id=? AND id!=?", (user_id, keep_sid))
+    else:
+        con.execute("DELETE FROM sessions WHERE user_id=?", (user_id,))
+    con.commit()
+    con.close()
+
+
+def user_place_visits(user_id):
+    con = connect()
+    row = con.execute(
+        "SELECT SUM(IFNULL(visits,0)) AS v FROM places WHERE creator_id=?",
+        (user_id,),
+    ).fetchone()
+    con.close()
+    return int(row["v"] or 0) if row else 0
 
 
 def update_user(user_id, **fields):

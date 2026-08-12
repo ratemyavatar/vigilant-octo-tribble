@@ -12,15 +12,25 @@
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
 <div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3></div>
-<div class="section-content"><ul class="hlist friend-list"></ul>
-<p class="list-content">No Search Results Found</p></div>
+<div class="section-content">
+<form method="post" action="/friends/add" class="add-friend-form">
+<label class="form-label" for="friend-username">Add a Friend</label>
+<input class="input-field" id="friend-username" name="username" placeholder="Username">
+<button type="submit" class="btn-primary-md">Add Friend</button>
+</form>
+<ul class="hlist friend-list"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>
 </div>
 </div>
 </div>

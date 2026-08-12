@@ -12,7 +12,10 @@
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
@@ -26,15 +29,15 @@
 <div class="game-creator"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
 <div class="game-play-button-container">
 <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
-<a class="btn-primary-lg" href="/play?placeId={{GAME_ID}}">Play</a>
+<a class="btn-primary-lg rbx-play-button" href="#" data-placeid="{{GAME_ID}}">Play</a>
 </div></div></div></div>
 <div class="section game-about-container">
 <div class="container-header"><h3>Description</h3></div>
 <div class="section-content">
 <pre class="game-description linkify">{{GAME_DESC}}</pre>
 <ul class="game-stats-container">
-<li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">0</p></li>
-<li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">0</p></li>
+<li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
+<li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
 <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
 <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
 <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>

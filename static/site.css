@@ -454,6 +454,94 @@ h3 { font-size: 18px; }
 .hidden, .hide, .sr-only { position: absolute; left: -9999px; height: 1px; width: 1px; overflow: hidden; }
 .alert-info { background: #232527; color: #fff; padding: 8px; margin-bottom: 8px; }
 
+/* settings tabs — official horizontal rbx-tabs */
+#user-account, .rbx-tabs-horizontal { margin-top: 8px; }
+#horizontal-tabs.nav-tabs {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #2d2f31;
+}
+.rbx-tab { display: inline-block; }
+.rbx-tab-heading {
+  display: block;
+  padding: 10px 14px;
+  color: #bdbebe !important;
+  font-weight: 700;
+  text-decoration: none !important;
+}
+.rbx-tab.active .rbx-tab-heading,
+.rbx-tab-heading.active {
+  color: #fff !important;
+  border-bottom: 2px solid #00a2ff;
+}
+.rbx-tab-heading:hover { color: #fff !important; background: #2d2f31; }
+.settings-tab-pane { display: none; }
+.settings-tab-pane.active { display: block; }
+.form-group { margin: 0 0 14px; }
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  margin: 0 0 10px;
+}
+.checkbox-row input { width: auto; }
+.status-update-form, .add-friend-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0 0;
+}
+.status-update-form .input-field, .add-friend-form .input-field { flex: 1; min-width: 140px; width: auto; }
+.profile-stats-container, .game-stats-container {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.profile-stat .text-label, .game-stat .text-label { display: block; font-size: 12px; }
+.profile-stat .text-lead { display: block; font-size: 16px; color: #fff; }
+.profile-status { color: #bdbebe; margin: 0 0 8px; }
+.item-buy-form { padding: 0 8px 8px; }
+
+/* play launcher modal */
+.modal-container { display: none; }
+.modal-container.open { display: block; }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+}
+.modal-window {
+  position: fixed;
+  z-index: 2010;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(400px, 92vw);
+  background: #232527;
+  border: 1px solid #111;
+  padding: 20px;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.modal-header h3 { margin: 0; }
+.modal-close {
+  background: #2d2f31;
+  color: #fff;
+  border: 0;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.modal-btns { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+
 /* phone: compact header + hamburger dropdown sidebar */
 @media (max-width: 767px) {
   .hidden-xs, .hidden-sm { display: none !important; }

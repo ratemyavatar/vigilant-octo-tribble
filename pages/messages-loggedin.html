@@ -12,18 +12,25 @@
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+    </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="container-header"><h3>Messages</h3></div>
-<div class="section-content"><ul class="vlist feeds"></ul>
+<div class="container-header"><h3>Inbox</h3></div>
+<div class="section-content"><ul class="vlist feeds"></ul></div>
+<div class="container-header"><h3>New Message</h3></div>
+<div class="section-content">
 <form method="post" action="/messages/send">
 <label class="form-label">To</label>
 <input class="input-field" name="username" placeholder="Username">
+<label class="form-label">Subject</label>
+<input class="input-field" name="subject" placeholder="Subject">
 <label class="form-label">Message</label>
-<input class="input-field" name="body" placeholder="Message">
+<textarea class="text-box text-area-medium" name="body" rows="4" placeholder="Write a message"></textarea>
 <button type="submit" class="btn-primary-md">Send</button>
 </form></div>
 </div>

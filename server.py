@@ -427,7 +427,15 @@ class Handler(BaseHTTPRequestHandler):
             return False
 
         if low in ("/play", "/play/"):
+            accept = (self.headers.get("Accept") or "").lower()
+            want_json = (
+                q.get("json") == "1"
+                or "application/json" in accept
+                or (self.headers.get("X-Requested-With") or "") == "XMLHttpRequest"
+            )
             if not user:
+                if want_json:
+                    return json_bytes({"error": "login"}, 401)
                 self.redirect("/signup.html")
                 return False
             try:
@@ -436,41 +444,104 @@ class Handler(BaseHTTPRequestHandler):
                 pid = 0
             if not pid:
                 pid = int(CONFIG.get("default_place_id") or 1)
-            self._open_game_job(pid)
+            job = self._open_game_job(pid)
+            place = db.get_place(pid) or {}
             launcher = PUBLIC + "/game/PlaceLauncher.ashx?placeId=%s" % pid
             ticket = uuid.uuid4().hex
             proto = (
                 "roblox-player:1+launchmode:play+gameinfo:%s+placelauncherurl:%s+launchtime:%s"
                 % (ticket, launcher, int(time.time() * 1000))
             )
-            body = (
-                "<!DOCTYPE html><html><head><title>Play - ROBLOX</title>"
-                '<link rel="stylesheet" href="https://static.rbxcdn.com/css/leanbase___a6440bf99edce7c683fb7ab84fe5b56e_m.css/fetch">'
-                '</head><body id="rbx-body" class="rbx-body light-theme gotham-font">'
-                '<div class="container-main"><div class="content">'
-                '<div class="section-content login-section">'
-                '<h2 class="login-header">Starting Roblox...</h2>'
-                '<p class="list-content">Place %s. If the client does not open, install it from Download.</p>'
-                '<a class="btn-primary-lg" href="%s">Play</a> '
-                '<a class="btn-secondary-md" href="/game.html?id=%s">Back</a>'
-                "</div></div></div>"
-                "<script>window.location.href=%s;</script>"
-                "</body></html>"
-            ) % (pid, proto, pid, json.dumps(proto))
-            return 200, "text/html; charset=utf-8", body.encode("utf-8")
+            if want_json:
+                return json_bytes(
+                    {
+                        "ok": True,
+                        "uri": proto,
+                        "placeId": pid,
+                        "placeName": place.get("name") or "Experience",
+                        "jobId": (job or {}).get("id") or "",
+                        "placeLauncherUrl": launcher,
+                    }
+                )
+            self.redirect("/game-loggedin.html?id=%s&launch=1" % pid)
+            return False
 
         if low in ("/settings/update", "/settings/update/") and method == "POST":
             if not user:
                 self.redirect("/signup.html")
                 return False
             form = self.parse_form()
-            db.update_user(
-                user["id"],
-                username=form.get("username"),
-                status=form.get("status"),
-                blurb=form.get("blurb"),
-            )
-            self.redirect("/settings-loggedin.html")
+            tab = form.get("tab") or ""
+            profile = {}
+            for k in ("username", "status", "blurb", "birthday", "gender"):
+                if k in form:
+                    profile[k] = form.get(k)
+            if profile:
+                db.update_user(user["id"], **profile)
+            updates = {}
+            if tab == "security":
+                updates["two_step"] = form.get("two_step") == "1"
+            elif tab == "notifications":
+                for k in ("notify_messages", "notify_friends", "notify_trades", "notify_updates"):
+                    updates[k] = form.get(k) == "1"
+            elif tab == "parental-controls":
+                updates["account_restrictions"] = form.get("account_restrictions") == "1"
+                if form.get("content_maturity"):
+                    updates["content_maturity"] = form.get("content_maturity")
+                if form.get("monthly_spend"):
+                    updates["monthly_spend"] = form.get("monthly_spend")
+                if form.get("clear_pin") == "1":
+                    db.set_pin(user["id"], "")
+                elif form.get("new_pin"):
+                    db.set_pin(user["id"], form.get("new_pin"))
+            elif tab == "privacy":
+                for k in (
+                    "who_message",
+                    "who_chat_app",
+                    "who_chat_game",
+                    "who_join",
+                    "who_inventory",
+                    "who_trade",
+                    "who_friends",
+                ):
+                    if form.get(k):
+                        updates[k] = form.get(k)
+            else:
+                if "display_name" in form:
+                    updates["display_name"] = form.get("display_name") or ""
+                if "email" in form:
+                    updates["email"] = form.get("email") or ""
+                if form.get("language"):
+                    updates["language"] = form.get("language")
+            if updates:
+                db.save_user_settings(user["id"], updates)
+            dest = "/settings-loggedin.html"
+            if tab:
+                dest += "#" + tab
+            elif "status" in form and "username" not in form:
+                dest = "/home-loggedin.html"
+            self.redirect(dest)
+            return False
+
+        if low in ("/settings/password", "/settings/password/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            ok = db.update_password(user["id"], form.get("current_password"), form.get("new_password"))
+            if not ok:
+                return text_bytes("Current password is wrong or new password is empty", status=400)
+            self.redirect("/settings-loggedin.html#security")
+            return False
+
+        if low in ("/settings/sessions/logout", "/settings/sessions/logout/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            c = self._cookies()
+            sid = c[".ROBLOSECURITY"].value if ".ROBLOSECURITY" in c else ""
+            db.delete_other_sessions(user["id"], sid)
+            self.redirect("/settings-loggedin.html#security")
             return False
 
         if low in ("/messages/send", "/messages/send/") and method == "POST":
