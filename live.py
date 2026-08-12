@@ -398,6 +398,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = fill_games(html, places, suffix)
     if "home" in name and user:
         html = html.replace("Hello!", "Hello, {{USERNAME}}!")
+        html = html.replace("{{PROFILE_ID}}", str(user["id"]))
         html = fill_friends(html, friends, suffix)
     if "friend" in name:
         html = fill_friends(html, friends, suffix)

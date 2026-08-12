@@ -60,6 +60,17 @@
       .navbar-login-bar { display: inline-block; white-space: nowrap; vertical-align: middle; margin: 8px 0 0 0; }
       .navbar-login-bar .input-field { display: inline-block; width: 150px; height: 28px; margin: 0 6px 0 0; vertical-align: middle; }
       .navbar-login-bar #navbar-login-button { display: inline-block; vertical-align: middle; height: 28px; line-height: 28px; padding: 0 12px; }
+      @media (max-width: 991px) {
+        .rbx-header .container-fluid { padding: 8px; }
+        .rbx-navbar.hidden-xs, .rbx-navbar.hidden-sm { display: none !important; }
+        .rbx-navbar.hidden-md { display: flex !important; flex-wrap: wrap; width: 100%; float: none; }
+        .rbx-navbar.hidden-md > li { display: inline-block; margin: 4px 8px 4px 0; }
+        .navbar-login-bar { display: flex !important; flex-wrap: wrap; white-space: normal; width: 100%; margin: 8px 0; }
+        .navbar-login-bar .input-field { width: 46%; min-width: 110px; margin: 0 6px 6px 0; }
+        .container-main { padding-top: 12px !important; padding-left: 12px !important; padding-right: 12px !important; margin-left: 0 !important; }
+        .login-container, .login-section, .content { max-width: 100%; }
+        .gender-row { flex-wrap: wrap; }
+      }
     </style>
   </div>
 </div>

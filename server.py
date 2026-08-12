@@ -160,13 +160,15 @@ def render_png(kind: str, key: str) -> bytes:
 
 
 def inject_nav(html: str, user: dict | None) -> str:
+    nav_in = (PARTIALS / "nav_in.html").read_text(encoding="utf-8", errors="replace")
+    nav_out = (PARTIALS / "nav_out.html").read_text(encoding="utf-8", errors="replace")
     if user:
         nav = (
-            NAV_IN.replace("{{USERNAME}}", user["username"])
+            nav_in.replace("{{USERNAME}}", user["username"])
             .replace("{{ROBUX}}", str(user.get("robux") or 0))
         )
     else:
-        nav = NAV_OUT
+        nav = nav_out
     # replace existing wrap/header through container-main
     patterns = [
         (r'<div id="wrap"[\s\S]*?<div class="container-main"', nav + '\n    <div class="container-main"'),
@@ -856,8 +858,10 @@ class Handler(BaseHTTPRequestHandler):
             )
             if user:
                 html = html.replace("{{USERNAME}}", user["username"])
+                html = html.replace("{{PROFILE_ID}}", str(user["id"]))
             else:
                 html = html.replace("{{USERNAME}}", "")
+                html = html.replace("{{PROFILE_ID}}", "0")
             data = html.encode("utf-8")
             ctype = "text/html; charset=utf-8"
         self.send_raw(200, ctype, data)
