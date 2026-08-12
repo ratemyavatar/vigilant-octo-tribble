@@ -65,7 +65,7 @@ body.adm-body {
 .adm-back:hover { background: #3c3e40; text-decoration: none !important; }
 
 .adm-banner, .site-alert {
-  background: #00a2ff;
+  background: linear-gradient(90deg, #0066aa 0%, #00a2ff 48%, #4cbcff 100%);
   color: #fff !important;
   text-align: center;
   padding: 10px 16px;

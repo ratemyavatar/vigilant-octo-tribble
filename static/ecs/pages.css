@@ -102,16 +102,16 @@
   width: auto;
   max-width: 180px;
   text-align: center;
-  background: linear-gradient(180deg, #3ed67a 0%, #02b757 48%, #019a4a 100%) !important;
+  background: linear-gradient(0deg, #007100 0%, #40c140 100%) !important;
   color: #fff !important;
   border: 0;
   padding: 8px 18px;
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .btn-play-green:hover {
-  background: linear-gradient(180deg, #62e090 0%, #14c566 48%, #02a852 100%) !important;
+  background: linear-gradient(0deg, #47e847 0%, #47e847 100%) !important;
   text-decoration: none !important;
 }
 .btn-item-grad {
@@ -265,6 +265,85 @@
   font-weight: 700;
 }
 .games-shelf { margin-bottom: 18px; }
+
+/* Game details — 2016 / ECS overview */
+.ecs-game .game-main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.ecs-game .game-thumb-container {
+  flex: 1 1 58%;
+  min-width: 240px;
+  background: #191b1d;
+}
+.ecs-game .carousel-thumb { width: 100%; display: block; min-height: 200px; object-fit: cover; }
+.ecs-game .game-calls-to-action {
+  flex: 1 1 260px;
+  background: #232527;
+  padding: 14px 16px;
+}
+.ecs-game .game-name { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+.ecs-game .game-play-buttons { margin: 12px 0; }
+.ecs-game .game-play-buttons .btn-play-green { display: block; width: 100%; max-width: 200px; }
+.game-about-container .game-description {
+  white-space: pre-wrap;
+  color: #fff;
+  margin: 0;
+  padding: 0 4px 8px;
+  font-family: inherit;
+}
+
+/* Item details — ECS catalog page */
+.ecs-item .item-title { font-size: 30px; font-weight: 700; margin: 0 0 4px; }
+.ecs-item .item-subtitle { font-size: 14px; font-weight: 600; color: #bdbebe; margin: 0 0 14px; }
+.item-layout { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+.item-preview { flex: 1 1 240px; max-width: 320px; text-align: center; }
+.item-detail-thumb { width: 100%; max-width: 280px; background: #191b1d; display: block; margin: 0 auto; }
+.item-copy { flex: 1 1 220px; min-width: 180px; }
+.item-desc { color: #fff; white-space: pre-wrap; }
+.item-buy-col { flex: 0 1 200px; padding: 14px; }
+.item-price { font-size: 20px; margin: 0 0 10px; }
+.btn-item-buy { display: block; width: 100%; max-width: none; }
+
+/* ECS starting launcher */
+.ecs-launcher {
+  width: min(420px, 92vw) !important;
+  padding: 0 20px 20px !important;
+  background: linear-gradient(180deg, #2c2e31 0%, #191b1d 100%) !important;
+  border: 1px solid #111;
+  text-align: center;
+}
+.ecs-launcher-bar {
+  height: 8px;
+  margin: 0 -20px 16px;
+  background: linear-gradient(90deg, #007100 0%, #40c140 55%, #02b757 100%);
+}
+.ecs-launcher-close {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+}
+.ecs-launcher-logo { width: 72px; height: 72px; margin: 8px auto 10px; display: block; }
+.ecs-launcher-title { margin: 0 0 6px; color: #fff !important; }
+.ecs-launcher-copy, .ecs-launcher-name { color: #fff !important; }
+.ecs-launcher-dots { display: flex; justify-content: center; gap: 6px; margin: 10px 0 12px; }
+.ecs-launcher-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #40c140;
+  animation: ecs-dot 1s ease-in-out infinite;
+}
+.ecs-launcher-dots span:nth-child(2) { animation-delay: 0.15s; }
+.ecs-launcher-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ecs-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-4px); }
+}
+.ecs-launcher-btns { justify-content: center; }
 @media (max-width: 767px) {
   .menu-area, .groups-2016 .groups-side { width: 100%; flex-basis: 100%; }
   .profile-header-top { flex-wrap: wrap; }

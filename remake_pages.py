@@ -368,21 +368,79 @@ PROFILE = """<div class="ecs-profile">
 </div>"""
 
 GAME = """<div class="ecs-game">
-<h1 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h1>
-<div cre</p><p class="text-lead">{{GENRE}}</p></li>
-<li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
-</ul>
+<div class="game-main-content">
+  <div class="game-thumb-container">
+    <img class="carousel-thumb" src="/thumbs/place.ashx?id={{GAME_ID}}" alt="{{GAME_NAME}}">
+  </div>
+  <div class="game-calls-to-action">
+    <div class="game-title-container">
+      <h2 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h2>
+      <div class="game-creator"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
+    </div>
+    <div class="game-play-buttons">
+      <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
+        <a class="btn-play-green rbx-play-button btn-primary-lg" href="#" data-placeid="{{GAME_ID}}">Play</a>
+      </div>
+      {{FAVORITE_FORM}}
+    </div>
+    <div class="ecs-vote">
+      <span class="icon-thumbs-up"></span>
+      <span class="vote-bar"><span class="vote-fill"></span></span>
+      <span class="icon-thumbs-down"></span>
+    </div>
+    <ul class="game-stats-container">
+      <li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
+      <li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
+      <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
+      <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
+      <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
+      <li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
+    </ul>
+  </div>
 </div>
+<div class="section game-about-container ecs-card">
+  <div class="container-header"><h3>Description</h3></div>
+  <pre class="game-description linkify">{{GAME_DESC}}</pre>
 </div>
-<div class="section ecs-card">
-<div class="container-header"><h3>Servers</h3></div>
-<div class="section-content"><ul class="vlist server-list"></ul>
-<p class="list-content">No running servers. Play starts one.</p></div>
+<div class="vtab-bar">
+  <a class="vtab active" href="#rec-pane" data-tab="rec-pane">Recommendations</a>
+  <a class="vtab" href="#servers-pane" data-tab="servers-pane">Games</a>
 </div>
-<div class="container-list">
-<div class="container-header"><h3 class="ecs-row-title">Recommended</h3></div>
-<ul class="hlist games game-cards" id="recommended-list"></ul>
+<div id="rec-pane" class="tab-pane settings-tab-pane active">
+  <div class="container-list">
+    <ul class="hlist games game-cards" id="recommended-list"></ul>
+  </div>
 </div>
+<div id="servers-pane" class="tab-pane settings-tab-pane">
+  <div class="section ecs-card">
+    <div class="container-header"><h3>Servers</h3></div>
+    <ul class="vlist server-list"></ul>
+    <p class="list-content">No running servers. Play starts one.</p>
+  </div>
+</div>
+</div>"""
+
+ITEM = """<div class="ecs-item">
+  <h1 class="item-title">{{ITEM_NAME}}</h1>
+  <h3 class="item-subtitle">ROBLOX {{ITEM_TYPE}}</h3>
+  <div class="item-layout">
+    <div class="item-preview ecs-card">
+      <img class="item-detail-thumb" src="/thumbs/asset.ashx?id={{ITEM_ID}}" alt="{{ITEM_NAME}}">
+    </div>
+    <div class="item-copy">
+      <p class="text-label">By <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></p>
+      <p class="item-desc">{{ITEM_DESC}}</p>
+    </div>
+    <div class="item-buy-col ecs-card">
+      <p class="item-price"><span class="icon-robux-16x16"></span> <span class="text-robux">R$ {{ITEM_PRICE}}</span></p>
+      <form method="post" action="/catalog/buy">
+        <input type="hidden" name="id" value="{{ITEM_ID}}">
+        <button type="submit" class="btn-play-green btn-item-buy">Buy with R$</button>
+      </form>
+    </div>
+  </div>
+  <h3 class="ecs-subtitle">Recommendations</h3>
+  <ul class="hlist item-cards"></ul>
 </div>"""
 
 CREATE = """<div class="ecs-develop">
@@ -860,6 +918,8 @@ def main():
     write("game-loggedin.html", page("Game", GAME))
     write("game-shindo.html", page("Game", GAME))
     write("game-shindo-loggedin.html", page("Game", GAME))
+    write("item.html", page("Item", ITEM))
+    write("item-loggedin.html", page("Item", ITEM))
     write("create.html", page("Develop", CREATE))
     write("create-loggedin.html", page("Develop", CREATE))
     write("avatar.html", page("Character", AVATAR))

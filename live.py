@@ -257,7 +257,7 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
     return (
         '<li class="list-item item-card">'
         '<div class="item-card-container">'
-        '<a href="#" class="item-card-link">'
+        '<a href="/item-loggedin.html?id=%s" class="item-card-link">'
         '<div class="item-card-thumb-container">'
         '<img class="item-card-thumb" src="/thumbs/asset.ashx?id=%s" alt="%s">'
         "</div>"
@@ -266,7 +266,7 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
         '<div class="text-overflow item-card-price">'
         '<span class="icon-robux-16x16"></span><span class="text-robux">%s</span>'
         "</div>%s</div></li>"
-    ) % (aid, name, name, name, price, extra)
+    ) % (aid, aid, name, name, name, price, extra)
 
 
 def people_card(user: dict, suffix: str) -> str:
@@ -350,6 +350,24 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{CREATED}}", created)
     html = html.replace("{{VISITS}}", str(int(place.get("visits") or 0)))
     html = html.replace("{{PLAYING}}", "0")
+    html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
+    return html
+
+
+def fill_item_detail(html: str, asset: dict, suffix: str) -> str:
+    name = esc(asset.get("name") or "Item")
+    desc = esc(asset.get("description") or "No description available.")
+    aid = asset["id"]
+    creator = db.get_user(asset.get("creator_id") or 0)
+    cname = esc(creator["username"]) if creator else "ROBLOX"
+    cid = creator["id"] if creator else 0
+    html = html.replace("{{ITEM_NAME}}", name)
+    html = html.replace("{{ITEM_DESC}}", desc)
+    html = html.replace("{{ITEM_ID}}", str(aid))
+    html = html.replace("{{ITEM_TYPE}}", esc(asset.get("asset_type") or "Item"))
+    html = html.replace("{{ITEM_PRICE}}", str(int(asset.get("price") or 0)))
+    html = html.replace("{{CREATOR_NAME}}", cname)
+    html = html.replace("{{CREATOR_ID}}", str(cid))
     html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
     return html
 
@@ -700,14 +718,17 @@ SITE_JS = r"""
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-modal', 'true');
     box.innerHTML = '<div class="modal-backdrop" id="rbx-play-backdrop"></div>'
-      + '<div class="modal-window">'
-      + '<div class="modal-header"><h3>Starting ROBLOX</h3>'
-      + '<button type="button" class="modal-close" id="rbx-play-close" aria-label="Close">x</button></div>'
-      + '<div class="modal-body"><p class="list-content" id="rbx-play-status">ROBLOX is now loading. Get ready!</p>'
-      + '<p class="text-lead" id="rbx-play-name"></p></div>'
-      + '<div class="modal-btns">'
+      + '<div class="modal-window ecs-launcher">'
+      + '<div class="ecs-launcher-bar"></div>'
+      + '<button type="button" class="modal-close ecs-launcher-close" id="rbx-play-close" aria-label="Close">x</button>'
+      + '<img class="ecs-launcher-logo" src="/static/ecs/logo_R.svg" alt="R">'
+      + '<h3 class="ecs-launcher-title">Starting ROBLOX</h3>'
+      + '<p class="ecs-launcher-copy" id="rbx-play-status">ROBLOX is now loading. Get ready!</p>'
+      + '<div class="ecs-launcher-dots" aria-hidden="true"><span></span><span></span><span></span></div>'
+      + '<p class="text-lead ecs-launcher-name" id="rbx-play-name"></p>'
+      + '<div class="modal-btns ecs-launcher-btns">'
       + '<a class="btn-secondary-md" href="/download.html">Download</a> '
-      + '<button type="button" class="btn-primary-md" id="rbx-play-retry">Retry</button> '
+      + '<button type="button" class="btn-play-green" id="rbx-play-retry">Retry</button> '
       + '<button type="button" class="btn-secondary-md" id="rbx-play-cancel">Cancel</button>'
       + '</div></div>';
     document.body.appendChild(box);
@@ -1008,6 +1029,18 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = replace_ul_inner(html, "request-list", "".join(request_card(u) for u in reqs))
         if reqs:
             html = html.replace('<p class="list-content request-empty">No pending requests.</p>', "")
+    if name.startswith("item"):
+        try:
+            iid = int(qs.get("id") or qs.get("assetId") or 0)
+        except Exception:
+            iid = 0
+        asset = db.get_asset(iid) if iid else None
+        if not asset:
+            all_a = db.list_assets()
+            asset = all_a[0] if all_a else {"id": 0, "name": "Item", "description": "", "creator_id": 0, "asset_type": "Hat", "price": 0}
+        html = fill_item_detail(html, asset, suffix)
+        rec = [a for a in db.list_assets() if a["id"] != asset.get("id")][:8]
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, buy=True) for a in rec), count=1)
     if "catalog" in name:
         html = fill_catalog(html, assets, buy=True)
     if "inventory" in name:

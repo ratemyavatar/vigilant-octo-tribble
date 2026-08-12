@@ -874,7 +874,7 @@ h3 { font-size: 18px; }
 
 /* Site-wide staff alert (also styled in admin.css). Always white on blue. */
 .site-alert {
-  background: #00a2ff;
+  background: linear-gradient(90deg, #0066aa 0%, #00a2ff 48%, #4cbcff 100%);
   color: #fff !important;
   text-align: center;
   padding: 10px 16px;
