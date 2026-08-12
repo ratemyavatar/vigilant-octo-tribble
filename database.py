@@ -234,6 +234,12 @@ def init():
             body TEXT NOT NULL,
             created_at INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS join_tickets (
+            id TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            created_at INTEGER NOT NULL
+        );
         """
     )
     con.commit()
@@ -877,7 +883,44 @@ def list_place_comments(place_id, limit=40):
     return [dict(r) for r in rows]
 
 
+
+def create_join_ticket(user_id, place_id):
+    try:
+        user_id = int(user_id or 0)
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return None
+    if not user_id or not place_id:
+        return None
+    tid = secrets.token_urlsafe(24)
+    con = connect()
+    con.execute(
+        "INSERT INTO join_tickets (id, user_id, place_id, created_at) VALUES (?,?,?,?)",
+        (tid, user_id, place_id, int(time.time())),
+    )
+    con.commit()
+    con.close()
+    return tid
+
+
+def get_join_ticket(ticket):
+    ticket = (ticket or "").strip()
+    if not ticket:
+        return None
+    con = connect()
+    row = con.execute("SELECT * FROM join_tickets WHERE id=?", (ticket,)).fetchone()
+    con.close()
+    if not row:
+        return None
+    d = dict(row)
+    # tickets last 10 minutes
+    if int(d.get("created_at") or 0) < int(time.time()) - 600:
+        return None
+    return d
+
+
 def list_messages(user_id):
+
     if not user_id:
         return []
     con = connect()

@@ -16,7 +16,7 @@ import mimetypes
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse, unquote
+from urllib.parse import parse_qs, urlparse, unquote, quote
 
 import database as db
 import api
@@ -462,6 +462,20 @@ class Handler(BaseHTTPRequestHandler):
             self.redirect("/friends-loggedin.html")
             return False
 
+        if "get-join-script" in low:
+            if not user:
+                return json_bytes({"error": "login"}, 401)
+            try:
+                pid = int(q.get("placeId") or q.get("placeid") or q.get("id") or 0)
+            except Exception:
+                pid = 0
+            if not pid:
+                pid = int(CONFIG.get("default_place_id") or 1)
+            data = self._join_script(user, pid)
+            if not data:
+                return json_bytes({"error": "Could not start the client."}, 400)
+            return json_bytes(data)
+
         if low in ("/play", "/play/"):
             accept = (self.headers.get("Accept") or "").lower()
             want_json = (
@@ -480,26 +494,13 @@ class Handler(BaseHTTPRequestHandler):
                 pid = 0
             if not pid:
                 pid = int(CONFIG.get("default_place_id") or 1)
-            job = self._open_game_job(pid)
-            db.record_play(user["id"], pid)
-            place = db.get_place(pid) or {}
-            launcher = PUBLIC + "/game/PlaceLauncher.ashx?placeId=%s" % pid
-            ticket = uuid.uuid4().hex
-            proto = (
-                "roblox-player:1+launchmode:play+gameinfo:%s+placelauncherurl:%s+launchtime:%s"
-                % (ticket, launcher, int(time.time() * 1000))
-            )
+            data = self._join_script(user, pid) or {}
+            proto = data.get("robloxPlayerUri") or data.get("joinUrl") or ""
             if want_json:
-                return json_bytes(
-                    {
-                        "ok": True,
-                        "uri": proto,
-                        "placeId": pid,
-                        "placeName": place.get("name") or "Experience",
-                        "jobId": (job or {}).get("id") or "",
-                        "placeLauncherUrl": launcher,
-                    }
-                )
+                out = dict(data)
+                out["ok"] = True
+                out["uri"] = proto
+                return json_bytes(out)
             self.redirect("/game-loggedin.html?id=%s&launch=1" % pid)
             return False
 
@@ -1022,7 +1023,13 @@ class Handler(BaseHTTPRequestHandler):
 
         # Place launcher + join
         if "placelauncher" in low:
-            pid = int(q.get("placeId") or q.get("placeid") or CONFIG.get("default_place_id") or 1)
+            ticket_row = db.get_join_ticket(q.get("ticket") or "")
+            if ticket_row:
+                pid = int(ticket_row.get("place_id") or 0)
+                if not user:
+                    user = db.get_user(ticket_row.get("user_id") or 0)
+            else:
+                pid = int(q.get("placeId") or q.get("placeid") or CONFIG.get("default_place_id") or 1)
             request = q.get("request") or q.get("Request") or "RequestGame"
             job = db.latest_job_for_place(pid)
             if request.lower() in ("requestgame", "requestgamejob", "requestfollowuser") or method == "POST":
@@ -1044,8 +1051,15 @@ class Handler(BaseHTTPRequestHandler):
         if low.endswith("/game/join.ashx") or low.endswith("/game/join.ashx/"):
             job_id = q.get("job") or q.get("jobId") or q.get("jobid")
             job = db.get_job(job_id) if job_id else None
+            ticket_row = db.get_join_ticket(q.get("ticket") or "")
+            if ticket_row and not user:
+                user = db.get_user(ticket_row.get("user_id") or 0)
             if not job:
-                pid = int(q.get("placeId") or q.get("placeid") or 1)
+                pid = int(q.get("placeId") or q.get("placeid") or 0)
+                if not pid and ticket_row:
+                    pid = int(ticket_row.get("place_id") or 0)
+                if not pid:
+                    pid = 1
                 job = self._open_game_job(pid)
             place = db.get_place(job["place_id"]) if job else None
             lua = fill_lua(
@@ -1085,6 +1099,31 @@ class Handler(BaseHTTPRequestHandler):
             return json_bytes({"id": user["id"], "username": user["username"], "robux": user.get("robux") or 0})
 
         return None
+
+    def _join_script(self, user, place_id: int):
+        """Economy Simulator /game/get-join-script payload."""
+        place = db.get_place(place_id) or {}
+        ticket = db.create_join_ticket(user["id"], place_id)
+        if not ticket:
+            return None
+        db.record_play(user["id"], place_id)
+        encoded = quote(ticket, safe="")
+        launcher = PUBLIC + "/placelauncher.ashx?ticket=" + encoded
+        prefix = CONFIG.get("client_prefix") or "rbxeconsim:"
+        proto = (
+            "roblox-player:1+launchmode:play+gameinfo:%s+placelauncherurl:%s+launchtime:%s"
+            % (ticket, launcher, int(time.time() * 1000))
+        )
+        return {
+            "prefix": prefix,
+            "joinScriptUrl": launcher,
+            "joinUrl": prefix + launcher,
+            "robloxPlayerUri": proto,
+            "authenticationUrl": PUBLIC + "/Login/Negotiate.ashx",
+            "authenticationTicket": ticket,
+            "placeId": place_id,
+            "placeName": place.get("name") or "Experience",
+        }
 
     def _open_game_job(self, place_id: int):
         place = db.get_place(place_id) or {"id": place_id, "max_players": 10, "creator_id": 1}

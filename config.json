@@ -7,5 +7,6 @@
   "rcc_timeout": 15,
   "game_port_start": 53640,
   "site_name": "ROBLOX",
-  "default_place_id": 1
+  "default_place_id": 1,
+  "client_prefix": "rbxeconsim:"
 }

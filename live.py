@@ -786,7 +786,7 @@ SITE_JS = r"""
       + '<button type="button" class="modal-close ecs-launcher-close" id="rbx-play-close" aria-label="Close">x</button>'
       + '<img class="ecs-launcher-logo" src="/static/ecs/logo_R.svg" alt="R">'
       + '<h3 class="ecs-launcher-title">Starting ROBLOX</h3>'
-      + '<p class="ecs-launcher-copy" id="rbx-play-status">ROBLOX is now loading. Get ready!</p>'
+      + '<p class="ecs-launcher-copy" id="rbx-play-status">Roblox is now loading. Get ready to play!</p>'
       + '<div class="ecs-launcher-dots" aria-hidden="true"><span></span><span></span><span></span></div>'
       + '<p class="text-lead ecs-launcher-name" id="rbx-play-name"></p>'
       + '<div class="modal-btns ecs-launcher-btns">'
@@ -801,15 +801,7 @@ SITE_JS = r"""
     var m = document.getElementById('rbx-play-modal');
     if (m) m.classList.remove('open');
   }
-  function fireUri(uri) {
-    var a = document.createElement('a');
-    a.href = uri;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-  function launchPlace(placeId) {
+  function launchGame(placeId) {
     if (!placeId) return;
     lastPlaceId = String(placeId);
     ensurePlayModal();
@@ -817,27 +809,31 @@ SITE_JS = r"""
     var status = document.getElementById('rbx-play-status');
     var nameEl = document.getElementById('rbx-play-name');
     if (modal) modal.classList.add('open');
-    if (status) status.textContent = 'ROBLOX is now loading. Get ready!';
-    if (nameEl) nameEl.textContent = 'Place ' + lastPlaceId;
-    fetch('/play?placeId=' + encodeURIComponent(lastPlaceId) + '&json=1', {
-      credentials: 'same-origin',
-      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    if (status) status.textContent = 'Roblox is now loading. Get ready to play!';
+    if (nameEl) nameEl.textContent = '';
+    fetch('/game/get-join-script?placeId=' + encodeURIComponent(lastPlaceId), {
+      credentials: 'same-origin'
     }).then(function (r) {
       if (r.status === 401) { window.location.href = '/signup.html'; return null; }
       return r.json();
     }).then(function (data) {
       if (!data) return;
-      if (!data.ok || !data.uri) {
+      if (data.error || !data.joinScriptUrl) {
         if (status) status.textContent = data.error || 'Could not start the client.';
         return;
       }
       if (nameEl && data.placeName) nameEl.textContent = data.placeName;
-      fireUri(data.uri);
-      if (status) status.textContent = 'If the client did not open, install it from Download, then press Retry.';
+      var href = (data.prefix || '') + (data.joinScriptUrl || '');
+      var aTag = document.createElement('a');
+      aTag.setAttribute('href', href);
+      document.body.appendChild(aTag);
+      aTag.click();
+      setTimeout(function () { aTag.remove(); }, 1000);
     }).catch(function () {
       if (status) status.textContent = 'Could not start the client.';
     });
   }
+  function launchPlace(placeId) { launchGame(placeId); }
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t) return;
