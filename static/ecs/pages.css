@@ -96,10 +96,164 @@
   width: 100%;
   max-width: 200px;
   text-align: center;
-  background: #02b757 !important;
+  background: linear-gradient(180deg, #3ed67a 0%, #02b757 48%, #019a4a 100%) !important;
+  color: #fff !important;
+  border: 0;
   padding: 8px 18px;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
-.btn-play-green:hover { background: #3fc679 !important; }
+.btn-play-green:hover {
+  background: linear-gradient(180deg, #62e090 0%, #14c566 48%, #02a852 100%) !important;
+  text-decoration: none !important;
+}
+.btn-item-grad {
+  width: 100%;
+  max-width: none;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.game-card-play {
+  display: block;
+  margin: 0 8px 8px;
+  max-width: none;
+  padding: 6px 8px;
+  font-size: 13px;
+  text-decoration: none !important;
+}
+.verified-badge {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 6px;
+  flex: 0 0 16px;
+}
+#navigation .verified-badge { width: 13px; height: 13px; margin-left: 4px; }
+.header-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.header-title h2 { margin: 0; display: flex; align-items: center; gap: 6px; }
+.header-details { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; }
+.details-info { list-style: none; margin: 8px 0 0; padding: 0; display: flex; gap: 18px; }
+.details-info .text-label { margin: 0; font-size: 14px; }
+.details-info h3 { margin: 2px 0 0; font-weight: 400; font-size: 20px; color: #fff; }
+.profile-header-top { display: flex; gap: 16px; align-items: flex-start; }
+.profile-avatar-thumb { width: 120px; height: 120px; object-fit: cover; display: block; background: #191b1d; }
+.header-caption { flex: 1; min-width: 0; }
+.profile-header { background: #232527; padding: 16px; margin-bottom: 12px; }
+
+/* Develop — 2016 build page, darkened */
+.develop-tabs { display: flex; gap: 0; margin: 0 0 14px; border-bottom: 2px solid #2d2f31; }
+.develop-tabs .tab-item {
+  display: inline-block;
+  padding: 8px 14px;
+  color: #bdbebe !important;
+  text-decoration: none !important;
+  font-weight: 700;
+}
+.develop-tabs .tab-item-selected { color: #fff !important; box-shadow: 0 -3px 0 0 #00a2ff inset; }
+.build-page { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.menu-area {
+  width: 190px;
+  flex: 0 0 190px;
+  background: #232527;
+  padding: 8px 0 16px;
+}
+.menu-area > .tab-item {
+  display: block;
+  padding: 7px 12px;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-weight: 400;
+}
+.menu-area > .tab-item:hover { background: #2d2f31; }
+.menu-area > .tab-item-selected { box-shadow: 4px 0 0 0 #00a2ff inset; font-weight: 700; }
+.dev-widget { margin: 14px 10px 0; padding-top: 10px; border-top: 1px solid #2d2f31; }
+.dev-widget .widget-name h3 { font-size: 15px; margin: 0 0 6px; }
+.dev-widget .brand-name { color: #00a2ff; }
+.content-area { flex: 1; min-width: 0; }
+.create-new-button { margin: 0 0 12px; }
+.status-confirm, .AlertMessage {
+  background: #12344a;
+  color: #fff;
+  border: 1px solid #00a2ff;
+  padding: 10px 12px;
+  margin: 0 0 14px;
+}
+.creation-head { margin: 8px 0 10px; }
+
+/* Groups — 2016 My Groups rail */
+.groups-2016 .groups-layout { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.groups-2016 .groups-side { width: 220px; flex: 0 0 220px; background: #232527; padding: 12px; }
+.my-groups-label { font-size: 16px; margin: 14px 0 8px; }
+.GroupListItemContainer { list-style: none; }
+.group-rail-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.group-rail-link:hover { background: #2d2f31; }
+.GroupListImageContainer {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  background: #191b1d;
+  color: #00a2ff;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.GroupListName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-search-bar { display: flex; gap: 8px; margin: 0 0 14px; }
+.group-search-bar .input-field { flex: 1; }
+.group-search-button {
+  background: #2d2f31;
+  color: #fff;
+  border: 1px solid #3c3e40;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.GroupPanelContainer {
+  display: flex;
+  gap: 16px;
+  background: #232527;
+  padding: 14px;
+  margin: 0 0 14px;
+}
+.GroupEmblem {
+  width: 100px;
+  height: 100px;
+  background: #191b1d;
+  color: #00a2ff;
+  font-size: 36px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.group-panel-name { margin: 0 0 8px; font-weight: 400; }
+.group-card { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #2d2f31; }
+.group-card-emblem {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  background: #191b1d;
+  color: #00a2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.games-shelf { margin-bottom: 18px; }
+@media (max-width: 767px) {
+  .menu-area, .groups-2016 .groups-side { width: 100%; flex-basis: 100%; }
+  .profile-header-top { flex-wrap: wrap; }
+}
 
 .ecs-game-grid {
   display: flex;

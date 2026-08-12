@@ -142,7 +142,7 @@ HOME = """<div class="ecs-dash">
 <img alt="avatar" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" id="home-avatar-thumb" class="avatar-card-image">
 </a>
 <div class="home-header-content">
-<h1 class="hello-message"><a href="/profile-loggedin.html">Hello, {{USERNAME}}!</a></h1>
+<h1 class="hello-message"><a href="/profile-loggedin.html">Hello, {{USERNAME}}!</a>{{VERIFIED_BADGE}}</h1>
 <p class="profile-status text-lead">{{STATUS}}</p>
 <form class="status-update-form" method="post" action="/settings/update">
 <input class="input-field" name="status" maxlength="140" placeholder="What are you up to?">
@@ -181,9 +181,21 @@ DISCOVER = """<div class="games-list-container ecs-games">
 <button type="submit" class="btn-primary-md">Search</button>
 </form>
 </div>
-<div class="container-list">
+<div class="container-list games-shelf">
 <div class="container-header"><h3 class="ecs-row-title">Popular</h3></div>
-<ul class="hlist games game-cards game-tile-list" id="games-list"></ul>
+<ul class="hlist games game-cards game-tile-list" id="games-popular"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Spotlight</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-spotlight"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Fresh Places</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-fresh"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Top Rated</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-rated"></ul>
 <p class="list-content">No Search Results Found</p>
 </div>
 </div>"""
@@ -265,57 +277,44 @@ CATALOG = """<div class="ecs-catalog">
 <ul class="hlist item-cards"></ul>
 <p class="list-content">No Search Results Found</p>
 </div>
-<div class="section-content ecs-card">
-<h3>Create Item</h3>
-<p class="list-content">Upload an item to this server. Catalog starts empty until someone creates one.</p>
-<form method="post" action="/catalog/upload">
-<label class="form-label">Name</label>
-<input class="input-field" name="name" placeholder="Item name">
-<label class="form-label">Type</label>
-<select class="input-field" name="asset_type">
-<option>Hat</option><option>Hair</option><option>Face</option><option>Shirt</option><option>Pants</option><option>Gear</option><option>Accessory</option>
-</select>
-<label class="form-label">Price (Robux)</label>
-<input class="input-field" name="price" type="number" min="0" value="0">
-<label class="form-label">Description</label>
-<input class="input-field" name="description" placeholder="Description">
-<button type="submit" class="btn-primary-md">Create</button>
-</form>
-</div>
 </div>
 </div>
 </div>""" % CAT_NAV
 
 PROFILE = """<div class="ecs-profile">
-<div class="profile-header-card ecs-card">
-<div class="profile-header-row">
-<div class="profile-shot-wrap">
-<img class="avatar-card-image profile-headshot" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
+<div class="section profile-header">
+<div class="section-content profile-header-content">
+<div class="profile-header-top">
+<div class="avatar avatar-headshot-lg card-plain profile-avatar-image">
+<img class="avatar-card-image profile-avatar-thumb" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
 </div>
-<div class="profile-header-main">
-<div class="profile-name-row">
-<h2 class="profile-name"><span class="profile-username">{{PROFILE_NAME}}</span></h2>
+<div class="header-caption">
+<div class="header-title">
+<h2>{{PROFILE_NAME}}{{VERIFIED_BADGE}}</h2>
 <div class="profile-dots-wrap">
 <button type="button" class="profile-dots" id="profile-gear" aria-haspopup="true" aria-expanded="false">...</button>
 <div class="profile-gear-menu" id="profile-gear-menu">{{PROFILE_GEAR}}</div>
 </div>
 </div>
+<div class="header-details">
+<ul class="details-info">
+<li><div class="text-label">Friends</div><a class="text-name" href="/friends.html"><h3>{{FRIEND_COUNT}}</h3></a></li>
+<li><div class="text-label">Followers</div><h3 class="text-name">{{FOLLOWER_COUNT}}</h3></li>
+<li><div class="text-label">Following</div><h3 class="text-name">{{FOLLOWING_COUNT}}</h3></li>
+</ul>
+<div class="profile-actions">{{MESSAGE_BTN}}{{ADD_FRIEND}}</div>
+</div>
 <p class="profile-status-quote" id="profile-status-text">{{PROFILE_STATUS_DISPLAY}}</p>
 <form id="profile-status-form" class="profile-status-form" method="post" action="/settings/update" hidden>
-<input class="input-field" name="status" maxlength="255" value="{{PROFILE_STATUS}}" placeholder="What are you up to?">
-<button type="submit" class="profile-status-save">Update Status</button>
+<input class="input-field" name="status" maxlength="255" value="{{PROFILE_STATUS}}" placeholder="What are you doing?">
+<button type="submit" class="profile-status-save">Save Status</button>
 </form>
-<div class="profile-rel-row">
-<div class="rel-stat"><p class="rel-label">Friends</p><p class="rel-value"><a href="/friends.html">{{FRIEND_COUNT}}</a></p></div>
-<div class="rel-stat"><p class="rel-label">Followers</p><p class="rel-value">{{FOLLOWER_COUNT}}</p></div>
-<div class="rel-stat"><p class="rel-label">Following</p><p class="rel-value">{{FOLLOWING_COUNT}}</p></div>
-<div class="profile-actions">{{MESSAGE_BTN}}{{ADD_FRIEND}}</div>
 </div>
 </div>
 </div>
 </div>
 
-<div class="profile-tabs-card ecs-card">
+<div class="profile-tabs-card">
 <a class="profile-tab active" href="#about-pane" data-tab="about-pane">About</a>
 <a class="profile-tab" href="#creations-pane" data-tab="creations-pane">Creations</a>
 </div>
@@ -325,7 +324,7 @@ PROFILE = """<div class="ecs-profile">
 <div class="ecs-card about-card">
 <p class="about-body profile-blurb">{{PROFILE_BLURB}}</p>
 <div class="divider-top"></div>
-<p class="prev-names">Previous Usernames</p>
+<p class="prev-names">Past usernames stay on this page when someone changes theirs.</p>
 </div>
 
 <h3 class="ecs-subtitle">Currently Wearing</h3>
@@ -343,11 +342,16 @@ PROFILE = """<div class="ecs-profile">
 <div class="ecs-card"><ul class="hlist friend-list"></ul></div>
 </div>
 
-<h3 class="ecs-subtitle">Groups</h3>
+<h3 class="ecs-subtitle">Collections</h3>
 <div class="ecs-card"><ul class="vlist group-list"></ul></div>
 
-<h3 class="ecs-subtitle">Favorites</h3>
+<h3 class="ecs-subtitle">Favorite Games</h3>
 <ul class="hlist games game-cards profile-fav-list" id="profile-favorites"></ul>
+
+<h3 class="ecs-subtitle">Player Badges</h3>
+<div class="ecs-card badge-row">
+<p class="list-content">Badges earned on this server show up here.</p>
+</div>
 
 <h3 class="ecs-subtitle">Statistics</h3>
 <div class="ecs-card stats-row">
@@ -365,36 +369,7 @@ PROFILE = """<div class="ecs-profile">
 
 GAME = """<div class="ecs-game">
 <h1 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h1>
-<div class="game-main-content ecs-game-grid">
-<div class="game-left">
-<div class="game-thumb-container">
-<img class="carousel-thumb" src="/thumbs/place.ashx?id={{GAME_ID}}" alt="{{GAME_NAME}}">
-</div>
-<div class="ecs-vote">
-<span class="icon-thumbs-up"></span>
-<span class="vote-bar"><span class="vote-fill"></span></span>
-<span class="icon-thumbs-down"></span>
-</div>
-<div class="section game-about-container">
-<div class="container-header"><h3>Description</h3></div>
-<div class="section-content">
-<pre class="game-description linkify">{{GAME_DESC}}</pre>
-</div></div>
-</div>
-<div class="game-right">
-<div class="game-creator ecs-card"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
-<div class="game-play-button-container">
-<div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
-<a class="btn-primary-lg rbx-play-button btn-play-green" href="#" data-placeid="{{GAME_ID}}">Play</a>
-</div>
-{{FAVORITE_FORM}}
-</div>
-<ul class="game-stats-container">
-<li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
-<li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
-<li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
-<li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
-<li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
+<div cre</p><p class="text-lead">{{GENRE}}</p></li>
 <li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
 </ul>
 </div>
@@ -411,32 +386,50 @@ GAME = """<div class="ecs-game">
 </div>"""
 
 CREATE = """<div class="ecs-develop">
-<div class="vtab-bar">
-<a class="vtab active" href="/create-loggedin.html">My Creations</a>
-<a class="vtab" href="/create-loggedin.html">Group Creations</a>
+<div id="DevelopTabs" class="tab-container develop-tabs">
+<a class="tab-item tab-item-selected" href="/create-loggedin.html">My Creations</a>
+<a class="tab-item" href="/create-loggedin.html">Group Creations</a>
+<a class="tab-item" href="/catalog-loggedin.html">Library</a>
 </div>
-<div class="develop-body">
-<aside class="develop-left">
-<p class="browse-by">Creations</p>
-<ul class="menu-vertical">
-<li class="menu-option"><a href="/create.html">Games</a></li>
-<li class="menu-option"><a href="/create.html">Places</a></li>
-<li class="menu-option"><a href="/catalog.html">Shirts</a></li>
-<li class="menu-option"><a href="/catalog.html">T-Shirts</a></li>
-<li class="menu-option"><a href="/catalog.html">Pants</a></li>
-<li class="menu-option"><a href="/catalog.html">Decals</a></li>
-<li class="menu-option"><a href="/catalog.html">Models</a></li>
-</ul>
+<div class="develop-body build-page">
+<aside class="develop-left menu-area">
+<a class="tab-item tab-item-selected" href="/create.html">Places</a>
+<a class="tab-item" href="/create.html">Games</a>
+<a class="tab-item" href="/catalog.html">Models</a>
+<a class="tab-item" href="/catalog.html">Decals</a>
+<a class="tab-item" href="/catalog.html">Badges</a>
+<a class="tab-item" href="/catalog.html">Game Passes</a>
+<a class="tab-item" href="/catalog.html">Audio</a>
+<a class="tab-item" href="/catalog.html">Animations</a>
+<a class="tab-item" href="/catalog.html">Meshes</a>
+<a class="tab-item" href="/catalog.html">Shirts</a>
+<a class="tab-item" href="/catalog.html">T-Shirts</a>
+<a class="tab-item" href="/catalog.html">Pants</a>
+<div id="StudioWidget" class="dev-widget">
+<div class="widget-name"><h3><span class="brand-name">ROBLOX</span> Studio</h3></div>
+<div class="widget-body">
+<p class="list-content">Build places on this server with the Computer client.</p>
+<a class="studio-launch" href="/download.html">Get the client</a>
+</div>
+</div>
+<div id="CommunityWidget" class="dev-widget">
+<div class="widget-name"><h3>Creator Corner</h3></div>
+<div class="widget-body">
+<p class="list-content">Tips and notes for people making places here.</p>
+<a href="/help.html">Open Help</a>
+</div>
+</div>
 </aside>
-<div class="develop-right">
-<h1>Create</h1>
-<div class="section">
-<div class="container-header"><h3 class="ecs-row-title">My Games</h3></div>
-<ul class="hlist games game-cards" id="my-places-list"></ul>
+<div class="develop-right content-area">
+<a class="create-new-button btn-medium btn-primary" href="#placeForm">Create New Place</a>
+<div class="status-confirm AlertMessage">Place settings live on this tab. Games you publish show on Discover.</div>
+<div class="section-header creation-head">
+<h2 class="header-text">Places</h2>
 </div>
+<ul class="hlist games game-cards" id="my-places-list"></ul>
 <form id="placeForm" method="POST" action="/places/create">
 <input id="TemplateID" name="TemplateID" type="hidden" value="95206881">
-<h2 id="StudioGameTemplates">GAME TEMPLATES</h2>
+<h2 id="StudioGameTemplates">Starting layouts</h2>
 <div class="templates">%s</div>
 <label class="form-label" for="Name">Name:</label>
 <input class="text-box text-box-medium" id="Name" name="Name" type="text" value="">
@@ -447,7 +440,7 @@ CREATE = """<div class="ecs-develop">
 <label class="form-label" for="MaxPlayersInput">Maximum Visitor Count:</label>
 <select class="form-select" id="MaxPlayersInput" name="NumberOfPlayersMax">%s</select>
 <div id="buttonRow">
-<a class="btn-medium btn-primary" id="finishButton">Create Experience</a>
+<a class="btn-medium btn-primary" id="finishButton">Create Place</a>
 </div>
 </form>
 </div>
@@ -587,39 +580,50 @@ MESSAGES = """<div class="ecs-messages">
 </div>
 </div>"""
 
-GROUPS = """<div class="ecs-groups">
-<h1 class="ecs-page-title">Groups</h1>
+GROUPS = """<div class="ecs-groups groups-2016">
 <div class="groups-layout">
-<aside class="groups-side ecs-card">
-<h3>My Groups</h3>
-<ul class="vlist my-group-list"></ul>
+<aside class="groups-side" id="left-column">
+<div class="CreateGroupContainer">
 <form method="post" action="/groups/create" class="create-group-form">
-<label class="form-label">Create Group</label>
-<input class="input-field" name="name" placeholder="Group name">
-<input class="input-field" name="description" placeholder="Description">
+<label class="form-label">Start a Group</label>
+<input class="input-field" name="name" placeholder="Group name" maxlength="50">
+<input class="input-field" name="description" placeholder="What is this group about?">
 <button type="submit" class="btn-primary-md">Create</button>
 </form>
+</div>
+<h3 class="my-groups-label">My Groups</h3>
+<ul class="vlist my-group-list GroupThumbnails" id="GroupThumbnails"></ul>
 </aside>
-<div class="groups-main">
-<div class="section ecs-card">
-<div class="container-header"><h3>Find Groups</h3></div>
-<div class="section-content">
-<form method="get" action="/groups.html" class="games-filter-bar">
-<input class="input-field" name="keyword" placeholder="Search groups" value="{{SEARCH_KEYWORD}}">
-<button type="submit" class="btn-primary-md">Search</button>
+<div class="groups-main" id="mid-column">
+<div id="SearchControls">
+<form method="get" action="/groups.html" class="group-search-bar">
+<input class="input-field SearchKeyword" name="keyword" placeholder="Search all groups" value="{{SEARCH_KEYWORD}}" maxlength="100">
+<button type="submit" class="group-search-button">Search</button>
 </form>
-<ul class="vlist group-list"></ul>
-<p class="list-content">No Search Results Found</p>
 </div>
+<div id="description" class="GroupPanelContainer">
+<div class="group-emblem-col">
+<div class="GroupEmblem" aria-hidden="true">{{GROUP_LETTER}}</div>
 </div>
-<div class="section group-detail ecs-card">
-<div class="container-header"><h3>{{GROUP_NAME}}</h3></div>
-<div class="section-content">
-<p class="list-content">{{GROUP_DESC}}</p>
+<div class="group-copy-col">
+<h2 class="group-panel-name">{{GROUP_NAME}}</h2>
+<p class="GroupDescription">{{GROUP_DESC}}</p>
 <p class="text-label">Owner {{GROUP_OWNER}} · Members {{GROUP_MEMBERS}}</p>
 {{GROUP_JOIN}}
+</div>
+</div>
+<div class="section group-wall-card">
+<div class="container-header"><h3>Group Wall</h3></div>
+<p class="list-content">Wall posts stay on this server. Pick a group to read its page.</p>
+</div>
+<div class="section">
+<div class="container-header"><h3>Members</h3></div>
 <ul class="hlist friend-list group-member-list"></ul>
 </div>
+<div class="section">
+<div class="container-header"><h3>Find Groups</h3></div>
+<ul class="vlist group-list"></ul>
+<p class="list-content">No Search Results Found</p>
 </div>
 </div>
 </div>

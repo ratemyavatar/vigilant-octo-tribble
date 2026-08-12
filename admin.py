@@ -528,6 +528,24 @@ def user_page(user, q):
             '<input class="adm-input" name="password" type="password" placeholder="New password" required>'
             '<button class="adm-btn ghost" type="submit">Save password</button></form></div>' % uid
         )
+    if target.get("verified"):
+        verify_card = (
+            '<div class="adm-card"><h2>Verified checkmark</h2>'
+            '<p class="adm-muted">Blue check shows beside this username.</p>'
+            '<form method="post" action="/admin/verify">'
+            '<input type="hidden" name="userId" value="%s">'
+            '<input type="hidden" name="on" value="0">'
+            '<button class="adm-btn ghost" type="submit">Remove checkmark</button></form></div>' % uid
+        )
+    else:
+        verify_card = (
+            '<div class="adm-card"><h2>Verified checkmark</h2>'
+            '<p class="adm-muted">Give a blue check beside this username.</p>'
+            '<form method="post" action="/admin/verify">'
+            '<input type="hidden" name="userId" value="%s">'
+            '<input type="hidden" name="on" value="1">'
+            '<button class="adm-btn" type="submit">Give checkmark</button></form></div>' % uid
+        )
     staff_card = ""
     if is_hard_admin(user) and not prot:
         if target.get("is_staff"):
@@ -547,7 +565,7 @@ def user_page(user, q):
                 '<button class="adm-btn" type="submit">Make staff</button></form></div>' % uid
             )
     inner = """
-    <h1>%s</h1>
+    <h1>%s %s</h1>
     %s
     <div class="adm-split">
       <div class="adm-card">
@@ -592,6 +610,7 @@ def user_page(user, q):
         </div>
         %s
         %s
+        %s
       </div>
     </div>
     <div class="adm-split">
@@ -600,6 +619,7 @@ def user_page(user, q):
     </div>
     """ % (
         esc(target.get("username")),
+        ('<img class="verified-badge" src="/static/ecs/verified.svg" alt="Verified">' if target.get("verified") else ""),
         ban_box,
         uid,
         "ok" if st == "Ok" else "bad",
@@ -617,6 +637,7 @@ def user_page(user, q):
         uid,
         pw_card,
         staff_card,
+        verify_card,
         place_bits,
         inv_bits,
     )
@@ -1116,5 +1137,16 @@ def _post(actor, low, form):
             con.commit()
             con.close()
             log_action(actor, "ManageStaff", target.get("username"), "on" if flag else "off")
+        return "/admin/user?id=%s" % uid
+    if low.startswith("/admin/verify"):
+        uid = int(form.get("userId") or 0)
+        target = db.get_user(uid)
+        if target:
+            flag = 1 if str(form.get("on") or "") == "1" else 0
+            con = db.connect()
+            con.execute("UPDATE users SET verified=? WHERE id=?", (flag, uid))
+            con.commit()
+            con.close()
+            log_action(actor, "SetVerified", target.get("username"), "on" if flag else "off")
         return "/admin/user?id=%s" % uid
     return "/admin"

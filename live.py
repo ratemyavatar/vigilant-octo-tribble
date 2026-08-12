@@ -13,6 +13,12 @@ def esc(s) -> str:
     return htmlmod.escape("" if s is None else str(s))
 
 
+def verified_badge(user) -> str:
+    if user and user.get("verified"):
+        return '<img class="verified-badge" src="/static/ecs/verified.svg" alt="Verified" title="Verified">'
+    return ""
+
+
 def _match_end(html: str, start: int, tag: str) -> int:
     open_re = re.compile(r"<" + re.escape(tag) + r"\b", re.I)
     close_re = re.compile(r"</" + re.escape(tag) + r"\s*>", re.I)
@@ -192,8 +198,10 @@ def game_card(place: dict, suffix: str) -> str:
         '<div class="game-card-info sgc-playing">%s Playing</div>'
         '<div class="sgc-vote"><span class="icon-thumbs-up"></span>'
         '<span class="vote-bar"><span class="vote-fill"></span></span></div>'
-        "</a></div></li>"
-    ) % (name, href, thumb, name, name, name, name, playing)
+        "</a>"
+        '<a class="btn-play-green rbx-play-button game-card-play" href="#" data-placeid="%s">Play</a>'
+        "</div></li>"
+    ) % (name, href, thumb, name, name, name, name, playing, pid)
 
 
 def friend_card(user: dict, suffix: str) -> str:
@@ -205,8 +213,8 @@ def friend_card(user: dict, suffix: str) -> str:
         '<a href="/profile%s?id=%s" class="avatar avatar-card-fullbody friend-link" title="%s">'
         '<span class="avatar-card-link friend-avatar">'
         '<img alt="%s" class="avatar-card-image" src="/thumbs/headshot.ashx?userId=%s">'
-        '</span><span class="text-overflow friend-name">%s</span></a></div></li>'
-    ) % (uid, suffix, uid, name, name, uid, name)
+        '</span><span class="text-overflow friend-name">%s%s</span></a></div></li>'
+    ) % (uid, suffix, uid, name, name, uid, name, verified_badge(user))
 
 
 def _type_icon(asset_type) -> str:
@@ -232,7 +240,7 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
         extra = (
             '<form method="post" action="/catalog/buy" class="item-buy-form">'
             '<input type="hidden" name="id" value="%s">'
-            '<button type="submit" class="btn-primary-xs">Buy</button></form>' % aid
+            '<button type="submit" class="btn-play-green btn-item-grad">Buy</button></form>' % aid
         )
     elif wearing:
         extra = (
@@ -279,7 +287,7 @@ def fill_games(html: str, places: list, suffix: str) -> str:
             count=1,
         )
         return html
-    html = replace_ul_inner(html, "game-tile-list", cards, count=1)
+    html = replace_ul_inner(html, "game-tile-list", cards, count=0)
     html = replace_ul_inner(html, "game-cards", cards, count=1)
     html = re.sub(
         r'(<div id=recently-visited-places-content>)</div>',
@@ -363,12 +371,25 @@ def request_card(user: dict) -> str:
     ) % (uid, name, uid, uid)
 
 
+def group_rail_item(group: dict) -> str:
+    gid = group["id"]
+    name = esc(group.get("name") or "Group")
+    letter = esc((group.get("name") or "G")[:1].upper())
+    return (
+        '<li class="GroupListItemContainer">'
+        '<a class="group-rail-link" href="/groups.html?id=%s">'
+        '<span class="GroupListImageContainer" aria-hidden="true">%s</span>'
+        '<span class="GroupListName">%s</span></a></li>'
+    ) % (gid, letter, name)
+
+
 def group_card(group: dict, joined=False) -> str:
     gid = group["id"]
     name = esc(group.get("name") or "Group")
     desc = esc(group.get("description") or "")
     members = int(group.get("member_count") or 0)
     owner = esc(group.get("owner_name") or "")
+    letter = esc((group.get("name") or "G")[:1].upper())
     join = ""
     if not joined:
         join = (
@@ -377,11 +398,13 @@ def group_card(group: dict, joined=False) -> str:
             '<button type="submit" class="btn-secondary-xs">Join</button></form>' % gid
         )
     return (
-        '<li class="list-item group-card"><div class="list-body">'
+        '<li class="list-item group-card">'
+        '<div class="group-card-emblem" aria-hidden="true">%s</div>'
+        '<div class="list-body">'
         '<h2><a href="/groups.html?id=%s">%s</a></h2>'
         '<p class="list-content">%s</p>'
         '<p class="text-label">%s · Members %s</p>%s</div></li>'
-    ) % (gid, name, desc, owner, members, join)
+    ) % (letter, gid, name, desc, owner, members, join)
 
 
 def trade_card(trade: dict, user_id: int) -> str:
@@ -1128,7 +1151,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
     if "group" in name:
         groups = db.search_groups(keyword) if keyword else db.list_groups_detailed()
         mine = db.groups_for_user(user["id"]) if user else []
-        html = replace_ul_inner(html, "my-group-list", "".join(group_card(g, True) for g in mine))
+        html = replace_ul_inner(html, "my-group-list", "".join(group_rail_item(g) for g in mine))
         html = replace_ul_inner(html, "group-list", "".join(group_card(g, any(x["id"]==g["id"] for x in mine)) for g in groups))
         if groups:
             html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
@@ -1142,6 +1165,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             members = db.group_members(gid)
             owner = db.get_user(g.get("creator_id") or 0)
             html = html.replace("{{GROUP_NAME}}", esc(g.get("name") or ""))
+            html = html.replace("{{GROUP_LETTER}}", esc((g.get("name") or "G")[:1].upper()))
             html = html.replace("{{GROUP_DESC}}", esc(g.get("description") or ""))
             html = html.replace("{{GROUP_OWNER}}", esc((owner or {}).get("username") or ""))
             html = html.replace("{{GROUP_MEMBERS}}", str(len(members)))
@@ -1270,6 +1294,8 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             vid = 0
         if vid:
             db.bump_place_visits(vid)
+    html = html.replace("{{VERIFIED_BADGE}}", "")
+    html = html.replace("{{GROUP_LETTER}}", "G")
     if "</body>" in html:
         html = html.replace("</body>", SITE_JS + "\n</body>", 1)
     else:

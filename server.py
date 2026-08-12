@@ -172,11 +172,15 @@ def inject_nav(html: str, user: dict | None) -> str:
         admin_link = ""
         if admin.is_admin(user):
             admin_link = '<a class="settings-drop-item" href="/admin">Admin</a>'
+        verified = ""
+        if user.get("verified"):
+            verified = '<img class="verified-badge" src="/static/ecs/verified.svg" alt="Verified" title="Verified">'
         nav = (
             nav_in.replace("{{USERNAME}}", user["username"])
             .replace("{{ROBUX}}", str(user.get("robux") or 0))
             .replace("{{USER_ID}}", str(user["id"]))
             .replace("{{ADMIN_LINK}}", admin_link)
+            .replace("{{NAV_VERIFIED}}", verified)
         )
     else:
         nav = nav_out

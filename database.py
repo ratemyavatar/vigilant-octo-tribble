@@ -200,6 +200,7 @@ def init():
     _col("users", "is_staff", "is_staff INTEGER DEFAULT 0")
     _col("users", "account_locked", "account_locked INTEGER DEFAULT 0")
     _col("users", "staff_role", "staff_role TEXT DEFAULT ''")
+    _col("users", "verified", "verified INTEGER DEFAULT 0")
     cur.executescript(
         """
         CREATE TABLE IF NOT EXISTS admin_logs (

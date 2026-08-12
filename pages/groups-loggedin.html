@@ -20,39 +20,50 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="ecs-groups">
-<h1 class="ecs-page-title">Groups</h1>
+<div class="ecs-groups groups-2016">
 <div class="groups-layout">
-<aside class="groups-side ecs-card">
-<h3>My Groups</h3>
-<ul class="vlist my-group-list"></ul>
+<aside class="groups-side" id="left-column">
+<div class="CreateGroupContainer">
 <form method="post" action="/groups/create" class="create-group-form">
-<label class="form-label">Create Group</label>
-<input class="input-field" name="name" placeholder="Group name">
-<input class="input-field" name="description" placeholder="Description">
+<label class="form-label">Start a Group</label>
+<input class="input-field" name="name" placeholder="Group name" maxlength="50">
+<input class="input-field" name="description" placeholder="What is this group about?">
 <button type="submit" class="btn-primary-md">Create</button>
 </form>
+</div>
+<h3 class="my-groups-label">My Groups</h3>
+<ul class="vlist my-group-list GroupThumbnails" id="GroupThumbnails"></ul>
 </aside>
-<div class="groups-main">
-<div class="section ecs-card">
-<div class="container-header"><h3>Find Groups</h3></div>
-<div class="section-content">
-<form method="get" action="/groups.html" class="games-filter-bar">
-<input class="input-field" name="keyword" placeholder="Search groups" value="{{SEARCH_KEYWORD}}">
-<button type="submit" class="btn-primary-md">Search</button>
+<div class="groups-main" id="mid-column">
+<div id="SearchControls">
+<form method="get" action="/groups.html" class="group-search-bar">
+<input class="input-field SearchKeyword" name="keyword" placeholder="Search all groups" value="{{SEARCH_KEYWORD}}" maxlength="100">
+<button type="submit" class="group-search-button">Search</button>
 </form>
-<ul class="vlist group-list"></ul>
-<p class="list-content">No Search Results Found</p>
 </div>
+<div id="description" class="GroupPanelContainer">
+<div class="group-emblem-col">
+<div class="GroupEmblem" aria-hidden="true">{{GROUP_LETTER}}</div>
 </div>
-<div class="section group-detail ecs-card">
-<div class="container-header"><h3>{{GROUP_NAME}}</h3></div>
-<div class="section-content">
-<p class="list-content">{{GROUP_DESC}}</p>
+<div class="group-copy-col">
+<h2 class="group-panel-name">{{GROUP_NAME}}</h2>
+<p class="GroupDescription">{{GROUP_DESC}}</p>
 <p class="text-label">Owner {{GROUP_OWNER}} · Members {{GROUP_MEMBERS}}</p>
 {{GROUP_JOIN}}
+</div>
+</div>
+<div class="section group-wall-card">
+<div class="container-header"><h3>Group Wall</h3></div>
+<p class="list-content">Wall posts stay on this server. Pick a group to read its page.</p>
+</div>
+<div class="section">
+<div class="container-header"><h3>Members</h3></div>
 <ul class="hlist friend-list group-member-list"></ul>
 </div>
+<div class="section">
+<div class="container-header"><h3>Find Groups</h3></div>
+<ul class="vlist group-list"></ul>
+<p class="list-content">No Search Results Found</p>
 </div>
 </div>
 </div>
