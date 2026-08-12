@@ -576,6 +576,7 @@ def fill_profile(html: str, viewed: dict, friends: list, places: list, suffix: s
     blurb = esc(viewed.get("blurb") or "This user has no description.")
     status = esc(viewed.get("status") or "")
     html = html.replace("{{PROFILE_NAME}}", name)
+    html = html.replace("{{VERIFIED_BADGE}}", verified_badge(viewed))
     html = html.replace("{{PROFILE_ID}}", str(uid))
     html = html.replace("{{PROFILE_STATUS}}", status)
     html = html.replace("{{PROFILE_STATUS_DISPLAY}}", ('"%s"' % status) if status else "")
@@ -820,24 +821,24 @@ SITE_JS = r"""
 
   var setBtn = document.getElementById('nav-settings');
   var setMenu = document.getElementById('settings-popover');
-  function placeSettingsMenu() {
-    if (!setBtn || !setMenu) return;
-    var r = setBtn.getBoundingClientRect();
-    setMenu.style.top = (r.bottom) + 'px';
-    setMenu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
-    setMenu.style.left = 'auto';
+  function spinGear() {
+    if (!setBtn) return;
+    setBtn.classList.remove('is-spinning');
+    void setBtn.offsetWidth;
+    setBtn.classList.add('is-spinning');
+    window.setTimeout(function () { setBtn.classList.remove('is-spinning'); }, 520);
   }
   if (setBtn && setMenu) {
+    setMenu.style.top = '';
+    setMenu.style.right = '';
+    setMenu.style.left = '';
     setBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var open = !setMenu.classList.contains('open');
-      if (open) placeSettingsMenu();
       setMenu.classList.toggle('open', open);
       setBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    window.addEventListener('resize', function () {
-      if (setMenu.classList.contains('open')) placeSettingsMenu();
+      spinGear();
     });
   }
 
@@ -977,6 +978,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = html.replace("Hello!", "Hello, {{USERNAME}}!")
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
         html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
+        html = html.replace("{{VERIFIED_BADGE}}", verified_badge(user))
         html = fill_friends(html, friends, suffix)
         recent = db.list_recent(user["id"])
         favs = db.list_favorites(user["id"])
