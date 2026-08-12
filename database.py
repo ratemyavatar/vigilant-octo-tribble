@@ -221,6 +221,19 @@ def init():
             last_seen INTEGER NOT NULL,
             PRIMARY KEY(user_id, place_id)
         );
+        CREATE TABLE IF NOT EXISTS place_votes (
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            is_up INTEGER NOT NULL,
+            PRIMARY KEY(user_id, place_id)
+        );
+        CREATE TABLE IF NOT EXISTS place_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            body TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+        );
         """
     )
     con.commit()
@@ -730,6 +743,138 @@ def place_playing(place_id):
     ).fetchone()
     con.close()
     return int(row["c"] or 0) if row else 0
+
+
+def list_playing_users(place_id):
+    try:
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return []
+    if not place_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT u.* FROM users u
+        JOIN game_presence p ON p.user_id = u.id
+        WHERE p.place_id=? AND p.last_seen>=?
+        ORDER BY p.last_seen DESC
+        """,
+        (place_id, int(time.time()) - PRESENCE_TTL),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def favorite_count(place_id):
+    try:
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return 0
+    con = connect()
+    row = con.execute("SELECT COUNT(*) AS c FROM favorites WHERE place_id=?", (place_id,)).fetchone()
+    con.close()
+    return int(row["c"] or 0) if row else 0
+
+
+def has_played(user_id, place_id):
+    try:
+        user_id = int(user_id or 0)
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return False
+    if not user_id or not place_id:
+        return False
+    con = connect()
+    row = con.execute(
+        "SELECT user_id FROM recently_played WHERE user_id=? AND place_id=?",
+        (user_id, place_id),
+    ).fetchone()
+    con.close()
+    return bool(row)
+
+
+def place_votes(place_id):
+    try:
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return 0, 0
+    con = connect()
+    up = con.execute(
+        "SELECT COUNT(*) AS c FROM place_votes WHERE place_id=? AND is_up=1",
+        (place_id,),
+    ).fetchone()
+    down = con.execute(
+        "SELECT COUNT(*) AS c FROM place_votes WHERE place_id=? AND is_up=0",
+        (place_id,),
+    ).fetchone()
+    con.close()
+    return int(up["c"] or 0) if up else 0, int(down["c"] or 0) if down else 0
+
+
+def set_place_vote(user_id, place_id, is_up):
+    try:
+        user_id = int(user_id or 0)
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return False, "invalid"
+    if not user_id or not place_id:
+        return False, "invalid"
+    if not has_played(user_id, place_id):
+        return False, "play"
+    con = connect()
+    con.execute(
+        "INSERT OR REPLACE INTO place_votes (user_id, place_id, is_up) VALUES (?,?,?)",
+        (user_id, place_id, 1 if is_up else 0),
+    )
+    con.commit()
+    con.close()
+    return True, "ok"
+
+
+def add_place_comment(user_id, place_id, body):
+    body = (body or "").strip()
+    try:
+        user_id = int(user_id or 0)
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return False, "invalid"
+    if not user_id or not place_id:
+        return False, "invalid"
+    if len(body) < 1:
+        return False, "short"
+    if len(body) > 200:
+        return False, "long"
+    if not get_place(place_id):
+        return False, "missing"
+    con = connect()
+    con.execute(
+        "INSERT INTO place_comments (user_id, place_id, body, created_at) VALUES (?,?,?,?)",
+        (user_id, place_id, body, int(time.time())),
+    )
+    con.commit()
+    con.close()
+    return True, "ok"
+
+
+def list_place_comments(place_id, limit=40):
+    try:
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT c.*, u.username AS username
+        FROM place_comments c
+        JOIN users u ON u.id = c.user_id
+        WHERE c.place_id=?
+        ORDER BY c.id DESC LIMIT ?
+        """,
+        (place_id, int(limit)),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
 
 
 def list_messages(user_id):

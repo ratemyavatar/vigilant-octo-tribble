@@ -740,6 +740,30 @@ class Handler(BaseHTTPRequestHandler):
             self.redirect("/game-loggedin.html?id=%s" % pid)
             return False
 
+        if low in ("/places/vote", "/places/vote/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            pid = form.get("placeId") or form.get("id") or 0
+            up = str(form.get("up") or "1") in ("1", "true", "True", "up")
+            ok, reason = db.set_place_vote(user["id"], pid, up)
+            dest = "/game-loggedin.html?id=%s" % pid
+            if not ok and reason == "play":
+                dest += "&vote=play"
+            self.redirect(dest)
+            return False
+
+        if low in ("/places/comment", "/places/comment/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            pid = form.get("placeId") or form.get("id") or 0
+            db.add_place_comment(user["id"], pid, form.get("body") or "")
+            self.redirect("/game-loggedin.html?id=%s#comments-pane" % pid)
+            return False
+
         if low in ("/groups/join", "/groups/join/") and method == "POST":
             if not user:
                 self.redirect("/signup.html")

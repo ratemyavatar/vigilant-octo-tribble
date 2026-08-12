@@ -335,9 +335,60 @@ def fill_catalog(html: str, assets: list, buy: bool = False) -> str:
     return html
 
 
+
+def server_list_html(place: dict, suffix: str) -> str:
+    players = db.list_playing_users(place.get("id") or 0)
+    if not players:
+        return '<p class="ecs-nobody">Nobody is playing this game.</p>'
+    maxp = int(place.get("max_players") or 10)
+    pid = place["id"]
+    bits = [
+        '<div class="ecs-server">',
+        '<div class="ecs-server-top">',
+        '<button type="button" class="btn-join-blue rbx-play-button ecs-join" data-placeid="%s">Join</button>' % pid,
+        '<p class="ecs-server-meta">',
+        '<span class="ecs-stat-k">Player Count: </span>%s / %s Players' % (len(players), maxp),
+        '<span class="ecs-stat-k"> FPS: </span>0',
+        '<span class="ecs-stat-k"> Ping: </span>0</p></div>',
+        '<div class="ecs-server-players">',
+    ]
+    for u in players:
+        uid = u["id"]
+        name = esc(u.get("username") or "Player")
+        bits.append(
+            '<div class="ecs-sp">'
+            '<a href="/profile%s?id=%s"><img class="ecs-sp-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
+            '<a class="ecs-sp-name" href="/profile%s?id=%s">%s</a></div>'
+            % (suffix, uid, uid, name, suffix, uid, name)
+        )
+    bits.append('</div><div class="divider-top ecs-game-div"></div></div>')
+    return "".join(bits)
+
+
+def comments_html(place_id: int, suffix: str) -> str:
+    rows = db.list_place_comments(place_id)
+    if not rows:
+        return '<p class="list-content">No comments yet.</p>'
+    bits = []
+    for c in rows:
+        uid = c.get("user_id") or 0
+        name = esc(c.get("username") or "Player")
+        body = esc(c.get("body") or "")
+        when = datetime.utcfromtimestamp(int(c.get("created_at") or time.time())).strftime("%m/%d/%Y")
+        bits.append(
+            '<div class="ecs-comment">'
+            '<a href="/profile%s?id=%s"><img class="ecs-comment-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
+            '<div class="ecs-comment-body"><p class="ecs-comment-when">%s · <a href="/profile%s?id=%s">%s</a></p>'
+            '<p class="ecs-comment-text">%s</p></div></div>'
+            % (suffix, uid, uid, name, when, suffix, uid, name, body)
+        )
+    return "".join(bits)
+
+
 def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     name = esc(place.get("name") or "Untitled")
-    desc = esc(place.get("description") or "")
+    raw_desc = (place.get("description") or "").strip()
+    desc = esc(raw_desc) if raw_desc else "No description available"
     pid = place["id"]
     creator = db.get_user(place.get("creator_id") or 0)
     cname = esc(creator["username"]) if creator else "ROBLOX"
@@ -355,6 +406,13 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{CREATED}}", created)
     html = html.replace("{{VISITS}}", str(int(place.get("visits") or 0)))
     html = html.replace("{{PLAYING}}", str(db.place_playing(pid)))
+    html = html.replace("{{UPDATED}}", created)
+    up, down = db.place_votes(pid)
+    total = up + down
+    pct = int(round((up / total) * 100)) if total else 50
+    html = html.replace("{{UPVOTES}}", str(up))
+    html = html.replace("{{DOWNVOTES}}", str(down))
+    html = html.replace("{{VOTE_PCT}}", str(pct))
     html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
     return html
 
@@ -1076,38 +1134,54 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         if not place:
             place = {"id": 0, "name": "Untitled", "description": "", "creator_id": 0, "max_players": 10, "genre": "All", "created_at": int(time.time()), "visits": 0}
         html = fill_game_detail(html, place, suffix)
-        fav_count = len(db.list_favorites(place["id"])) if False else 0
-        # count favorites for this place
-        con_fav = 0
-        try:
-            import sqlite3
-            from database import connect
-            c = connect()
-            row = c.execute("SELECT COUNT(*) AS c FROM favorites WHERE place_id=?", (place["id"],)).fetchone()
-            c.close()
-            con_fav = int(row["c"] or 0) if row else 0
-        except Exception:
-            con_fav = 0
+        con_fav = db.favorite_count(place["id"])
         html = html.replace("{{FAVORITE_COUNT}}", str(con_fav))
         if user and place["id"]:
             on = db.is_favorite(user["id"], place["id"])
             html = html.replace(
                 "{{FAVORITE_FORM}}",
+                '<div class="ecs-fav-row"><span class="ecs-fav-star" aria-hidden="true"></span>'
+                '<span class="ecs-fav-n">%s</span> '
                 '<form method="post" action="/places/favorite" class="inline-form">'
                 '<input type="hidden" name="placeId" value="%s">'
-                '<button type="submit" class="btn-secondary-md">%s</button></form>'
-                % (place["id"], "Favorited" if on else "Favorite"),
+                '<button type="submit" class="ecs-fav-link">%s</button></form></div>'
+                % (con_fav, place["id"], "Unfavorite" if on else "Favorite"),
             )
         else:
-            html = html.replace("{{FAVORITE_FORM}}", "")
-        jobs = db.list_jobs_for_place(place["id"]) if place["id"] else []
-        servers = "".join(
-            '<li class="list-item"><div class="list-body"><h2>Server</h2>'
-            '<p class="list-content">%s:%s</p></div></li>'
-            % (esc(j.get("host") or ""), esc(j.get("port") or ""))
-            for j in jobs
-        )
-        html = replace_ul_inner(html, "server-list", servers)
+            html = html.replace(
+                "{{FAVORITE_FORM}}",
+                '<div class="ecs-fav-row"><span class="ecs-fav-star" aria-hidden="true"></span>'
+                '<span class="ecs-fav-n">%s</span></div>' % con_fav,
+            )
+        if user and place.get("creator_id") and user["id"] == place["creator_id"]:
+            html = html.replace(
+                "{{GAME_GEAR}}",
+                '<div class="ecs-game-gear"><a href="/create-loggedin.html">Configure</a></div>',
+            )
+        else:
+            html = html.replace("{{GAME_GEAR}}", "")
+        vote_msg = ""
+        if (qs.get("vote") or "") == "play":
+            vote_msg = "You must play this game before you can vote on it."
+        html = html.replace("{{VOTE_MSG}}", vote_msg)
+        html = html.replace("{{SERVERS}}", server_list_html(place, suffix))
+        if user and place["id"]:
+            html = html.replace(
+                "{{COMMENT_FORM}}",
+                '<form method="post" action="/places/comment" class="ecs-comment-form">'
+                '<input type="hidden" name="placeId" value="%s">'
+                '<img class="ecs-comment-shot" src="/thumbs/headshot.ashx?userId=%s" alt="">'
+                '<div class="ecs-comment-write">'
+                '<textarea class="text-box" name="body" maxlength="200" rows="5" placeholder="Write a comment"></textarea>'
+                '<button type="submit" class="btn-join-blue">Continue</button></div></form>'
+                % (place["id"], user["id"]),
+            )
+        else:
+            html = html.replace(
+                "{{COMMENT_FORM}}",
+                '<p class="list-content">Log in to write a comment.</p>',
+            )
+        html = html.replace("{{COMMENTS}}", comments_html(place["id"], suffix))
         rec = [p for p in all_places if p["id"] != place["id"]][:8]
         html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in rec), count=1)
         html = html.replace("{{PLAYING}}", str(db.place_playing(place["id"])))

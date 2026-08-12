@@ -278,28 +278,253 @@
 }
 .games-shelf { margin-bottom: 18px; }
 
-/* Game details — 2016 / ECS overview */
-.ecs-game .game-main-content {
+/* Game details — Economy Simulator 2016 overview */
+.ecs-game-2016 {
+  background: #232527;
+  padding: 8px 12px 16px;
+}
+.ecs-game-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 12px;
+}
+.ecs-game-title {
+  font-weight: 700;
+  font-size: 30px;
+  color: #fff;
+  margin: 0;
+  line-height: 1.15;
+}
+.ecs-game-gear a {
+  display: inline-block;
+  background: #2d2f31;
+  color: #fff !important;
+  border: 1px solid #111;
+  padding: 6px 10px;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+.ecs-game-overview {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
   align-items: flex-start;
-  margin-bottom: 16px;
 }
-.ecs-game .game-thumb-container {
-  flex: 1 1 58%;
-  min-width: 240px;
+.ecs-game-left { flex: 1 1 58%; min-width: 240px; }
+.ecs-game-right { flex: 1 1 260px; max-width: 340px; }
+.ecs-game-thumb-wrap { background: #191b1d; }
+.ecs-game-thumb {
+  width: 100%;
+  height: auto;
+  max-width: 800px;
+  display: block;
+  margin: 0 auto;
+}
+.ecs-vote-row { margin: 10px auto 0; max-width: 320px; }
+.ecs-vote-counts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ecs-vote-hit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+.ecs-vote-n { font-size: 12px; color: #fff; }
+.ecs-thumb {
+  padding: 0;
+  cursor: pointer;
+  background: transparent !important;
+  box-shadow: none;
+  display: inline-block;
+}
+.ecs-thumb-up {
+  width: 0;
+  height: 0;
+  border: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid #52a846;
+}
+.ecs-thumb-down {
+  width: 0;
+  height: 0;
+  border: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid #ce645b;
+}
+.ecs-vote-track {
+  margin-top: 6px;
+  width: 100%;
+  height: 5px;
+  background: #ce645b;
+}
+.ecs-vote-green { height: 5px; background: #52a846; }
+.ecs-vote-msg { color: #ce645b; font-size: 12px; margin: 6px 0 0; min-height: 0; }
+.ecs-vote-msg:empty { display: none; }
+.ecs-game-desc {
+  white-space: pre-wrap;
+  color: #fff;
+  margin: 18px 0 0;
+  font-size: 16px;
+}
+.ecs-builder {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.ecs-builder-shot {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  display: block;
   background: #191b1d;
 }
-.ecs-game .carousel-thumb { width: 100%; display: block; min-height: 200px; object-fit: cover; }
-.ecs-game .game-calls-to-action {
-  flex: 1 1 260px;
-  background: #232527;
-  padding: 14px 16px;
+.ecs-builder-label {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: #bdbebe;
 }
-.ecs-game .game-name { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+.ecs-builder-name {
+  font-weight: 500;
+  font-size: 18px;
+  color: #00a2ff !important;
+}
+.ecs-game-div { margin: 12px 0; border-top: 1px solid #2d2f31; }
 .ecs-game .game-play-buttons { margin: 12px 0; }
-.ecs-game .game-play-buttons .btn-play-green { display: block; width: 100%; max-width: 200px; }
+.ecs-game .game-play-buttons .btn-play-green {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+.ecs-stat-list { margin-top: 16px; }
+.ecs-stat-list p {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #fff;
+}
+.ecs-stat-k { font-weight: 600; margin-right: 4px; }
+.ecs-fav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.ecs-fav-star {
+  width: 14px;
+  height: 14px;
+  background: #f5cd30;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.ecs-fav-n { color: #fff; }
+.ecs-fav-link {
+  background: none;
+  border: 0;
+  color: #00a2ff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+.ecs-fav-link:hover { text-decoration: underline; }
+.ecs-vtabs {
+  border-bottom: 2px solid #3c3e40;
+  margin: 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ecs-vtabs .vtab {
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid #3c3e40;
+  border-bottom: 0;
+  background: #2d2f31;
+  color: #fff !important;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 10px 8px;
+  text-decoration: none !important;
+  margin: 0;
+}
+.ecs-vtabs .vtab:hover { background: #3c3e40; }
+.ecs-vtabs .vtab.active {
+  background: #232527;
+  box-shadow: 0 2px 0 0 #232527;
+}
+.ecs-nobody, .ecs-servers { color: #fff; padding: 16px 4px; }
+.ecs-server-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.btn-join-blue {
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+  color: #fff !important;
+  border: 1px solid #084ea6;
+  background: linear-gradient(0deg, #084fc0 0%, #0567ea 100%) !important;
+  padding: 6px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+.btn-join-blue:hover {
+  background: linear-gradient(0deg, #0249c6 0%, #0793fd 100%) !important;
+}
+.ecs-server-meta { margin: 0; color: #fff; font-size: 15px; }
+.ecs-server-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ecs-sp { width: 110px; text-align: left; }
+.ecs-sp-shot {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  background: #191b1d;
+  display: block;
+}
+.ecs-sp-name { display: block; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ecs-comment-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 16px 0;
+}
+.ecs-comment-write { flex: 1; min-width: 0; }
+.ecs-comment-write textarea { min-height: 110px; margin-bottom: 8px; }
+.ecs-comment {
+  display: flex;
+  gap: 12px;
+  background: #191b1d;
+  border: 1px solid #2d2f31;
+  padding: 10px;
+  margin: 0 0 10px;
+}
+.ecs-comment-shot, .ecs-comment-form .ecs-comment-shot {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  background: #2d2f31;
+  flex: 0 0 72px;
+}
+.ecs-comment-when { color: #bdbebe; font-size: 12px; margin: 0 0 6px; }
+.ecs-comment-text { color: #fff; margin: 0; white-space: pre-wrap; }
+@media (max-width: 767px) {
+  .ecs-game-right { max-width: none; }
+  .ecs-game-title { font-size: 22px; }
+}
 .game-about-container .game-description {
   white-space: pre-wrap;
   color: #fff;
@@ -627,3 +852,16 @@
 }
 .ae-shop { margin: 0 0 12px; color: #00a2ff; }
 .ae-sep { color: #bdbebe; }
+
+/* ECS games hub rows */
+.ecs-games .games-shelf .hlist.game-cards,
+.ecs-games .games-shelf .hlist.game-tile-list {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+.ecs-games .ecs-row-title {
+  font-weight: 300;
+  margin-left: 4px;
+}

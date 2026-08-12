@@ -20,57 +20,83 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="ecs-game">
-<div class="game-main-content">
-  <div class="game-thumb-container">
-    <img class="carousel-thumb" src="/thumbs/place.ashx?id={{GAME_ID}}" alt="{{GAME_NAME}}">
+<div class="ecs-game ecs-game-2016">
+  <div class="ecs-game-head">
+    <h1 class="ecs-game-title">{{GAME_NAME}}</h1>
+    {{GAME_GEAR}}
   </div>
-  <div class="game-calls-to-action">
-    <div class="game-title-container">
-      <h2 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h2>
-      <div class="game-creator"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
-    </div>
-    <div class="game-play-buttons">
-      <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
-        <a class="btn-play-green rbx-play-button btn-primary-lg" href="#" data-placeid="{{GAME_ID}}">Play</a>
+  <div class="ecs-game-overview">
+    <div class="ecs-game-left">
+      <div class="ecs-game-thumb-wrap">
+        <img class="ecs-game-thumb" src="/thumbs/place.ashx?id={{GAME_ID}}" alt="{{GAME_NAME}}">
       </div>
-      {{FAVORITE_FORM}}
+      <div class="ecs-vote-row">
+        <div class="ecs-vote-counts">
+          <form method="post" action="/places/vote" class="ecs-vote-hit">
+            <input type="hidden" name="placeId" value="{{GAME_ID}}">
+            <input type="hidden" name="up" value="1">
+            <button type="submit" class="ecs-thumb ecs-thumb-up" title="Like" aria-label="Like"></button>
+            <span class="ecs-vote-n">{{UPVOTES}}</span>
+          </form>
+          <form method="post" action="/places/vote" class="ecs-vote-hit ecs-vote-hit-down">
+            <input type="hidden" name="placeId" value="{{GAME_ID}}">
+            <input type="hidden" name="up" value="0">
+            <span class="ecs-vote-n">{{DOWNVOTES}}</span>
+            <button type="submit" class="ecs-thumb ecs-thumb-down" title="Dislike" aria-label="Dislike"></button>
+          </form>
+        </div>
+        <div class="ecs-vote-track"><div class="ecs-vote-green" style="width:{{VOTE_PCT}}%"></div></div>
+        <p class="ecs-vote-msg">{{VOTE_MSG}}</p>
+      </div>
+      <p class="ecs-game-desc">{{GAME_DESC}}</p>
     </div>
-    <div class="ecs-vote">
-      <span class="icon-thumbs-up"></span>
-      <span class="vote-bar"><span class="vote-fill"></span></span>
-      <span class="icon-thumbs-down"></span>
+    <div class="ecs-game-right">
+      <div class="ecs-builder">
+        <a class="ecs-builder-shot-link" href="/profile.html?id={{CREATOR_ID}}">
+          <img class="ecs-builder-shot" src="/thumbs/headshot.ashx?userId={{CREATOR_ID}}" alt="{{CREATOR_NAME}}">
+        </a>
+        <div class="ecs-builder-copy">
+          <p class="ecs-builder-label">Builder:</p>
+          <a class="ecs-builder-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a>
+        </div>
+      </div>
+      <div class="divider-top ecs-game-div"></div>
+      <div class="game-play-buttons">
+        <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
+          <a class="btn-play-green rbx-play-button btn-primary-lg" href="#" data-placeid="{{GAME_ID}}">Play</a>
+        </div>
+      </div>
+      <div class="ecs-stat-list">
+        <p><span class="ecs-stat-k">Created:</span> {{CREATED}}</p>
+        <p><span class="ecs-stat-k">Updated:</span> {{UPDATED}}</p>
+        <p><span class="ecs-stat-k">Favorited:</span> {{FAVORITE_COUNT}}</p>
+        <p><span class="ecs-stat-k">Visited:</span> {{VISITS}}</p>
+        <p><span class="ecs-stat-k">Max Players:</span> {{MAX_PLAYERS}}</p>
+        <p><span class="ecs-stat-k">Genres:</span> {{GENRE}}</p>
+        <p><span class="ecs-stat-k">Allowed Gear Types:</span></p>
+        <p>None</p>
+      </div>
+      <div class="divider-top ecs-game-div"></div>
+      <div class="ecs-favorite">{{FAVORITE_FORM}}</div>
     </div>
-    <ul class="game-stats-container">
-      <li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
-      <li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
-      <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
-      <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
-      <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
-      <li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
-    </ul>
   </div>
-</div>
-<div class="section game-about-container ecs-card">
-  <div class="container-header"><h3>Description</h3></div>
-  <pre class="game-description linkify">{{GAME_DESC}}</pre>
-</div>
-<div class="vtab-bar">
-  <a class="vtab active" href="#rec-pane" data-tab="rec-pane">Recommendations</a>
-  <a class="vtab" href="#servers-pane" data-tab="servers-pane">Games</a>
-</div>
-<div id="rec-pane" class="tab-pane settings-tab-pane active">
-  <div class="container-list">
-    <ul class="hlist games game-cards" id="recommended-list"></ul>
+  <div class="vtab-bar ecs-vtabs">
+    <a class="vtab active" href="#rec-pane" data-tab="rec-pane">Recommendations</a>
+    <a class="vtab" href="#servers-pane" data-tab="servers-pane">Games</a>
+    <a class="vtab" href="#comments-pane" data-tab="comments-pane">Commentary</a>
   </div>
-</div>
-<div id="servers-pane" class="tab-pane settings-tab-pane">
-  <div class="section ecs-card">
-    <div class="container-header"><h3>Servers</h3></div>
-    <ul class="vlist server-list"></ul>
-    <p class="list-content">No running servers. Play starts one.</p>
+  <div id="rec-pane" class="tab-pane settings-tab-pane active">
+    <div class="container-list">
+      <ul class="hlist games game-cards" id="recommended-list"></ul>
+    </div>
   </div>
-</div>
+  <div id="servers-pane" class="tab-pane settings-tab-pane">
+    <div class="ecs-servers">{{SERVERS}}</div>
+  </div>
+  <div id="comments-pane" class="tab-pane settings-tab-pane">
+    {{COMMENT_FORM}}
+    <div class="ecs-comments">{{COMMENTS}}</div>
+  </div>
 </div>
 </div>
 </div>
