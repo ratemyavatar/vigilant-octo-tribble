@@ -25,8 +25,73 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600">
     <link rel="stylesheet" href="https://static.rbxcdn.com/css/leanbase___a6440bf99edce7c683fb7ab84fe5b56e_m.css/fetch">
     <link rel="stylesheet" href="https://static.rbxcdn.com/css/page___b20a9ce37814c8ad660c1ac93362fe25_m.css/fetch">
+    <style type="text/css">
+        .birthday-row,
+        .gender-row { display: flex; gap: 8px; width: 100%; }
+        .birthday-row .rbx-select-group { flex: 1; min-width: 0; margin: 0; }
+        .birthday-row select.rbx-select {
+            -webkit-appearance: none;
+            appearance: none;
+            display: block;
+            width: 100%;
+            height: 38px;
+            max-height: 38px;
+            margin: 0;
+            padding: 0 28px 0 10px;
+            border: 1px solid #b8b8b8;
+            border-radius: 8px;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23393b3d' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            color: #393b3d;
+            font-size: 16px;
+            line-height: 38px;
+        }
+        .gender-row .gender-button {
+            flex: 1;
+            height: 48px;
+            overflow: visible;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0;
+            padding: 0 8px;
+            border: 1px solid #b8b8b8;
+            border-radius: 8px;
+            background: #fff;
+            color: #393b3d;
+            cursor: pointer;
+        }
+        .gender-row .gender-button.selected {
+            border-color: #00a2ff;
+            box-shadow: inset 0 0 0 1px #00a2ff;
+        }
+        .gender-row .gender-icon {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            flex-shrink: 0;
+            overflow: visible;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        #login-button.login-button {
+            height: 40px;
+            margin-top: 4px;
+            border: 0;
+            border-radius: 8px;
+            background: #00b06f;
+            color: #fff;
+            font-weight: 700;
+        }
+        .birthday-container .account-more-info { display: none; }
+        .signup-option .no-account-text,
+        .signup-option .signup-link { display: inline; }
+    </style>
 </head>
-<body id="rbx-body" class="rbx-body light-theme gotham-font" data-internal-page-name="Login">
+<body id="rbx-body" class="rbx-body light-theme gotham-font" data-internal-page-name="Landing">
 <div id="wrap" class="wrap no-gutter-ads logged-out" data-gutter-ads-enabled="false">
 
 
@@ -36,7 +101,7 @@
     <div class="rbx-navbar-header">
       <div id="header-menu-icon" class="rbx-nav-collapse"><button type="button" class="btn-primary-xs btn-min-width" id="skip-to-main-content">Skip to Main Content</button></div>
       <div class="navbar-header">
-        <a class="navbar-brand" href="login.html">
+        <a class="navbar-brand" href="signup.html">
           <span class="icon-logo"></span><span class="icon-logo-r"></span>
         </a>
       </div>
@@ -89,449 +154,13 @@
     <div class="container-main" id="container-main" tabindex="-1">
         <div class="alert-container"><noscript><div><div class="alert-info" role="alert">Please enable Javascript to use all the features on this site.</div></div></noscript></div>
         <div class="content">
-            
-
-
-<!DOCTYPE html>
-<!--[if IE 8]><html class="ie8" ng-app="robloxApp"><![endif]-->
-<!--[if gt IE 8]><!-->
-<html>
-<!--<![endif]-->
-<head data-machine-id="WEB1468">
-    <!-- MachineID: WEB1468 -->
-    <title>Roblox</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Roblox Corporation" />
-<meta name="description" content="Roblox is a global platform that brings people together through play." />
-<meta name="keywords" content="free games, online games, building games, virtual worlds, free mmo, gaming cloud, physics engine" />
-<meta name="apple-itunes-app" content="app-id=431946152" />
-
-    <meta name="google-site-verification" content="BfkEEZ1dsSAEJIS1yV2prCFgO8zboMYioG1c9VITB5Y" />
-
-
-
-    <meta property="og:site_name" content="ROBLOX" />
-    <meta property="og:title" content="Roblox" />
-    <meta property="og:type" content="website"/>
-        <meta property="og:url" content="home.html" />
-    <meta property="og:description" content="Roblox is ushering in the next generation of entertainment. Imagine, create, and play together with millions of players across an infinite variety of immersive, user-generated 3D worlds."/>
-            <meta property="og:image" content="https://images.rbxcdn.com/6c27cb9db1779888868bf7d87e6d3709.jpg" />
-    <meta property="fb:app_id" content="190191627665278">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@Roblox">
-    <meta name="twitter:title" content="Roblox">
-    <meta name="twitter:description" content="Roblox is ushering in the next generation of entertainment. Imagine, create, and play together with millions of players across an infinite variety of immersive, user-generated 3D worlds.">
-    <meta name="twitter:creator">
-            <meta name=twitter:image1 content="https://images.rbxcdn.com/6c27cb9db1779888868bf7d87e6d3709.jpg" />
-    <meta name="twitter:app:country" content="US">
-    <meta name="twitter:app:name:iphone" content="ROBLOX Mobile">
-    <meta name="twitter:app:id:iphone" content="431946152">
-    <meta name="twitter:app:url:iphone">
-    <meta name="twitter:app:name:ipad" content="ROBLOX Mobile">
-    <meta name="twitter:app:id:ipad" content="431946152">
-    <meta name="twitter:app:url:ipad">
-    <meta name="twitter:app:name:googleplay" content="ROBLOX">
-    <meta name="twitter:app:id:googleplay" content="com.roblox.client">
-    <meta name="twitter:app:url:googleplay"/>
-
-<meta name="locale-data" 
-      data-language-code="en_us" 
-      data-language-name="English" /><meta name="device-meta"
-      data-device-type="computer"
-      data-is-in-app="false"
-      data-is-desktop="true"
-      data-is-phone="false"
-      data-is-tablet="false"
-      data-is-console="false"
-      data-is-android-app="false"
-      data-is-ios-app="false"
-      data-is-uwp-app="false"
-      data-is-xbox-app="false"
-      data-is-amazon-app="false"
-      data-is-win32-app="false"
-      data-is-studio="false"
-      data-is-game-client-browser="false"
-      data-is-ios-device="false"
-      data-is-android-device="false"
-      data-is-universal-app="false"
-      data-app-type="unknown"
-/>
-<meta name="environment-meta"
-      data-is-testing-site="false" />
-
-<meta id="roblox-display-names" data-enabled="false"></meta><meta name="page-meta" data-internal-page-name="Landing" />
-    
-
-        
-    
-<link href="https://images.rbxcdn.com/23421382939a9f4ae8bbe60dbe2a3e7e.ico.gzip" rel="icon" />
-
-
-    <link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='StyleGuide' href='https://css.rbxcdn.com/9157afd5cee40eb7b436a6945743afc5a4e11f242379b22371e6a508f06bcc2d.css' />
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='Thumbnails' href='https://css.rbxcdn.com/9517d686dc47015c200496d77e2b18146ee37652d18e25ecf9e1ed230310ea13.css' />
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='Navigation' href='https://css.rbxcdn.com/b4acdc29672aaf9dec2081fb12cfd9f1c40ecfef7a80915c9e2377bdd251c8bc.css' />
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='Footer' href='https://css.rbxcdn.com/55b250e8473888792f885d898973a13692fb22157baf61aaffa62ce4545f3408.css' />
-
-
-
-    <link rel="canonical" href="home.html" />
-    
-
-    
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet'  href='https://static.rbxcdn.com/css/page___c9e032a4e921419962d7000da9e16b0b_m.css/fetch' />
-
-
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='CookieBanner' href='https://css.rbxcdn.com/afafff83403710724c6ac194fd9932c401d8edcd4335be2c3bf35fe27a529e05.css' />
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='Landing' href='https://css.rbxcdn.com/70601b02095c8799b44d63feeb4e88232fa2f447f595b9a27fbb2a1bd2fd6a99.css' />
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='Captcha' href='https://css.rbxcdn.com/24a76e8ea70afb9462fad013faa3d22ff3e832e8327ddd764dafe328918bed90.css' />
-
-
-<link onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' rel='stylesheet' data-bundlename='RobuxIcon' href='https://css.rbxcdn.com/2f599b9e9ca20ee3c155684adbf1cdcb7220bab681b55b4505123a0c34e81969.css' />
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-<meta name="sentry-meta"
-      data-env-name="production"
-      data-dsn="https://6750adeb1b1348e4a10b13e726d5c10b@sentry.io/1539367"
-      data-sample-rate="0.01" />
-
-
-<meta name="roblox-tracer-meta-data"
-      data-access-token="S3EXjCZQQr6OixnmKu+hoa3OSfpvPP5qgU0esiWgwreFUUMBnPhEaoS5yIIrf9bdYlSgW0XKCb1So9Rhtj1eMzt/MJWcyKZ4TwIckHVj"
-      data-service-name="Web"
-      data-tracer-enabled="false"
-      data-api-sites-request-allow-list="friends.roblox.com,chat.roblox.com,thumbnails.roblox.com,games.roblox.com"
-      data-sample-rate="2"
-      data-is-instrument-page-performance-enabled="true"/>
-
-
-
-<meta id="avatar-shop-abtest" data-avatar-shop-variant="False"></meta>
-    
-
-    
-    <!--[if lt IE 9]>
-        
-        
-    <![endif]-->
-
-
-
-
-    
-        
-        
-
-    
-            
-
-
-
-            
-
-    
-
-    
-
-</head>
-<body id="rbx-body"
-      class="rbx-body    gotham-font"
-      data-performance-relative-value="0.005"
-      data-internal-page-name="Landing"
-      data-send-event-percentage="0">
-    <div id="roblox-linkify" data-enabled="true" data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9-]{2,}\.)*(((m|de|www|web|api|blog|wiki|corp|polls|bloxcon|developer|devforum|forum|status)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com)|(roblox\.status\.io)|(rblx\.co)|help\.roblox\.com(?![A-Za-z0-9\/.]*\/attachments\/))(?!\/[A-Za-z0-9-+&amp;@#\/=~_|!:,.;]*%)((\/[A-Za-z0-9-+&amp;@#\/%?=~_|!:,.;]*)|(?=\s|\b))" data-regex-flags="gm" data-as-http-regex="(([^.]help|polls)\.roblox\.com)"></div>
-
-<div id="image-retry-data"
-     data-image-retry-max-times="30"
-     data-image-retry-timer="500"
-     data-ga-logging-percent="10">
-</div>
-<div id="http-retry-data"
-     data-http-retry-max-timeout="0"
-     data-http-retry-base-timeout="0"
-     data-http-retry-max-times="1">
-</div>
-    
-    
-        
-
-
-
-<div id="landing-page-container" landing-page-container
-     use-experimentation-platform-for-ftux="false"
-     is-ftux-avatar-enabled="false"
-     ftux-avatar-version="0"
-     ftux-context-version="0"
-     is-always-captcha-sign-up-enabled="false"
-     is-captcha-v2-component-for-sign-up-enabled="true">
-</div>
-
-<div class="dark-theme">
-<!--Bootstrap Footer React Component -->
-
-<footer class="container-footer" id="footer-container"
-        data-is-giftcards-footer-enabled="True">
-</footer>
-
-
-</div>
-
- 
-
-<img src="/timg/rbx" style="position: absolute"/>
-
-
-
-
-    
-
-    
-    
-
-
-    
-
-
-    
-
-
-
-    
-
-
-    
-
-
-    
-
-
-
-
-    
-
-
-    
-
-
-    
-
-
-
-    
-    
-
-    
-
-
-    
-
-
-
-
-
-
-
-
-
-
-<div id="presence-registration-bootstrap-data"
-     data-is-enabled="False"
-     data-interval="15000"></div>
-
-    <div ng-modules="baseTemplateApp">
-        
-    </div>
-
-    <div ng-modules="pageTemplateApp">
-        <!-- Template bundle: page -->
-
-
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-    
-
-    
-    
-
-        
-    
-
-
-
-
-    
-    
-
-
-
-    
-    
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-    
-        
-
-
-<div id='cookieConsentModalOverlay' class='cookie-modal-overlay modal-backdrop in'></div>
-<div id='cookieConsentModalWrapper' class='cookie-modal-wrapper modal-dialog'>
-    <div id='cookieConsentModal' class='modal-content cookie-modal desktop'>
-        <div class="modal-header cookie-modal-title">
-            <button type="button" class="close">
-                <span aria-hidden="true">
-                    <span class="icon-close"></span>
-                </span>
-                <span class="sr-only"></span>
-            </button>
-            <h4>
-                Manage Cookies
-            </h4>
-        </div>
-        <div class='cookie-modal-content modal-body'>
-            <div class="cookie-modal-description">
-                Please choose whether this site may use cookies as described below. You can learn more about how this site uses cookies and related technologies by reading our <a id='cookie-link-privacy' class='cookie-link-privacy text-name' href='privacy.html'>privacy policy</a>.
-            </div>
-            <div class="modal-checkbox checkbox cookie-checkbox">
-                <input id="cookie-checkbox-essential" type="checkbox" disabled="" checked="" />
-                <label for="cookie-checkbox-essential" class="cookie-checkbox-label">
-                    Essential Cookies
-                </label>
-            </div>
-            <div class="cookie-modal-padding">
-                These cookies are required to provide the functionality on the site, such as for user authentication, securing the system or saving cookie preferences.
-            </div>
-            <ul class="cookie-modal-padding cookie-modal-list">
-                <li>
-                    Roblox
-                </li>
-                <li>
-                    Zendesk
-                </li>
-                <li>
-                    Gigya
-                </li>
-            </ul>
-            <div class="modal-checkbox checkbox cookie-checkbox">
-                <input id="cookie-checkbox-tracking" type="checkbox" />
-                <label for="cookie-checkbox-tracking" class="cookie-checkbox-label">
-                    Analytics Cookies
-                </label>
-            </div>
-            <div class="cookie-modal-padding">
-                These cookies used for improving site performance or understanding site usage.
-            </div>
-            <ul class="cookie-modal-padding cookie-modal-list">
-                <li>
-                    Google Analytics
-                </li>
-                <li>
-                    Google Universal Analytics
-                </li>
-            </ul>
-        </div>
-        <button id="cookie-btn-allow" class="btn-secondary-md cookie-btn-allow">
-            Allow
-        </button>
-    </div>
-</div>
-
-<div id="cookie-banner-wrapper" class="cookie-banner-wrapper desktop">
-    <div class="alert-info cookie-banner">
-        <div class="banner-item">
-            Roblox uses cookies to personalize content, provide social media features and analyze the traffic on our site. To learn about how we use cookies and how you can <a id='cookie-link-manage' href='#' class='cookie-link-manage text-name'>manage cookie preferences</a>, please refer to our <a class='text-name' href='privacy.html'>Privacy and Cookie Policy</a>.
-        </div>
-        <div class="banner-item accept-btn">
-            <button type="button" id="CookieLawAccept" class="btn-secondary-sm cookie-law-accept-btn">
-                Accept
-            </button>
-        </div>
-    </div>
-</div>
-    
-
-
-    
-
-
-</body>
-</html></div>
+            <div id="react-login-container" class="login-container"><div id="login-base"><div class="section-content login-section"><h2 class="login-header">Sign Up</h2><div id="login-form"><div><div class="login-form-container"><form class="login-form" name="loginForm" method="post" action="/signup">
+<div class="form-group birthday-container"><label class="text-label">Birthday</label><div class="birthday-row"><div class="rbx-select-group month"><select class="input-field rbx-select" id="MondDropdown" name="BirthMonth"><option value="" selected disabled>Month</option><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select></div><div class="rbx-select-group day"><select class="input-field rbx-select" id="DayDropdown" name="BirthDay"><option value="" selected disabled>Day</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select></div><div class="rbx-select-group year"><select class="input-field rbx-select" id="YearDropdown" name="BirthYear"><option value="" selected disabled>Year</option><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option><option value="2009">2009</option><option value="2008">2008</option><option value="2007">2007</option><option value="2006">2006</option><option value="2005">2005</option><option value="2004">2004</option><option value="2003">2003</option><option value="2002">2002</option><option value="2001">2001</option><option value="2000">2000</option><option value="1999">1999</option><option value="1998">1998</option><option value="1997">1997</option><option value="1996">1996</option><option value="1995">1995</option><option value="1994">1994</option><option value="1993">1993</option><option value="1992">1992</option><option value="1991">1991</option><option value="1990">1990</option><option value="1989">1989</option><option value="1988">1988</option><option value="1987">1987</option><option value="1986">1986</option><option value="1985">1985</option><option value="1984">1984</option><option value="1983">1983</option><option value="1982">1982</option><option value="1981">1981</option><option value="1980">1980</option><option value="1979">1979</option><option value="1978">1978</option><option value="1977">1977</option><option value="1976">1976</option><option value="1975">1975</option><option value="1974">1974</option><option value="1973">1973</option><option value="1972">1972</option><option value="1971">1971</option><option value="1970">1970</option><option value="1969">1969</option><option value="1968">1968</option><option value="1967">1967</option><option value="1966">1966</option><option value="1965">1965</option><option value="1964">1964</option><option value="1963">1963</option><option value="1962">1962</option><option value="1961">1961</option><option value="1960">1960</option><option value="1959">1959</option><option value="1958">1958</option><option value="1957">1957</option><option value="1956">1956</option><option value="1955">1955</option><option value="1954">1954</option><option value="1953">1953</option><option value="1952">1952</option><option value="1951">1951</option><option value="1950">1950</option><option value="1949">1949</option><option value="1948">1948</option><option value="1947">1947</option><option value="1946">1946</option><option value="1945">1945</option><option value="1944">1944</option><option value="1943">1943</option><option value="1942">1942</option><option value="1941">1941</option><option value="1940">1940</option><option value="1939">1939</option><option value="1938">1938</option><option value="1937">1937</option><option value="1936">1936</option><option value="1935">1935</option><option value="1934">1934</option><option value="1933">1933</option><option value="1932">1932</option><option value="1931">1931</option><option value="1930">1930</option><option value="1929">1929</option><option value="1928">1928</option><option value="1927">1927</option><option value="1926">1926</option><option value="1925">1925</option><option value="1924">1924</option><option value="1923">1923</option><option value="1922">1922</option><option value="1921">1921</option><option value="1920">1920</option><option value="1919">1919</option><option value="1918">1918</option><option value="1917">1917</option></select></div></div></div>
+<div class="form-group username-form-group"><label for="login-username" class="sr-only">Username/Email/Phone</label><input id="login-username" name="username" type="text" class="form-control input-field" placeholder="Username/Email/Phone" value=""></div><div class="form-group password-form-group"><label for="login-password" class="sr-only">Password</label><input id="login-password" name="password" type="password" class="form-control input-field" placeholder="Password" value=""><div aria-live="polite"></div></div>
+<div class="form-group gender-container"><label class="text-label">Gender</label><div class="gender-row"><button type="button" id="MaleButton" class="gender-button btn-control-md selected"><div class="gender-icon icon-male"></div><span>Male</span></button><button type="button" id="FemaleButton" class="gender-button btn-control-md"><div class="gender-icon icon-female"></div><span>Female</span></button></div></div>
+<button type="submit" id="login-button" class="btn-full-width login-button btn-growth-md">Sign Up</button>
+</form></div></div></div>
+</div></div></div>
         </div>
     </div>
 <footer class="container-footer" id="footer-container" data-is-giftcards-footer-enabled="True"><div class="footer"><ul class="row footer-links"><li class="footer-link"><a class="text-footer-nav" href="about.html" target="_blank">About Us</a></li><li class="footer-link"><a class="text-footer-nav" href="jobs.html" target="_blank">Jobs</a></li><li class="footer-link"><a class="text-footer-nav" href="blog.html" target="_blank">Blog</a></li><li class="footer-link"><a class="text-footer-nav" href="parents.html" target="_blank">Parents</a></li><li class="footer-link"><a class="text-footer-nav giftcards" href="giftcards.html" target="_blank">Gift Cards</a></li><li class="footer-link"><a class="text-footer-nav" href="help.html" target="_blank">Help</a></li><li class="footer-link"><a class="text-footer-nav" href="terms.html" target="_blank">Terms</a></li><li class="footer-link"><a class="text-footer-nav" href="accessibility.html" target="_blank">Accessibility</a></li><li class="footer-link"><a class="text-footer-nav privacy" href="privacy.html" target="_blank">Privacy</a></li><li></li></ul><div class="row copyright-container"><div class="col-sm-6 col-md-3"></div><div class="col-sm-12"><p class="text-footer footer-note">©2022 Roblox Corporation. Roblox, the Roblox logo and Powering Imagination are among our registered and unregistered trademarks in the U.S. and other countries.</p></div></div></div></footer>
@@ -548,5 +177,18 @@
     </div>
 </div>
 </div>
+<script>
+(function () {
+    var buttons = document.querySelectorAll('.gender-row .gender-button');
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function () {
+            for (var j = 0; j < buttons.length; j++) {
+                buttons[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+        });
+    }
+})();
+</script>
 </body>
 </html>

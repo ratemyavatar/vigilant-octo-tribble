@@ -102,14 +102,68 @@ def init():
         """
     )
     con.commit()
-    if not cur.execute("SELECT id FROM users WHERE username=?", ("Player",)).fetchone():
-        create_user("Player", "player", "1/1/2000", "Male")
+    # Older builds seeded a fake Player / player account. Accounts now come
+    # from signup only — drop that leftover row if it is still around.
+    seeded = cur.execute(
+        "SELECT id FROM users WHERE username=? AND birthday=? AND gender=?",
+        ("Player", "1/1/2000", "Male"),
+    ).fetchone()
+    if seeded:
+        uid = seeded["id"]
+        cur.execute("DELETE FROM sessions WHERE user_id=?", (uid,))
+        cur.execute("DELETE FROM inventory WHERE user_id=?", (uid,))
+        cur.execute("DELETE FROM friendships WHERE user_id=? OR friend_id=?", (uid, uid))
+        cur.execute("DELETE FROM messages WHERE from_id=? OR to_id=?", (uid, uid))
+        cur.execute("DELETE FROM trades WHERE from_id=? OR to_id=?", (uid, uid))
+        cur.execute("DELETE FROM users WHERE id=?", (uid,))
+        cur.execute("UPDATE places SET creator_id=0 WHERE creator_id=?", (uid,))
+        cur.execute("UPDATE assets SET creator_id=0 WHERE creator_id=?", (uid,))
+        con.commit()
     if not cur.execute("SELECT id FROM places").fetchone():
         cur.execute(
-            "INSERT INTO places (creator_id, name, description, genre, max_players, created_at) VALUES (1, ?, ?, ?, 10, ?)",
+            "INSERT INTO places (creator_id, name, description, genre, max_players, created_at) VALUES (0, ?, ?, ?, 10, ?)",
             ("Baseplate", "A starting place.", "All", int(time.time())),
         )
         con.commit()
+    cur.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS groups (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            creator_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            created_at INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS group_members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            role TEXT DEFAULT 'Member',
+            UNIQUE(group_id, user_id)
+        );
+        CREATE TABLE IF NOT EXISTS wearing (
+            user_id INTEGER NOT NULL,
+            asset_id INTEGER NOT NULL,
+            PRIMARY KEY(user_id, asset_id)
+        );
+        CREATE TABLE IF NOT EXISTS trade_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            trade_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            asset_id INTEGER NOT NULL
+        );
+        """
+    )
+    def _col(table, col, decl):
+        names = [r[1] for r in cur.execute("PRAGMA table_info(%s)" % table)]
+        if col not in names:
+            cur.execute("ALTER TABLE %s ADD COLUMN %s" % (table, decl))
+    _col("users", "status", "status TEXT DEFAULT ''")
+    _col("users", "blurb", "blurb TEXT DEFAULT ''")
+    _col("places", "visits", "visits INTEGER DEFAULT 0")
+    _col("messages", "subject", "subject TEXT DEFAULT ''")
+    _col("messages", "is_read", "is_read INTEGER DEFAULT 0")
+    con.commit()
     con.close()
 
 
@@ -129,11 +183,15 @@ def _check(password: str, stored: str):
 
 
 def create_user(username, password, birthday="", gender=""):
+    username = (username or "").strip()
+    password = password or ""
+    if not username or not password:
+        return None
     con = connect()
     try:
         con.execute(
             "INSERT INTO users (username, password_hash, birthday, gender, created_at) VALUES (?,?,?,?,?)",
-            (username.strip(), _hash(password), birthday, gender, int(time.time())),
+            (username, _hash(password), birthday, gender, int(time.time())),
         )
         con.commit()
         row = con.execute("SELECT * FROM users WHERE username=?", (username.strip(),)).fetchone()
@@ -276,3 +334,391 @@ def latest_job_for_place(place_id):
     ).fetchone()
     con.close()
     return dict(row) if row else None
+
+
+def list_friends(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT u.* FROM users u
+        JOIN friendships f ON (
+            (f.friend_id = u.id AND f.user_id = ?)
+            OR (f.user_id = u.id AND f.friend_id = ?)
+        )
+        WHERE u.id != ? AND IFNULL(f.status, 'accepted') = 'accepted'
+        ORDER BY u.username COLLATE NOCASE
+        """,
+        (user_id, user_id, user_id),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def add_friend(user_id, other_id):
+    try:
+        user_id = int(user_id)
+        other_id = int(other_id)
+    except (TypeError, ValueError):
+        return False
+    if not user_id or not other_id or user_id == other_id:
+        return False
+    if not get_user(other_id):
+        return False
+    con = connect()
+    exists = con.execute(
+        "SELECT id FROM friendships WHERE (user_id=? AND friend_id=?) OR (user_id=? AND friend_id=?)",
+        (user_id, other_id, other_id, user_id),
+    ).fetchone()
+    if not exists:
+        con.execute(
+            "INSERT INTO friendships (user_id, friend_id, status) VALUES (?,?,?)",
+            (user_id, other_id, "accepted"),
+        )
+        con.commit()
+    con.close()
+    return True
+
+
+def list_inventory(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT a.* FROM assets a
+        JOIN inventory i ON i.asset_id = a.id
+        WHERE i.user_id = ?
+        ORDER BY i.id DESC
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def search_users(q):
+    q = (q or "").strip()
+    if not q:
+        return []
+    con = connect()
+    rows = con.execute(
+        "SELECT * FROM users WHERE username LIKE ? ORDER BY id DESC LIMIT 50",
+        ("%" + q + "%",),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def search_places(q):
+    q = (q or "").strip()
+    if not q:
+        return []
+    con = connect()
+    rows = con.execute(
+        "SELECT * FROM places WHERE name LIKE ? OR description LIKE ? ORDER BY id DESC LIMIT 50",
+        ("%" + q + "%", "%" + q + "%"),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def places_by_creator(user_id):
+    con = connect()
+    rows = con.execute(
+        "SELECT * FROM places WHERE creator_id=? ORDER BY id DESC",
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+
+def public_user(row):
+    if not row:
+        return None
+    return {
+        "id": row["id"],
+        "username": row["username"],
+        "robux": row.get("robux") or 0,
+        "status": row.get("status") or "",
+        "blurb": row.get("blurb") or "",
+        "created_at": row.get("created_at") or 0,
+    }
+
+
+def update_user(user_id, **fields):
+    allowed = {"username", "status", "blurb", "robux", "birthday", "gender"}
+    sets, vals = [], []
+    for k, v in fields.items():
+        if k not in allowed:
+            continue
+        if k == "username":
+            v = (v or "").strip()
+            if not v:
+                continue
+        sets.append("%s=?" % k)
+        vals.append(v)
+    if not sets:
+        return get_user(user_id)
+    vals.append(user_id)
+    con = connect()
+    try:
+        con.execute("UPDATE users SET %s WHERE id=?" % ",".join(sets), vals)
+        con.commit()
+    except sqlite3.IntegrityError:
+        con.close()
+        return None
+    con.close()
+    return get_user(user_id)
+
+
+def bump_place_visits(pid):
+    con = connect()
+    con.execute("UPDATE places SET visits = IFNULL(visits,0) + 1 WHERE id=?", (pid,))
+    con.commit()
+    con.close()
+
+
+def list_messages(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT m.*, fu.username AS from_name, tu.username AS to_name
+        FROM messages m
+        JOIN users fu ON fu.id = m.from_id
+        JOIN users tu ON tu.id = m.to_id
+        WHERE m.to_id=? OR m.from_id=?
+        ORDER BY m.id DESC LIMIT 100
+        """,
+        (user_id, user_id),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def send_message(from_id, to_id, body, subject=""):
+    if not from_id or not to_id or not (body or "").strip():
+        return None
+    if not get_user(to_id):
+        return None
+    con = connect()
+    cur = con.execute(
+        "INSERT INTO messages (from_id, to_id, body, created_at, subject, is_read) VALUES (?,?,?,?,?,0)",
+        (from_id, to_id, body.strip(), int(time.time()), subject or ""),
+    )
+    con.commit()
+    mid = cur.lastrowid
+    con.close()
+    return mid
+
+
+def list_groups():
+    con = connect()
+    rows = con.execute("SELECT * FROM groups ORDER BY id DESC").fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def get_group(gid):
+    con = connect()
+    row = con.execute("SELECT * FROM groups WHERE id=?", (gid,)).fetchone()
+    con.close()
+    return dict(row) if row else None
+
+
+def create_group(creator_id, name, description=""):
+    name = (name or "").strip()
+    if not name:
+        return None
+    con = connect()
+    cur = con.execute(
+        "INSERT INTO groups (creator_id, name, description, created_at) VALUES (?,?,?,?)",
+        (creator_id, name, description or "", int(time.time())),
+    )
+    gid = cur.lastrowid
+    con.execute(
+        "INSERT INTO group_members (group_id, user_id, role) VALUES (?,?,?)",
+        (gid, creator_id, "Owner"),
+    )
+    con.commit()
+    con.close()
+    return gid
+
+
+def join_group(group_id, user_id):
+    if not get_group(group_id) or not get_user(user_id):
+        return False
+    con = connect()
+    try:
+        con.execute(
+            "INSERT OR IGNORE INTO group_members (group_id, user_id, role) VALUES (?,?,?)",
+            (group_id, user_id, "Member"),
+        )
+        con.commit()
+    finally:
+        con.close()
+    return True
+
+
+def group_members(group_id):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT u.*, gm.role FROM users u
+        JOIN group_members gm ON gm.user_id=u.id
+        WHERE gm.group_id=?
+        ORDER BY u.username COLLATE NOCASE
+        """,
+        (group_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def list_wearing(user_id):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT a.* FROM assets a
+        JOIN wearing w ON w.asset_id=a.id
+        WHERE w.user_id=?
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def wear_asset(user_id, asset_id):
+    if not get_asset(asset_id):
+        return False
+    con = connect()
+    owned = con.execute(
+        "SELECT id FROM inventory WHERE user_id=? AND asset_id=?",
+        (user_id, asset_id),
+    ).fetchone()
+    if not owned:
+        con.close()
+        return False
+    con.execute("INSERT OR IGNORE INTO wearing (user_id, asset_id) VALUES (?,?)", (user_id, asset_id))
+    con.commit()
+    con.close()
+    return True
+
+
+def unwear_asset(user_id, asset_id):
+    con = connect()
+    con.execute("DELETE FROM wearing WHERE user_id=? AND asset_id=?", (user_id, asset_id))
+    con.commit()
+    con.close()
+
+
+def grant_asset(user_id, asset_id):
+    con = connect()
+    exists = con.execute(
+        "SELECT id FROM inventory WHERE user_id=? AND asset_id=?",
+        (user_id, asset_id),
+    ).fetchone()
+    if not exists:
+        con.execute(
+            "INSERT INTO inventory (user_id, asset_id, created_at) VALUES (?,?,?)",
+            (user_id, asset_id, int(time.time())),
+        )
+        con.commit()
+    con.close()
+
+
+def buy_asset(user_id, asset_id):
+    user = get_user(user_id)
+    asset = get_asset(asset_id)
+    if not user or not asset:
+        return False, "not found"
+    price = int(asset.get("price") or 0)
+    if int(user.get("robux") or 0) < price:
+        return False, "robux"
+    con = connect()
+    owned = con.execute(
+        "SELECT id FROM inventory WHERE user_id=? AND asset_id=?",
+        (user_id, asset_id),
+    ).fetchone()
+    if owned:
+        con.close()
+        return False, "owned"
+    con.execute("UPDATE users SET robux = robux - ? WHERE id=?", (price, user_id))
+    con.execute(
+        "INSERT INTO inventory (user_id, asset_id, created_at) VALUES (?,?,?)",
+        (user_id, asset_id, int(time.time())),
+    )
+    con.commit()
+    con.close()
+    return True, "ok"
+
+
+def remove_friend(user_id, other_id):
+    con = connect()
+    con.execute(
+        "DELETE FROM friendships WHERE (user_id=? AND friend_id=?) OR (user_id=? AND friend_id=?)",
+        (user_id, other_id, other_id, user_id),
+    )
+    con.commit()
+    con.close()
+
+
+def list_trades(user_id):
+    con = connect()
+    rows = con.execute(
+        "SELECT * FROM trades WHERE from_id=? OR to_id=? ORDER BY id DESC",
+        (user_id, user_id),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def create_trade(from_id, to_id):
+    if from_id == to_id or not get_user(to_id):
+        return None
+    con = connect()
+    cur = con.execute(
+        "INSERT INTO trades (from_id, to_id, status, created_at) VALUES (?,?,?,?)",
+        (from_id, to_id, "open", int(time.time())),
+    )
+    con.commit()
+    tid = cur.lastrowid
+    con.close()
+    return tid
+
+
+def redeem_promo(user_id, code):
+    code = (code or "").strip()
+    if not code:
+        return False, "invalid"
+    con = connect()
+    row = con.execute("SELECT * FROM promo_codes WHERE code=?", (code,)).fetchone()
+    if not row:
+        con.close()
+        return False, "invalid"
+    if row["redeemed_by"]:
+        con.close()
+        return False, "used"
+    reward = row["reward"] or ""
+    con.execute("UPDATE promo_codes SET redeemed_by=? WHERE code=?", (user_id, code))
+    if reward.startswith("robux:"):
+        try:
+            amt = int(reward.split(":", 1)[1])
+            con.execute("UPDATE users SET robux = IFNULL(robux,0) + ? WHERE id=?", (amt, user_id))
+        except ValueError:
+            pass
+    con.commit()
+    con.close()
+    return True, reward
+
+
+def list_users(limit=50):
+    con = connect()
+    rows = con.execute("SELECT * FROM users ORDER BY id DESC LIMIT ?", (int(limit),)).fetchall()
+    con.close()
+    return [dict(r) for r in rows]

@@ -19,6 +19,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse, unquote
 
 import database as db
+import api
+import live
 import rcc
 
 ROOT = Path(__file__).resolve().parent
@@ -35,7 +37,7 @@ NAV_OUT = (PARTIALS / "nav_out.html").read_text(encoding="utf-8", errors="replac
 NAV_IN = (PARTIALS / "nav_in.html").read_text(encoding="utf-8", errors="replace")
 
 # logged-out pages keep these filenames even when a -loggedin twin exists
-AUTH_PAGES = {"login.html", "signup.html", "index.html"}
+AUTH_PAGES = {"login.html", "signup.html", "index.html", "landing.html"}
 
 
 def next_game_port():
@@ -184,10 +186,15 @@ def pick_page(name: str, user: dict | None) -> Path:
     name = name.lstrip("/").split("?")[0]
     if not name or name == "/":
         name = "home-loggedin.html" if user else "signup.html"
-    if name in ("login.html", "index.html") and not user:
-        name = "signup.html"
     if not name.endswith(".html"):
         name = name + ".html"
+    if name in ("game-shindo.html", "game-shindo-loggedin.html"):
+        name = "game-loggedin.html" if user else "game.html"
+    landing = {"login.html", "index.html", "landing.html", "signup.html", "home.html"}
+    if name in landing and not user:
+        name = "signup.html"
+    if name in landing and user:
+        name = "home-loggedin.html"
     if user and name not in AUTH_PAGES:
         twin = name[:-5] + "-loggedin.html" if not name.endswith("-loggedin.html") else name
         if (PAGES / twin).exists():
@@ -316,6 +323,10 @@ class Handler(BaseHTTPRequestHandler):
     def api(self, method, path, low, q):
         user = self.current_user()
 
+        api_hit = api.handle(method, path, low, q, user, self)
+        if api_hit is not None:
+            return api_hit
+
         if low in ("/login", "/login/") and method == "POST":
             form = self.parse_form()
             u = db.verify_user(form.get("username", ""), form.get("password", ""))
@@ -395,6 +406,105 @@ class Handler(BaseHTTPRequestHandler):
                 except Exception as e:
                     print("render job", e)
             return json_bytes({"id": aid})
+
+        if low in ("/friends/add", "/friends/add/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            other = form.get("userId") or form.get("userid") or ""
+            if not str(other).isdigit():
+                named = db.get_user_by_name(form.get("username") or "")
+                other = named["id"] if named else 0
+            db.add_friend(user["id"], other)
+            self.redirect("/friends-loggedin.html")
+            return False
+
+        if low in ("/play", "/play/"):
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            try:
+                pid = int(q.get("placeId") or q.get("placeid") or q.get("id") or 0)
+            except Exception:
+                pid = 0
+            if not pid:
+                pid = int(CONFIG.get("default_place_id") or 1)
+            self._open_game_job(pid)
+            launcher = PUBLIC + "/game/PlaceLauncher.ashx?placeId=%s" % pid
+            ticket = uuid.uuid4().hex
+            proto = (
+                "roblox-player:1+launchmode:play+gameinfo:%s+placelauncherurl:%s+launchtime:%s"
+                % (ticket, launcher, int(time.time() * 1000))
+            )
+            body = (
+                "<!DOCTYPE html><html><head><title>Play - ROBLOX</title>"
+                '<link rel="stylesheet" href="https://static.rbxcdn.com/css/leanbase___a6440bf99edce7c683fb7ab84fe5b56e_m.css/fetch">'
+                '</head><body id="rbx-body" class="rbx-body light-theme gotham-font">'
+                '<div class="container-main"><div class="content">'
+                '<div class="section-content login-section">'
+                '<h2 class="login-header">Starting Roblox...</h2>'
+                '<p class="list-content">Place %s. If the client does not open, install it from Download.</p>'
+                '<a class="btn-primary-lg" href="%s">Play</a> '
+                '<a class="btn-secondary-md" href="/game.html?id=%s">Back</a>'
+                "</div></div></div>"
+                "<script>window.location.href=%s;</script>"
+                "</body></html>"
+            ) % (pid, proto, pid, json.dumps(proto))
+            return 200, "text/html; charset=utf-8", body.encode("utf-8")
+
+        if low in ("/settings/update", "/settings/update/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.update_user(
+                user["id"],
+                username=form.get("username"),
+                status=form.get("status"),
+                blurb=form.get("blurb"),
+            )
+            self.redirect("/settings-loggedin.html")
+            return False
+
+        if low in ("/messages/send", "/messages/send/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            to_id = form.get("toId") or form.get("to") or ""
+            if not str(to_id).isdigit():
+                named = db.get_user_by_name(form.get("username") or form.get("to") or "")
+                to_id = named["id"] if named else 0
+            db.send_message(user["id"], to_id, form.get("body") or "", form.get("subject") or "")
+            self.redirect("/messages-loggedin.html")
+            return False
+
+        if low in ("/groups/create", "/groups/create/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.create_group(user["id"], form.get("name") or "", form.get("description") or "")
+            self.redirect("/groups-loggedin.html")
+            return False
+
+        if low in ("/promo/redeem", "/promo/redeem/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.redeem_promo(user["id"], form.get("code") or "")
+            self.redirect("/promocodes-loggedin.html")
+            return False
+
+        if low in ("/catalog/buy", "/catalog/buy/") and method == "POST":
+            if not user:
+                return json_bytes({"error": "login"}, 401)
+            form = self.parse_form()
+            aid = form.get("id") or form.get("assetId") or q.get("id") or 0
+            ok, reason = db.buy_asset(user["id"], aid)
+            return json_bytes({"ok": ok, "reason": reason}, 200 if ok else 400)
 
         # auth ticket
         if low.endswith("/login/negotiate.ashx") or low.endswith("/authentication/negotiate"):
@@ -542,7 +652,8 @@ class Handler(BaseHTTPRequestHandler):
             return text_bytes("false")
 
         if "get-friendship-count" in low:
-            return json_bytes({"success": True, "count": 0})
+            n = len(db.list_friends(user["id"])) if user else 0
+            return json_bytes({"success": True, "count": n})
 
         if low.endswith("/my/settings/json"):
             if not user:
@@ -713,13 +824,16 @@ class Handler(BaseHTTPRequestHandler):
             html = inject_nav(html, user)
             html = rewrite_thumbs(html, user)
             html = rewrite_offsite(html, user is not None)
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            q = {k: v[0] if v else "" for k, v in qs.items()}
+            html = live.prepare(html, page.name, user, q)
             # wire forms
             html = html.replace(
                 '<form class="login-form" name="loginForm">',
                 '<form class="login-form" name="loginForm" method="post" action="/login">',
             )
-            if "signup" in page.name:
-                html = html.replace('action="/login"', 'action="/signup"')
+            if "signup" in page.name or page.name in ("login.html", "index.html", "landing.html"):
                 html = html.replace('id="MondDropdown"', 'id="MondDropdown" name="BirthMonth"')
                 html = html.replace('id="DayDropdown"', 'id="DayDropdown" name="BirthDay"')
                 html = html.replace('id="YearDropdown"', 'id="YearDropdown" name="BirthYear"')
@@ -732,8 +846,18 @@ class Handler(BaseHTTPRequestHandler):
                 '<form id="placeForm" method="POST" action="https://www.roblox.com/places/create">',
                 '<form id="placeForm" method="POST" action="/places/create">',
             )
+            html = html.replace(
+                '<form id="placeForm" method="POST" action="create.html">',
+                '<form id="placeForm" method="POST" action="/places/create">',
+            )
+            html = html.replace(
+                '<form id="placeForm" method="POST" action="create-loggedin.html">',
+                '<form id="placeForm" method="POST" action="/places/create">',
+            )
             if user:
                 html = html.replace("{{USERNAME}}", user["username"])
+            else:
+                html = html.replace("{{USERNAME}}", "")
             data = html.encode("utf-8")
             ctype = "text/html; charset=utf-8"
         self.send_raw(200, ctype, data)

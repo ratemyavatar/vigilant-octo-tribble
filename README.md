@@ -8,7 +8,9 @@ Static pages from the HTML dump, plus a local API so a Roblox client and RCCServ
 
 Open http://127.0.0.1:8080
 
-Default account: Player / player (created on first start).
+Landing is the Sign Up form with Log In in the navbar. There is no default account — sign up; that writes a row to `data/site.db`.
+
+Games, friends, catalog, and inventory are empty until users create them. Create an experience on Develop.
 
 config.json:
 
@@ -74,10 +76,28 @@ Files live in `data/renders/headshots/`, `places/`, `assets/`.
 If RCC is down or the PNG is missing, the site serves `data/renders/placeholder-headshot.png` or `placeholder-place.png`.
 RCC can POST a finished PNG to the same `/thumbs/...` URL to replace the placeholder.
 
+## Site JSON API
+
+All of these read/write `data/site.db` (no snapshot data):
+
+- GET/POST `/api/me`
+- GET `/api/users`  GET `/api/users/{id}`  GET `/api/users?q=`
+- GET/POST `/api/places`  GET `/api/places/{id}`
+- GET/POST `/api/catalog`  POST `/api/catalog/{id}/buy`
+- GET/POST `/api/friends`  DELETE `/api/friends/{id}`
+- GET/POST `/api/messages`
+- GET `/api/inventory`  POST `/api/inventory/{id}/wear`
+- GET/POST `/api/groups`  POST `/api/groups/{id}/join`
+- GET `/api/search?q=`
+- GET/POST `/api/trades`
+- POST `/api/promo`  POST `/api/status`
+
+Forms: `/signup` `/login` `/logout` `/places/create` `/friends/add` `/messages/send` `/groups/create` `/settings/update` `/promo/redeem` `/catalog/buy` `/play`
+
 ## Pages
 
 HTML is in pages/. Logged-in twins end with -loggedin.html.
-Catalog starts empty. Upload via POST /catalog/upload (name, asset_type, description, price).
+Lists (games, friends, catalog, inventory, messages, groups, blog) start empty and fill from the database.
 Navbar is injected from partials/nav_out.html and partials/nav_in.html.
 
 SQLite file: data/site.db.
