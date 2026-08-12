@@ -301,3 +301,69 @@
   .profile-header-row { flex-wrap: wrap; }
   .profile-actions { margin-left: 0; width: 100%; }
 }
+
+/* Roblox avatar editor category pull-downs */
+.ae-catbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.ae-dd { position: relative; }
+.ae-dd-btn {
+  background: #2d2f31;
+  color: #fff;
+  border: 1px solid #3c3e40;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 120px;
+  text-align: left;
+}
+.ae-dd-btn:hover, .ae-dd.open .ae-dd-btn, .ae-dd.active-group .ae-dd-btn {
+  border-color: #00a2ff;
+}
+.ae-caret {
+  float: right;
+  margin-left: 10px;
+  border: 5px solid transparent;
+  border-top-color: #bdbebe;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+  margin-top: 6px;
+}
+.ae-dd.open .ae-caret {
+  border-top-color: transparent;
+  border-bottom-color: #bdbebe;
+  margin-top: 1px;
+}
+.ae-dd-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 170px;
+  background: #2d2f31;
+  border: 1px solid #111;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  z-index: 50;
+  padding: 4px 0;
+}
+.ae-dd.open .ae-dd-menu { display: block; }
+.ae-dd-menu a {
+  display: block;
+  padding: 8px 12px;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 15px;
+}
+.ae-dd-menu a:hover, .ae-dd-menu a.selected {
+  background: #3c3e40;
+  box-shadow: 4px 0 0 0 #00a2ff inset;
+}
+.ae-shop { margin: 0 0 12px; color: #00a2ff; }
+.ae-sep { color: #bdbebe; }

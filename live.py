@@ -797,13 +797,68 @@ SITE_JS = r"""
 
   var setBtn = document.getElementById('nav-settings');
   var setMenu = document.getElementById('settings-popover');
+  function placeSettingsMenu() {
+    if (!setBtn || !setMenu) return;
+    var r = setBtn.getBoundingClientRect();
+    setMenu.style.top = (r.bottom) + 'px';
+    setMenu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+    setMenu.style.left = 'auto';
+  }
   if (setBtn && setMenu) {
     setBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var open = !setMenu.classList.contains('open');
+      if (open) placeSettingsMenu();
       setMenu.classList.toggle('open', open);
       setBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    window.addEventListener('resize', function () {
+      if (setMenu.classList.contains('open')) placeSettingsMenu();
+    });
+  }
+
+  var aeDrops = document.querySelectorAll('.ae-dd');
+  function closeAeDrops(except) {
+    for (var i = 0; i < aeDrops.length; i++) {
+      if (aeDrops[i] !== except) aeDrops[i].classList.remove('open');
+    }
+  }
+  for (var ad = 0; ad < aeDrops.length; ad++) {
+    (function (box) {
+      var btn = box.querySelector('.ae-dd-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var open = !box.classList.contains('open');
+        closeAeDrops(box);
+        box.classList.toggle('open', open);
+      });
+    })(aeDrops[ad]);
+  }
+  var catBar = document.querySelector('.ae-catbar');
+  if (catBar) {
+    var current = catBar.getAttribute('data-current') || '';
+    var links = catBar.querySelectorAll('.ae-dd-menu a');
+    for (var cl = 0; cl < links.length; cl++) {
+      var href = links[cl].getAttribute('href') || '';
+      if (current && href.indexOf('category=' + encodeURIComponent(current)) >= 0 ||
+          (current && href.indexOf('category=' + current) >= 0)) {
+        links[cl].classList.add('selected');
+        var parent = links[cl].closest('.ae-dd');
+        if (parent) parent.classList.add('active-group');
+      }
+    }
+  }
+  var skinLink = document.getElementById('ae-skin-tone');
+  if (skinLink) {
+    skinLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeAeDrops();
+      var man = document.querySelector('.cc-mannequin');
+      if (man) man.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (picker) picker.hidden = false;
     });
   }
 
@@ -855,6 +910,7 @@ SITE_JS = r"""
       if (setMenu) setMenu.classList.remove('open');
       if (gearMenu) gearMenu.classList.remove('open');
       if (loginBar) loginBar.classList.remove('open');
+      closeAeDrops();
       closePlayModal();
     }
   });
@@ -1159,6 +1215,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = html.replace("{{LEFT_LEG_COLOR}}", s.get("left_leg_color") or "#4B974B")
         html = html.replace("{{RIGHT_LEG_COLOR}}", s.get("right_leg_color") or "#4B974B")
         html = html.replace("{{COLOR_SWATCHES}}", color_swatches())
+        html = html.replace("{{AVATAR_CATEGORY}}", esc(category if category not in ("", "All") else ""))
         html = html.replace("{{TAB_WARDROBE}}", "active" if tab != "outfits" else "")
         html = html.replace("{{TAB_OUTFITS}}", "active" if tab == "outfits" else "")
         html = html.replace("{{WARDROBE_HIDDEN}}", 'style="display:none"' if tab == "outfits" else "")

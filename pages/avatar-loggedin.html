@@ -54,8 +54,51 @@
     <a class="vtab {{TAB_OUTFITS}}" href="/avatar-loggedin.html?tab=outfits">Outfits</a>
   </div>
   <div class="wardrobe-panel" {{WARDROBE_HIDDEN}}>
-    <p class="cc-cats">{{AVATAR_SUBCATS}}</p>
-    <p class="cc-cats"><a href="/catalog-loggedin.html">Shop</a> | <a href="/catalog-loggedin.html">Create</a></p>
+    <div class="ae-catbar" data-current="{{AVATAR_CATEGORY}}">
+      <div class="ae-dd">
+        <button type="button" class="ae-dd-btn">Recent <span class="ae-caret"></span></button>
+        <div class="ae-dd-menu">
+          <a href="/avatar-loggedin.html?tab=wardrobe">All Items</a>
+        </div>
+      </div>
+      <div class="ae-dd">
+        <button type="button" class="ae-dd-btn">Clothing <span class="ae-caret"></span></button>
+        <div class="ae-dd-menu">
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Shirts">Shirts</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=T-Shirts">T-Shirts</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Pants">Pants</a>
+        </div>
+      </div>
+      <div class="ae-dd">
+        <button type="button" class="ae-dd-btn">Accessories <span class="ae-caret"></span></button>
+        <div class="ae-dd-menu">
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Hats">Hats</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Hair">Hair</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Face">Face</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Neck">Neck</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Shoulder">Shoulder</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Front">Front</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Back">Back</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Waist">Waist</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Gear">Gear</a>
+        </div>
+      </div>
+      <div class="ae-dd">
+        <button type="button" class="ae-dd-btn">Head &amp; Body <span class="ae-caret"></span></button>
+        <div class="ae-dd-menu">
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Heads">Heads</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Faces">Faces</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Torsos">Torsos</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=L Arms">Left Arms</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=R Arms">Right Arms</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=L Legs">Left Legs</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=R Legs">Right Legs</a>
+          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Packages">Packages</a>
+          <a href="#" id="ae-skin-tone">Skin Tone</a>
+        </div>
+      </div>
+    </div>
+    <p class="ae-shop"><a href="/catalog-loggedin.html">Shop</a> <span class="ae-sep">|</span> <a href="/catalog-loggedin.html">Create</a></p>
     <div class="row wardrobe-grid">
       <ul class="hlist item-cards" id="wardrobe-list"></ul>
     </div>
