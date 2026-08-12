@@ -47,8 +47,20 @@
         <a class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" href="credits.html">made by thuggy</a>
       </li>
     </ul>
-    <div id="right-navigation-header"><div data-testid="navigation-search-input" class="navbar-left navbar-search col-xs-5 col-sm-6 col-md-2 col-lg-3 shown" role="search"><div class="input-group"><form><div class="form-has-feedback"><input id="navbar-search-input" data-testid="navigation-search-input-field" class="form-control input-field new-input-field" placeholder="Search" maxlength="120" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value=""></div></form><div class="input-group-btn"><button data-testid="navigation-search-input-search-button" class="input-addon-btn" type="submit"><span class="icon-common-search-sm"></span></button></div></div><ul class="dropdown-menu new-dropdown-menu" role="menu"><li class="navbar-search-option rbx-clickable-li new-selected"><a class="new-navbar-search-anchor" href="discover.html"><span class="icon-menu-games-off navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">in Experiences</span></a></li><li class="navbar-search-option rbx-clickable-li"><a class="new-navbar-search-anchor" href="search.html"><span class="icon-menu-profile navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">in People</span></a></li><li class="navbar-search-option rbx-clickable-li"><a class="new-navbar-search-anchor" href="catalog.html"><span class="icon-menu-shop navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">in Avatar Shop</span></a></li><li class="navbar-search-option rbx-clickable-li"><a class="new-navbar-search-anchor" href="groups.html"><span class="icon-menu-groups navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">in Groups</span></a></li><li class="navbar-search-option rbx-clickable-li"><a class="new-navbar-search-anchor" href="create.html"><span class="icon-menu-library navbar-list-option-icon"></span><span class="navbar-list-option-text"></span><span class="navbar-list-option-suffix">in Creator Marketplace</span></a></li></ul></div><div class="navbar-right rbx-navbar-right"><ul class="nav navbar-right rbx-navbar-right-nav"><li class="signup-button-container"><a class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" href="signup.html" id="sign-up-button">Sign Up</a></li><li class="login-action"><a id="triggerLogin" class="font-header-2 rbx-navbar-login nav-menu-title rbx-menu-item" href="home.html">Log In</a></li>
-<li class="rbx-navbar-right-search"><button type="button" class="rbx-menu-item btn-navigation-nav-search-white-md"><span class="icon-nav-search-white"></span></button></li></ul></div></div>
+    <div id="right-navigation-header"><div class="navbar-right rbx-navbar-right"><ul class="nav navbar-right rbx-navbar-right-nav"><li class="login-action">
+      <form class="login-form navbar-login-bar" name="navbarLoginForm" method="post" action="/login">
+        <label class="sr-only" for="navbar-login-username">Username/Email/Phone</label>
+        <input id="navbar-login-username" name="username" type="text" class="form-control input-field" placeholder="Username/Email/Phone" value="">
+        <label class="sr-only" for="navbar-login-password">Password</label>
+        <input id="navbar-login-password" name="password" type="password" class="form-control input-field" placeholder="Password" value="">
+        <button type="submit" class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" id="navbar-login-button">Log In</button>
+      </form>
+    </li></ul></div></div>
+    <style type="text/css">
+      .navbar-login-bar { display: inline-block; white-space: nowrap; vertical-align: middle; margin: 8px 0 0 0; }
+      .navbar-login-bar .input-field { display: inline-block; width: 150px; height: 28px; margin: 0 6px 0 0; vertical-align: middle; }
+      .navbar-login-bar #navbar-login-button { display: inline-block; vertical-align: middle; height: 28px; line-height: 28px; padding: 0 12px; }
+    </style>
   </div>
 </div>
 <div id="left-navigation-container"></div>

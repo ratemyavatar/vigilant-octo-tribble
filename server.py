@@ -183,7 +183,9 @@ def inject_nav(html: str, user: dict | None) -> str:
 def pick_page(name: str, user: dict | None) -> Path:
     name = name.lstrip("/").split("?")[0]
     if not name or name == "/":
-        name = "home-loggedin.html" if user else "login.html"
+        name = "home-loggedin.html" if user else "signup.html"
+    if name in ("login.html", "index.html") and not user:
+        name = "signup.html"
     if not name.endswith(".html"):
         name = name + ".html"
     if user and name not in AUTH_PAGES:
