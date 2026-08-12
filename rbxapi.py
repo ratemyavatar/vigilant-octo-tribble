@@ -295,7 +295,7 @@ def handle(method, path, low, q, user, req):
                         "name": (creator or {}).get("username") or "ROBLOX",
                         "type": "User",
                     },
-                    "playing": len(db.list_jobs_for_place(place["id"])),
+                    "playing": db.place_playing(place["id"]),
                     "visits": place.get("visits") or 0,
                     "maxPlayers": place.get("max_players") or 10,
                     "created": _iso(place.get("created_at")),

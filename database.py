@@ -215,6 +215,12 @@ def init():
             k TEXT PRIMARY KEY,
             v TEXT
         );
+        CREATE TABLE IF NOT EXISTS game_presence (
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            last_seen INTEGER NOT NULL,
+            PRIMARY KEY(user_id, place_id)
+        );
         """
     )
     con.commit()
@@ -658,6 +664,72 @@ def bump_place_visits(pid):
     con.execute("UPDATE places SET visits = IFNULL(visits,0) + 1 WHERE id=?", (pid,))
     con.commit()
     con.close()
+
+
+PRESENCE_TTL = 180
+
+
+def set_playing(user_id, place_id, bump_visit=False):
+    """Mark a user as currently in a place. Visits only bump on a fresh join."""
+    try:
+        user_id = int(user_id or 0)
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return
+    if not user_id or not place_id:
+        return
+    now = int(time.time())
+    con = connect()
+    row = con.execute(
+        "SELECT last_seen FROM game_presence WHERE user_id=? AND place_id=?",
+        (user_id, place_id),
+    ).fetchone()
+    last = int(row["last_seen"] or 0) if row else 0
+    fresh = last < (now - PRESENCE_TTL)
+    con.execute(
+        "INSERT OR REPLACE INTO game_presence (user_id, place_id, last_seen) VALUES (?,?,?)",
+        (user_id, place_id, now),
+    )
+    if bump_visit and fresh:
+        con.execute("UPDATE places SET visits = IFNULL(visits,0) + 1 WHERE id=?", (place_id,))
+    con.commit()
+    con.close()
+
+
+def clear_playing(user_id, place_id=None):
+    try:
+        user_id = int(user_id or 0)
+    except (TypeError, ValueError):
+        return
+    if not user_id:
+        return
+    con = connect()
+    if place_id:
+        con.execute(
+            "DELETE FROM game_presence WHERE user_id=? AND place_id=?",
+            (user_id, place_id),
+        )
+    else:
+        con.execute("DELETE FROM game_presence WHERE user_id=?", (user_id,))
+    con.commit()
+    con.close()
+
+
+def place_playing(place_id):
+    """How many people are actually in this place right now."""
+    try:
+        place_id = int(place_id or 0)
+    except (TypeError, ValueError):
+        return 0
+    if not place_id:
+        return 0
+    con = connect()
+    row = con.execute(
+        "SELECT COUNT(*) AS c FROM game_presence WHERE place_id=? AND last_seen>=?",
+        (place_id, int(time.time()) - PRESENCE_TTL),
+    ).fetchone()
+    con.close()
+    return int(row["c"] or 0) if row else 0
 
 
 def list_messages(user_id):

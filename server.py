@@ -803,6 +803,18 @@ class Handler(BaseHTTPRequestHandler):
             return text_bytes("OK")
 
         if "clientpresence" in low:
+            action = (q.get("action") or q.get("Action") or "").lower()
+            pid = 0
+            for key in ("placeId", "placeid", "PlaceID", "PlaceId", "placeID"):
+                raw = q.get(key)
+                if raw and str(raw).isdigit():
+                    pid = int(raw)
+                    break
+            if user and pid:
+                if action in ("disconnect", "unregister", "leave"):
+                    db.clear_playing(user["id"], pid)
+                else:
+                    db.set_playing(user["id"], pid)
             return text_bytes("OK")
 
         if "validate-machine" in low or "validatemachine" in low:
@@ -1022,6 +1034,8 @@ class Handler(BaseHTTPRequestHandler):
                     "PORT": job["port"] if job else 53640,
                 },
             )
+            if user and job:
+                db.set_playing(user["id"], job["place_id"], bump_visit=True)
             return lua_bytes(lua)
 
         if low in ("/game/gameserver.ashx", "/game/gameserver.ashx/"):

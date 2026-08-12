@@ -186,22 +186,27 @@ def game_card(place: dict, suffix: str) -> str:
     name = esc(place.get("name") or "Untitled")
     href = "/game%s?id=%s" % (suffix, pid)
     thumb = "/thumbs/place.ashx?id=%s" % pid
-    playing = int(place.get("visits") or 0)
+    if "playing" in place:
+        playing = int(place.get("playing") or 0)
+    else:
+        playing = db.place_playing(pid)
     return (
         '<li class="list-item game-card game-tile" title="%s">'
         '<div class="game-card-container sgc">'
         '<a class="game-card-link" href="%s">'
         '<div class="game-card-thumb-container">'
         '<img class="game-card-thumb sgc-thumb" src="%s" alt="%s" title="%s">'
-        '<span class="btn-play-green rbx-play-button game-card-play" data-placeid="%s">Play</span>'
         "</div>"
         '<div class="game-card-name game-name-title sgc-name" title="%s">%s</div>'
-        '<div class="game-card-info sgc-playing">%s Playing</div>'
+        '<div class="game-card-info sgc-playing">'
+        '<span class="info-label icon-playing-counts-gray"></span>'
+        '<span class="info-label playing-counts-label">%s Playing</span>'
+        "</div></a>"
+        '<span class="btn-play-green rbx-play-button game-card-play" data-placeid="%s" role="button">Play</span>'
         '<div class="sgc-vote"><span class="icon-thumbs-up"></span>'
         '<span class="vote-bar"><span class="vote-fill"></span></span></div>'
-        "</a>"
         "</div></li>"
-    ) % (name, href, thumb, name, name, pid, name, name, playing)
+    ) % (name, href, thumb, name, name, name, name, playing, pid)
 
 
 def friend_card(user: dict, suffix: str) -> str:
@@ -349,7 +354,7 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{GENRE}}", genre)
     html = html.replace("{{CREATED}}", created)
     html = html.replace("{{VISITS}}", str(int(place.get("visits") or 0)))
-    html = html.replace("{{PLAYING}}", "0")
+    html = html.replace("{{PLAYING}}", str(db.place_playing(pid)))
     html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
     return html
 
@@ -1105,7 +1110,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = replace_ul_inner(html, "server-list", servers)
         rec = [p for p in all_places if p["id"] != place["id"]][:8]
         html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in rec), count=1)
-        html = html.replace("{{PLAYING}}", str(len(jobs)))
+        html = html.replace("{{PLAYING}}", str(db.place_playing(place["id"])))
     if "profile" in name:
         viewed = user
         try:
@@ -1337,13 +1342,6 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = html.replace('action="promocodes-loggedin.html"', 'action="/promo/redeem"')
     if "robux" in name and user:
         html = html.replace("{{ROBUX}}", str(user.get("robux") or 0))
-    if name.startswith("game") and "games" not in name:
-        try:
-            vid = int(qs.get("id") or qs.get("placeId") or 0)
-        except Exception:
-            vid = 0
-        if vid:
-            db.bump_place_visits(vid)
     html = html.replace("{{VERIFIED_BADGE}}", "")
     html = html.replace("{{GROUP_LETTER}}", "G")
     if "</body>" in html:
