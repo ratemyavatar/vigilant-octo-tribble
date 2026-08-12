@@ -195,10 +195,109 @@
 
 .gender-button .icon-male, .gender-button .icon-female { flex: 0 0 28px; }
 
+/* ECS 2016 profile */
+.profile-header-card { padding: 16px; margin-bottom: 16px; }
+.profile-header-row { display: flex; gap: 16px; align-items: flex-start; }
+.profile-shot-wrap {
+  width: 110px;
+  flex: 0 0 110px;
+  border: 1px solid #2d2f31;
+  background: #191b1d;
+}
+.profile-headshot { width: 110px; height: 110px; object-fit: cover; display: block; }
+.profile-header-main { flex: 1; min-width: 0; }
+.profile-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.profile-name { font-size: 30px; font-weight: 400; margin: 0; }
+.profile-dots-wrap { position: relative; }
+.profile-dots {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: 3px;
+  font-weight: 100;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.profile-gear-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 24px;
+  width: 140px;
+  background: #232527;
+  border: 1px solid #111;
+  box-shadow: 0 1px 4px rgba(25, 25, 25, 0.4);
+  z-index: 20;
+}
+.profile-gear-menu.open { display: block; }
+.profile-gear-menu a {
+  display: block;
+  padding: 8px 10px;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 16px;
+}
+.profile-gear-menu a:hover { background: #2d2f31; }
+.profile-status-quote { font-size: 16px; font-weight: 300; color: #bdbebe; margin: 6px 0 12px; min-height: 1.2em; }
+.profile-status-form { display: flex; gap: 8px; margin: 8px 0 12px; flex-wrap: wrap; }
+.profile-status-form .input-field { flex: 1; min-width: 160px; }
+.profile-status-save { background: #2d2f31; color: #fff; border: 1px solid #111; padding: 6px 10px; cursor: pointer; font-size: 12px; }
+.profile-rel-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; }
+.rel-stat { min-width: 72px; text-align: center; }
+.rel-label { color: #c3c3c3; font-weight: 400; font-size: 18px; margin: 0; }
+.rel-value { font-weight: 300; font-size: 20px; margin: 2px 0 0; }
+.rel-value a { color: #00a2ff !important; }
+.profile-actions { display: flex; gap: 8px; margin-left: auto; }
+.profile-action-btn, .profile-action-form .profile-action-btn {
+  display: inline-block;
+  text-align: center;
+  border: 1px solid #2d2f31;
+  border-radius: 2px;
+  background: #191b1d;
+  color: #fff !important;
+  font-size: 16px;
+  padding: 6px 14px;
+  min-width: 110px;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+.profile-action-btn:hover { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+.profile-tabs-card {
+  display: flex;
+  margin: 16px 0;
+}
+.profile-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 18px;
+  color: #fff !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+.profile-tab:hover, .profile-tab.active {
+  box-shadow: 0 -4px 0 0 #00a2ff inset;
+}
+.ecs-subtitle { font-weight: 300; font-size: 26px; margin: 16px 0 8px; }
+.about-card .about-body { font-weight: 300; font-size: 16px; padding: 15px 20px; margin: 0; white-space: pre-wrap; }
+.prev-names { padding: 10px 20px 16px; color: #bdbebe; font-size: 14px; margin: 0; }
+.wearing-row { display: flex; flex-wrap: wrap; gap: 0; }
+.wearing-avatar { flex: 1 1 280px; min-width: 200px; background: #191b1d; display: flex; align-items: center; justify-content: center; }
+.wearing-items { flex: 1 1 280px; background: #2a4d66; min-height: 180px; padding: 12px; }
+.wearing-items .item-card { width: 72px; }
+.see-all { color: #00a2ff !important; font-size: 14px; }
+.stats-row { display: flex; flex-wrap: wrap; padding: 20px 8px; }
+.stat-cell { flex: 1; min-width: 100px; text-align: center; }
+.stat-label { color: #b8b8b8; font-size: 16px; margin: 0; }
+.stat-value { font-size: 18px; margin: 6px 0 0; }
+
 @media (max-width: 767px) {
   .ecs-hello-shot, .ecs-hello-shot .avatar-card-image { width: 72px; height: 72px; }
   .ecs-hello { gap: 10px; }
   .hello-message { font-size: 24px; }
   .inventory-cats, .groups-side, .develop-left { width: 100%; flex-basis: 100%; }
-  .profile-header-inner { flex-wrap: wrap; }
+  .profile-header-row { flex-wrap: wrap; }
+  .profile-actions { margin-left: 0; width: 100%; }
 }

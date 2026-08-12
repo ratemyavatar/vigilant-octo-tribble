@@ -555,20 +555,15 @@ def fill_profile(html: str, viewed: dict, friends: list, places: list, suffix: s
     html = html.replace("{{PROFILE_NAME}}", name)
     html = html.replace("{{PROFILE_ID}}", str(uid))
     html = html.replace("{{PROFILE_STATUS}}", status)
+    html = html.replace("{{PROFILE_STATUS_DISPLAY}}", ('"%s"' % status) if status else "")
     html = html.replace("{{PROFILE_BLURB}}", blurb)
     html = html.replace("{{PROFILE_JOINED}}", joined)
     html = html.replace("{{FRIEND_COUNT}}", str(len(friends)))
+    html = html.replace("{{FOLLOWER_COUNT}}", "0")
+    html = html.replace("{{FOLLOWING_COUNT}}", "0")
     html = html.replace("{{PLACE_VISITS}}", str(db.user_place_visits(uid)))
     html = html.replace("{{DISPLAY_NAME}}", esc(s.get("display_name") or name))
-    html = re.sub(
-        r'(<h2 class="profile-name"[^>]*>)(.*?)(</h2>)',
-        lambda m: m.group(1) + name + m.group(3),
-        html,
-        count=1,
-        flags=re.S,
-    )
     html = fill_friends(html, friends, suffix)
-    html = fill_games(html, places, suffix)
     return html
 
 
@@ -805,9 +800,33 @@ SITE_JS = r"""
   if (setBtn && setMenu) {
     setBtn.addEventListener('click', function (e) {
       e.preventDefault();
+      e.stopPropagation();
       var open = !setMenu.classList.contains('open');
       setMenu.classList.toggle('open', open);
       setBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  var gearBtn = document.getElementById('profile-gear');
+  var gearMenu = document.getElementById('profile-gear-menu');
+  if (gearBtn && gearMenu) {
+    gearBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var open = !gearMenu.classList.contains('open');
+      gearMenu.classList.toggle('open', open);
+      gearBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+  var statusLink = document.getElementById('update-status-link');
+  var statusForm = document.getElementById('profile-status-form');
+  var statusText = document.getElementById('profile-status-text');
+  if (statusLink && statusForm) {
+    statusLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      statusForm.hidden = false;
+      if (statusText) statusText.hidden = true;
+      if (gearMenu) gearMenu.classList.remove('open');
     });
   }
 
@@ -834,6 +853,7 @@ SITE_JS = r"""
     if (e.key === 'Escape') {
       closeNav();
       if (setMenu) setMenu.classList.remove('open');
+      if (gearMenu) gearMenu.classList.remove('open');
       if (loginBar) loginBar.classList.remove('open');
       closePlayModal();
     }
@@ -976,19 +996,45 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             wearing = db.list_wearing(viewed["id"])
             html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in wearing), count=1)
             html = replace_ul_inner(html, "group-list", "".join(group_card(g, True) for g in db.groups_for_user(viewed["id"])))
-            html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in db.list_favorites(viewed["id"])), count=1)
-            if user and viewed["id"] != user["id"]:
+            html = replace_ul_inner(html, "profile-fav-list", "".join(game_card(p, suffix) for p in db.list_favorites(viewed["id"])))
+            html = replace_ul_inner(html, "profile-create-list", "".join(game_card(p, suffix) for p in db.places_by_creator(viewed["id"])))
+            own = user and viewed["id"] == user["id"]
+            if own:
                 html = html.replace(
-                    "{{ADD_FRIEND}}",
-                    '<form method="post" action="/friends/add">'
-                    '<input type="hidden" name="userId" value="%s">'
-                    '<button type="submit" class="btn-secondary-md">Add Friend</button></form>'
+                    "{{PROFILE_GEAR}}",
+                    '<a href="#" id="update-status-link">Update Status</a>'
+                    '<a href="/inventory-loggedin.html">Inventory</a>',
+                )
+                html = html.replace("{{ADD_FRIEND}}", "")
+                html = html.replace("{{MESSAGE_BTN}}", "")
+            elif user:
+                html = html.replace(
+                    "{{PROFILE_GEAR}}",
+                    (
+                        '<a href="/inventory.html?id=%s">Inventory</a>'
+                        '<a href="/trades-loggedin.html">Trade</a>'
+                    )
                     % viewed["id"],
                 )
+                html = html.replace(
+                    "{{ADD_FRIEND}}",
+                    '<form method="post" action="/friends/add" class="profile-action-form">'
+                    '<input type="hidden" name="userId" value="%s">'
+                    '<button type="submit" class="profile-action-btn">Add Friend</button></form>'
+                    % viewed["id"],
+                )
+                html = html.replace(
+                    "{{MESSAGE_BTN}}",
+                    '<a class="profile-action-btn" href="/messages-loggedin.html#compose-pane">Message</a>',
+                )
             else:
+                html = html.replace("{{PROFILE_GEAR}}", "")
                 html = html.replace("{{ADD_FRIEND}}", "")
+                html = html.replace("{{MESSAGE_BTN}}", "")
         else:
             html = html.replace("{{ADD_FRIEND}}", "")
+            html = html.replace("{{MESSAGE_BTN}}", "")
+            html = html.replace("{{PROFILE_GEAR}}", "")
     if "search" in name:
         html = fill_search(
             html,

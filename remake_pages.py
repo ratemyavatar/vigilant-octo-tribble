@@ -287,53 +287,79 @@ CATALOG = """<div class="ecs-catalog">
 </div>""" % CAT_NAV
 
 PROFILE = """<div class="ecs-profile">
-<div class="section profile-header ecs-card">
-<div class="section-content profile-header-inner">
-<div class="profile-shot">
-<img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
+<div class="profile-header-card ecs-card">
+<div class="profile-header-row">
+<div class="profile-shot-wrap">
+<img class="avatar-card-image profile-headshot" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
 </div>
 <div class="profile-header-main">
-<h2 class="profile-name">{{PROFILE_NAME}}</h2>
-<p class="profile-status text-lead">{{PROFILE_STATUS}}</p>
-<div>{{ADD_FRIEND}}</div>
-<ul class="profile-stats-container">
-<li class="profile-stat"><p class="text-label">Friends</p><p class="text-lead">{{FRIEND_COUNT}}</p></li>
-<li class="profile-stat"><p class="text-label">Place Visits</p><p class="text-lead">{{PLACE_VISITS}}</p></li>
-<li class="profile-stat"><p class="text-label">Join Date</p><p class="text-lead">{{PROFILE_JOINED}}</p></li>
-</ul>
+<div class="profile-name-row">
+<h2 class="profile-name"><span class="profile-username">{{PROFILE_NAME}}</span></h2>
+<div class="profile-dots-wrap">
+<button type="button" class="profile-dots" id="profile-gear" aria-haspopup="true" aria-expanded="false">...</button>
+<div class="profile-gear-menu" id="profile-gear-menu">{{PROFILE_GEAR}}</div>
 </div>
-</div></div>
-<ul class="nav nav-tabs settings-tabs" role="tablist">
-<li class="rbx-tab active"><a class="rbx-tab-heading" href="#about-pane" data-tab="about-pane">About</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#creations-pane" data-tab="creations-pane">Creations</a></li>
-</ul>
+</div>
+<p class="profile-status-quote" id="profile-status-text">{{PROFILE_STATUS_DISPLAY}}</p>
+<form id="profile-status-form" class="profile-status-form" method="post" action="/settings/update" hidden>
+<input class="input-field" name="status" maxlength="255" value="{{PROFILE_STATUS}}" placeholder="What are you up to?">
+<button type="submit" class="profile-status-save">Update Status</button>
+</form>
+<div class="profile-rel-row">
+<div class="rel-stat"><p class="rel-label">Friends</p><p class="rel-value"><a href="/friends.html">{{FRIEND_COUNT}}</a></p></div>
+<div class="rel-stat"><p class="rel-label">Followers</p><p class="rel-value">{{FOLLOWER_COUNT}}</p></div>
+<div class="rel-stat"><p class="rel-label">Following</p><p class="rel-value">{{FOLLOWING_COUNT}}</p></div>
+<div class="profile-actions">{{MESSAGE_BTN}}{{ADD_FRIEND}}</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="profile-tabs-card ecs-card">
+<a class="profile-tab active" href="#about-pane" data-tab="about-pane">About</a>
+<a class="profile-tab" href="#creations-pane" data-tab="creations-pane">Creations</a>
+</div>
+
 <div id="about-pane" class="tab-pane settings-tab-pane active">
-<div class="section ecs-card">
-<div class="container-header"><h3>About</h3></div>
-<div class="section-content"><p class="list-content profile-blurb">{{PROFILE_BLURB}}</p></div>
+<h3 class="ecs-subtitle">About</h3>
+<div class="ecs-card about-card">
+<p class="about-body profile-blurb">{{PROFILE_BLURB}}</p>
+<div class="divider-top"></div>
+<p class="prev-names">Previous Usernames</p>
 </div>
-<div class="section ecs-card">
-<div class="container-header"><h3>Currently Wearing</h3></div>
-<div class="section-content"><ul class="hlist item-cards" id="profile-wearing"></ul></div>
+
+<h3 class="ecs-subtitle">Currently Wearing</h3>
+<div class="wearing-row">
+<div class="wearing-avatar ecs-card">
+<img class="cc-avatar-img" src="/thumbs/avatar.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
 </div>
-<div class="section home-friends ecs-card">
-<div class="container-header"><h3>Friends (0)</h3></div>
-<div class="section-content"><ul class="hlist friend-list"></ul></div>
-</div>
-<div class="section ecs-card">
-<div class="container-header"><h3>Groups</h3></div>
-<div class="section-content"><ul class="vlist group-list"></ul></div>
-</div>
-<div class="container-list">
-<div class="container-header"><h3 class="ecs-row-title">Favorites</h3></div>
-<ul class="hlist games game-cards" id="profile-favorites"></ul>
+<div class="wearing-items">
+<ul class="hlist item-cards" id="profile-wearing"></ul>
 </div>
 </div>
+
+<div class="section home-friends">
+<div class="container-header"><h3 class="ecs-subtitle">Friends (0)</h3><a href="friends.html" class="see-all">See All</a></div>
+<div class="ecs-card"><ul class="hlist friend-list"></ul></div>
+</div>
+
+<h3 class="ecs-subtitle">Groups</h3>
+<div class="ecs-card"><ul class="vlist group-list"></ul></div>
+
+<h3 class="ecs-subtitle">Favorites</h3>
+<ul class="hlist games game-cards profile-fav-list" id="profile-favorites"></ul>
+
+<h3 class="ecs-subtitle">Statistics</h3>
+<div class="ecs-card stats-row">
+<div class="stat-cell"><p class="stat-label">Join Date</p><p class="stat-value">{{PROFILE_JOINED}}</p></div>
+<div class="stat-cell"><p class="stat-label">Place Visits</p><p class="stat-value">{{PLACE_VISITS}}</p></div>
+<div class="stat-cell"><p class="stat-label">Forum Posts</p><p class="stat-value">0</p></div>
+</div>
+</div>
+
 <div id="creations-pane" class="tab-pane settings-tab-pane">
-<div class="container-list">
-<div class="container-header"><h3 class="ecs-row-title">Creations</h3></div>
-<ul class="hlist games game-cards"></ul>
-</div>
+<h3 class="ecs-subtitle">Games</h3>
+<ul class="hlist games game-cards profile-create-list" id="profile-creations"></ul>
 </div>
 </div>"""
 

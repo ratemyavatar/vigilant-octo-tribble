@@ -27,14 +27,13 @@
         </a>
       </li>
       <li id="navbar-setting" class="navbar-icon-item">
-        <a class="rbx-menu-item" id="nav-settings" href="/settings-loggedin.html" title="Settings" aria-haspopup="true" aria-expanded="false">
+        <button type="button" class="rbx-menu-item settings-gear-btn" id="nav-settings" title="Settings" aria-haspopup="true" aria-expanded="false">
           <span class="icon-nav-settings"></span>
-        </a>
-        <ul class="dropdown-menu" id="settings-popover" role="menu">
-          <li><a class="rbx-menu-item" href="/settings-loggedin.html">Settings</a></li>
-          <li><a class="rbx-menu-item" href="/help-loggedin.html">Help</a></li>
-          <li><a class="rbx-menu-item" href="/logout">Logout</a></li>
-        </ul>
+        </button>
+        <div class="dropdown-menu settings-dropdown" id="settings-popover" role="menu">
+          <a class="settings-drop-item" href="/settings-loggedin.html">Settings</a>
+          <a class="settings-drop-item" href="/logout">Log Out</a>
+        </div>
       </li>
     </ul>
   </div>
