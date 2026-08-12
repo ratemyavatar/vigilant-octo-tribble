@@ -470,70 +470,14 @@ ITEM = """<div class="ecs-item">
 </div>"""
 
 CREATE = """<div class="ecs-develop">
-<div id="DevelopTabs" class="tab-container develop-tabs">
-<a class="tab-item tab-item-selected" href="/create-loggedin.html">My Creations</a>
-<a class="tab-item" href="/create-loggedin.html">Group Creations</a>
-<a class="tab-item" href="/catalog-loggedin.html">Library</a>
+<div class="vtab-bar ecs-vtabs develop-vtabs">
+<a class="vtab {{TAB_MY}}" href="/create-loggedin.html?tab=my&amp;View={{VIEW}}">My Creations</a>
+<a class="vtab {{TAB_GROUP}}" href="/create-loggedin.html?tab=group&amp;View={{VIEW}}">Group Creations</a>
+<a class="vtab {{TAB_LIBRARY}}" href="/create-loggedin.html?tab=library">Library</a>
+<a class="vtab {{TAB_DEVEX}}" href="/create-loggedin.html?tab=devex">Developer Exchange</a>
 </div>
-<div class="develop-body build-page">
-<aside class="develop-left menu-area">
-<a class="tab-item tab-item-selected" href="/create.html">Places</a>
-<a class="tab-item" href="/create.html">Games</a>
-<a class="tab-item" href="/catalog.html">Models</a>
-<a class="tab-item" href="/catalog.html">Decals</a>
-<a class="tab-item" href="/catalog.html">Badges</a>
-<a class="tab-item" href="/catalog.html">Game Passes</a>
-<a class="tab-item" href="/catalog.html">Audio</a>
-<a class="tab-item" href="/catalog.html">Animations</a>
-<a class="tab-item" href="/catalog.html">Meshes</a>
-<a class="tab-item" href="/catalog.html">Shirts</a>
-<a class="tab-item" href="/catalog.html">T-Shirts</a>
-<a class="tab-item" href="/catalog.html">Pants</a>
-<div id="StudioWidget" class="dev-widget">
-<div class="widget-name"><h3><span class="brand-name">ROBLOX</span> Studio</h3></div>
-<div class="widget-body">
-<p class="list-content">Build places on this server with the Computer client.</p>
-<a class="studio-launch" href="/download.html">Get the client</a>
-</div>
-</div>
-<div id="CommunityWidget" class="dev-widget">
-<div class="widget-name"><h3>Creator Corner</h3></div>
-<div class="widget-body">
-<p class="list-content">Tips and notes for people making places here.</p>
-<a href="/help.html">Open Help</a>
-</div>
-</div>
-</aside>
-<div class="develop-right content-area">
-<a class="create-new-button btn-medium btn-primary" href="#placeForm">Create New Place</a>
-<div class="status-confirm AlertMessage">Place settings live on this tab. Games you publish show on Discover.</div>
-<div class="section-header creation-head">
-<h2 class="header-text">Places</h2>
-</div>
-<ul class="hlist games game-cards" id="my-places-list"></ul>
-<form id="placeForm" method="POST" action="/places/create">
-<input id="TemplateID" name="TemplateID" type="hidden" value="95206881">
-<h2 id="StudioGameTemplates">Starting layouts</h2>
-<div class="templates">%s</div>
-<label class="form-label" for="Name">Name:</label>
-<input class="text-box text-box-medium" id="Name" name="Name" type="text" value="">
-<label class="form-label" for="Description">Description:</label>
-<textarea class="text-box text-area-medium" id="Description" name="Description" rows="4"></textarea>
-<label class="form-label" for="Genre">Genre:</label>
-<select class="form-select" id="Genre" name="Genre">%s</select>
-<label class="form-label" for="MaxPlayersInput">Maximum Visitor Count:</label>
-<select class="form-select" id="MaxPlayersInput" name="NumberOfPlayersMax">%s</select>
-<div id="buttonRow">
-<a class="btn-medium btn-primary" id="finishButton">Create Place</a>
-</div>
-</form>
-</div>
-</div>
-</div>""" % (
-    TPL_HTML,
-    GENRES,
-    MAXP,
-)
+<div class="develop-body">{{DEV_BODY}}</div>
+</div>"""
 
 AVATAR = """<div class="character-customizer">
 <h1 class="cc-title">Character</h1>
@@ -948,6 +892,8 @@ def main():
     write("item-loggedin.html", page("Item", ITEM))
     write("create.html", page("Develop", CREATE))
     write("create-loggedin.html", page("Develop", CREATE))
+    write("develop.html", page("Develop", CREATE))
+    write("develop-loggedin.html", page("Develop", CREATE))
     write("avatar.html", page("Character", AVATAR))
     write("avatar-loggedin.html", page("Character", AVATAR))
     write("messages.html", page("Messages", MESSAGES))

@@ -208,6 +208,8 @@ def pick_page(name: str, user: dict | None) -> Path:
         name = name + ".html"
     if name in ("game-shindo.html", "game-shindo-loggedin.html"):
         name = "game-loggedin.html" if user else "game.html"
+    if name in ("develop.html", "develop-loggedin.html"):
+        name = "create-loggedin.html" if user else "create.html"
     landing = {"login.html", "index.html", "landing.html", "signup.html", "home.html"}
     if name in landing and not user:
         name = "signup.html"
@@ -418,7 +420,7 @@ class Handler(BaseHTTPRequestHandler):
                 form.get("TemplateID") or "",
                 form.get("NumberOfPlayersMax") or 10,
             )
-            self.redirect("/games-loggedin.html?id=%s" % pid)
+            self.redirect("/create-loggedin.html?tab=my&View=0")
             return False
 
         if low in ("/catalog/upload",) and method == "POST":
@@ -446,7 +448,11 @@ class Handler(BaseHTTPRequestHandler):
             accept = (self.headers.get("Accept") or "").lower()
             if "application/json" in accept:
                 return json_bytes({"id": aid})
-            self.redirect("/catalog-loggedin.html")
+            view = form.get("view") or form.get("View") or ""
+            if str(view).isdigit():
+                self.redirect("/create-loggedin.html?tab=my&View=%s" % view)
+            else:
+                self.redirect("/catalog-loggedin.html")
             return False
 
         if low in ("/friends/add", "/friends/add/") and method == "POST":

@@ -362,6 +362,22 @@ def create_place(creator_id, name, description, genre, template_id, max_players,
     return pid
 
 
+def assets_by_creator(user_id, asset_type=None):
+    con = connect()
+    if asset_type and asset_type not in ("", "All"):
+        rows = con.execute(
+            "SELECT * FROM assets WHERE creator_id=? AND IFNULL(asset_type,'Hat')=? ORDER BY id DESC",
+            (user_id, asset_type),
+        ).fetchall()
+    else:
+        rows = con.execute(
+            "SELECT * FROM assets WHERE creator_id=? ORDER BY id DESC",
+            (user_id,),
+        ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
 def list_assets():
     con = connect()
     rows = con.execute("SELECT * FROM assets ORDER BY id DESC").fetchall()

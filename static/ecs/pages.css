@@ -865,3 +865,90 @@
   font-weight: 300;
   margin-left: 4px;
 }
+
+/* ECS Develop pages */
+.develop-vtabs { margin-bottom: 12px; }
+.develop-creations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+.develop-creations .develop-left { width: 190px; flex: 0 0 190px; }
+.develop-creations .develop-right { flex: 1; min-width: 0; }
+.vertical-selector {
+  border-right: 1px solid #2d2f31;
+  margin-top: 8px;
+}
+.dev-side-link {
+  display: block;
+  width: 100%;
+  color: #fff !important;
+  padding: 5px 10px;
+  text-decoration: none !important;
+  font-size: 16px;
+}
+.dev-side-link:hover { background: #2d2f31; color: #fff !important; }
+.dev-side-link.selected {
+  background: #2d2f31;
+  font-weight: 600;
+  border-left: 1px solid #3c3e40;
+  border-top: 1px solid #3c3e40;
+  border-bottom: 1px solid #3c3e40;
+}
+.dev-group-pick { padding: 8px 10px 0; }
+.dev-asset-list { margin-top: 12px; }
+.dev-asset-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #2d2f31;
+}
+.dev-asset-thumb {
+  width: 70px;
+  flex: 0 0 70px;
+  background: #191b1d;
+}
+.dev-asset-thumb img { width: 70px; height: 70px; object-fit: cover; display: block; }
+.dev-asset-copy { flex: 1; min-width: 0; }
+.dev-asset-name { margin: 0 0 4px; }
+.dev-meta { margin: 0; font-size: 13px; color: #bdbebe; }
+.dev-dim { color: #8d8d8d; }
+.dev-upload { max-width: 420px; margin: 8px 0 16px; }
+.dev-upload .input-field { margin: 0 0 10px; }
+.dev-pane { padding: 8px 4px 16px; }
+.ecs-gear-dd { position: relative; flex: 0 0 44px; }
+.ecs-gear-btn {
+  width: 40px;
+  background: linear-gradient(0deg, #232527 0%, #3c3e40 100%);
+  border: 1px solid #555;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px 0 2px;
+  font-size: 12px;
+}
+.ecs-gear-btn:hover { background: linear-gradient(0deg, #2a3a55 0%, #3c3e40 100%); }
+.ecs-gear-caret { font-size: 9px; }
+.ecs-gear-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 24px;
+  width: 160px;
+  background: #232527;
+  border: 1px solid #555;
+  z-index: 40;
+}
+.ecs-gear-dd.open .ecs-gear-menu { display: block; }
+.ecs-gear-menu a {
+  display: block;
+  padding: 4px 8px;
+  color: #fff !important;
+  font-size: 12px;
+  text-decoration: none !important;
+}
+.ecs-gear-menu a:hover { background: #2d2f31; }
+@media (max-width: 767px) {
+  .develop-creations .develop-left { width: 100%; flex-basis: 100%; }
+}

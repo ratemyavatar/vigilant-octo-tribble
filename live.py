@@ -385,6 +385,265 @@ def comments_html(place_id: int, suffix: str) -> str:
     return "".join(bits)
 
 
+
+DEV_VIEWS = [
+    (0, "Games", None, "games"),
+    (9, "Places", None, "places"),
+    (10, "Models", "Model", "models"),
+    (13, "Decals", "Decal", "decals"),
+    (1, "Images", "Image", "images"),
+    (21, "Badges", "Badge", "badges"),
+    (100, "Passes", "Pass", "passes"),
+    (3, "Audio", "Audio", "audio"),
+    (24, "Animations", "Animation", "animations"),
+    (40, "Meshes", "Mesh", "meshes"),
+    (101, "User Ads", "Ad", "ads"),
+    (103, "Sponsored Games", None, "sponsored"),
+    (11, "Shirts", "Shirt", "shirts"),
+    (2, "T-Shirts", "T-Shirt", "tshirts"),
+    (12, "Pants", "Pants", "pants"),
+    (38, "Plugins", "Plugin", "plugins"),
+]
+
+DEV_UPLOAD = {1: "Image", 2: "T-Shirt", 3: "Audio", 11: "Shirt", 12: "Pants"}
+
+_DEV_TEMPLATES = [
+    ("95206881", "Baseplate"),
+    ("6560363541", "Classic Baseplate"),
+    ("95206192", "Flat Terrain"),
+    ("203812057", "Obby"),
+    ("215383192", "Racing"),
+    ("203885589", "Combat"),
+    ("379736082", "Starting Place"),
+    ("203783329", "City"),
+]
+_DEV_GENRES = [
+    "All", "Adventure", "Building", "Comedy", "Fighting", "FPS", "Horror",
+    "Medieval", "Military", "Naval", "RPG", "Sci-Fi", "Sports", "Town and City", "Western",
+]
+
+
+def _place_create_form() -> str:
+    tpls = "".join(
+        '<div class="template" placeid="%s"><img src="/static/placeholder.png" alt="%s"><p>%s</p></div>'
+        % (i, n, n)
+        for i, n in _DEV_TEMPLATES
+    )
+    genres = "".join("<option>%s</option>" % g for g in _DEV_GENRES)
+    maxp = "".join(
+        '<option%s>%s</option>' % (" selected" if n == 10 else "", n) for n in range(1, 51)
+    )
+    return (
+        '<form id="placeForm" method="POST" action="/places/create">'
+        '<input id="TemplateID" name="TemplateID" type="hidden" value="95206881">'
+        '<h2 id="StudioGameTemplates">Starting layouts</h2>'
+        '<div class="templates">%s</div>'
+        '<label class="form-label" for="Name">Name:</label>'
+        '<input class="text-box text-box-medium" id="Name" name="Name" type="text" value="">'
+        '<label class="form-label" for="Description">Description:</label>'
+        '<textarea class="text-box text-area-medium" id="Description" name="Description" rows="4"></textarea>'
+        '<label class="form-label" for="Genre">Genre:</label>'
+        '<select class="form-select" id="Genre" name="Genre">%s</select>'
+        '<label class="form-label" for="MaxPlayersInput">Maximum Visitor Count:</label>'
+        '<select class="form-select" id="MaxPlayersInput" name="NumberOfPlayersMax">%s</select>'
+        '<div id="buttonRow"><a class="btn-medium btn-primary" id="finishButton">Create Place</a></div>'
+        "</form>"
+    ) % (tpls, genres, maxp)
+
+
+def _dev_asset_row(kind: str, item: dict, suffix: str) -> str:
+    iid = item["id"]
+    name = esc(item.get("name") or "Untitled")
+    if kind == "place":
+        href = "/game%s?id=%s" % (suffix, iid)
+        thumb = "/thumbs/place.ashx?id=%s" % iid
+        extra = (
+            '<p class="dev-meta"><span class="dev-dim">Start Place: </span>'
+            '<a href="%s">%s</a></p><p class="dev-meta"><a href="%s">Public</a></p>'
+            % (href, name, href)
+        )
+        gear = (
+            '<a href="/game%s?id=%s">Configure Game</a>'
+            '<a href="/create%s?tab=my&amp;View=9">Configure Start Place</a>'
+            '<a href="/create%s?tab=my&amp;View=21">Create Badge</a>'
+            '<a href="/create%s?tab=my&amp;View=100">Create Pass</a>'
+            % (suffix, iid, suffix, suffix, suffix)
+        )
+    else:
+        href = "/item-loggedin.html?id=%s" % iid
+        thumb = "/thumbs/asset.ashx?id=%s" % iid
+        created = datetime.utcfromtimestamp(int(item.get("created_at") or time.time())).strftime("%m/%d/%Y")
+        extra = '<p class="dev-meta"><span class="dev-dim">Created: </span>%s</p>' % created
+        gear = (
+            '<a href="/item-loggedin.html?id=%s">Configure</a>'
+            '<a href="/create%s?tab=my&amp;View=101">Advertise</a>' % (iid, suffix)
+        )
+    return (
+        '<div class="dev-asset-row">'
+        '<a class="dev-asset-thumb" href="%s"><img src="%s" alt="%s"></a>'
+        '<div class="dev-asset-copy"><p class="dev-asset-name"><a href="%s">%s</a></p>%s</div>'
+        '<div class="ecs-gear-dd">'
+        '<button type="button" class="ecs-gear-btn" aria-haspopup="true">&#9881; <span class="ecs-gear-caret">&#9660;</span></button>'
+        '<div class="ecs-gear-menu">%s</div></div></div>'
+    ) % (href, thumb, name, href, name, extra, gear)
+
+
+def _dev_upload_form(view_id: int, asset_type: str, title: str) -> str:
+    return (
+        '<form method="post" action="/catalog/upload" class="dev-upload">'
+        '<input type="hidden" name="asset_type" value="%s">'
+        '<input type="hidden" name="view" value="%s">'
+        '<p class="list-content">Name your %s. It shows in Catalog after you upload.</p>'
+        '<label class="form-label">%s Name</label>'
+        '<input class="input-field" name="name" type="text" maxlength="50">'
+        '<button type="submit" class="btn-play-green">Upload</button></form>'
+        % (esc(asset_type), view_id, esc(title), esc(title))
+    )
+
+
+def fill_develop(html: str, user: dict | None, qs: dict, suffix: str) -> str:
+    tab = (qs.get("tab") or "my").lower()
+    if tab not in ("my", "group", "library", "devex"):
+        tab = "my"
+    try:
+        view = int(qs.get("View") or qs.get("view") or 0)
+    except Exception:
+        view = 0
+    if view not in {v[0] for v in DEV_VIEWS}:
+        view = 0
+    view_meta = next(v for v in DEV_VIEWS if v[0] == view)
+    html = html.replace("{{VIEW}}", str(view))
+    for key, token in (("my", "MY"), ("group", "GROUP"), ("library", "LIBRARY"), ("devex", "DEVEX")):
+        html = html.replace("{{TAB_%s}}" % token, "active" if tab == key else "")
+    href_base = "/create%s" % suffix
+
+    if tab == "devex":
+        body = '<div class="dev-pane"><p class="mt-2">This feature is not available right now.</p></div>'
+        return html.replace("{{DEV_BODY}}", body)
+
+    if tab == "library":
+        keyword = qs.get("keyword") or ""
+        assets = db.list_assets_filtered(keyword=keyword) if keyword else db.list_assets()
+        rows = "".join(_dev_asset_row("asset", a, suffix) for a in assets[:40])
+        if not rows:
+            rows = '<p class="list-content">No items in the library yet.</p>'
+        body = (
+            '<div class="dev-pane">'
+            "<h2>Library</h2>"
+            '<p class="list-content">Models, decals, audio, and clothing made on this server.</p>'
+            '<form class="games-filter-bar" method="get" action="%s">'
+            '<input type="hidden" name="tab" value="library">'
+            '<input class="input-field" name="keyword" placeholder="Search library" value="%s">'
+            '<button type="submit" class="btn-primary-md">Search</button></form>'
+            '<div class="dev-asset-list">%s</div></div>'
+            % (href_base, esc(keyword), rows)
+        )
+        return html.replace("{{DEV_BODY}}", body)
+
+    # My / Group creations
+    gid = 0
+    try:
+        gid = int(qs.get("groupId") or 0)
+    except Exception:
+        gid = 0
+    groups = db.groups_for_user(user["id"]) if user else []
+    if tab == "group" and not gid and groups:
+        gid = groups[0]["id"]
+    group_sel = ""
+    if tab == "group":
+        opts = "".join(
+            '<option value="%s"%s>%s</option>'
+            % (g["id"], " selected" if g["id"] == gid else "", esc(g.get("name") or "Group"))
+            for g in groups
+        )
+        group_sel = (
+            '<div class="dev-group-pick"><p class="mb-0 mt-2">Select Group:</p>'
+            '<form method="get" action="%s"><input type="hidden" name="tab" value="group">'
+            '<input type="hidden" name="View" value="%s">'
+            '<select class="input-field w-100" name="groupId" onchange="this.form.submit()">%s</select>'
+            "</form></div>" % (href_base, view, opts or '<option>No groups</option>')
+        )
+
+    side = []
+    for vid, name, _atype, _slug in DEV_VIEWS:
+        cls = "dev-side-link selected" if vid == view else "dev-side-link"
+        side.append(
+            '<a class="%s" href="%s?tab=%s&amp;View=%s">%s</a>'
+            % (cls, href_base, tab, vid, name)
+        )
+    side_html = (
+        '<aside class="develop-left menu-area">'
+        + group_sel
+        + '<nav class="vertical-selector">'
+        + "".join(side)
+        + "</nav>"
+        + '<div id="StudioWidget" class="dev-widget"><div class="widget-name">'
+        '<h3><span class="brand-name">ROBLOX</span> Studio</h3></div>'
+        '<div class="widget-body"><p class="list-content">Build places on this server with the Computer client.</p>'
+        '<a class="studio-launch" href="/download.html">Get the client</a></div></div>'
+        '<div id="CommunityWidget" class="dev-widget"><div class="widget-name"><h3>Creator Corner</h3></div>'
+        '<div class="widget-body"><p class="list-content">Tips and notes for people making places here.</p>'
+        '<a href="/help.html">Open Help</a></div></div></aside>'
+    )
+
+    title = view_meta[1]
+    atype = view_meta[2]
+    main = ['<div class="develop-right content-area">']
+    if view in (0, 9):
+        btn = "Create New Game" if view == 0 else "Create New Place"
+        main.append('<a class="create-new-button btn-play-green" href="#placeForm">%s</a>' % btn)
+        main.append("<h2>%s</h2>" % title)
+        if tab == "group":
+            places = []
+            if gid:
+                # group-owned places are not stored separately; show empty
+                places = []
+            if not places:
+                main.append('<p class="mt-4">This group hasn\'t created any games.</p>')
+        else:
+            places = db.places_by_creator(user["id"]) if user else []
+            if places:
+                main.append(
+                    '<div class="dev-asset-list">%s</div>'
+                    % "".join(_dev_asset_row("place", p, suffix) for p in places)
+                )
+            else:
+                main.append('<p class="mt-4">You haven\'t created any games.</p>')
+        if tab != "group":
+            main.append(_place_create_form())
+    elif view in DEV_UPLOAD:
+        utype = DEV_UPLOAD[view]
+        main.append("<h2>Create %s</h2>" % utype)
+        if tab == "group":
+            main.append('<p class="list-content">Group uploads are not open on this tab yet.</p>')
+        else:
+            main.append(_dev_upload_form(view, utype, utype))
+            owned = db.assets_by_creator(user["id"], utype) if user else []
+            if owned:
+                main.append(
+                    '<div class="dev-asset-list">%s</div>'
+                    % "".join(_dev_asset_row("asset", a, suffix) for a in owned)
+                )
+            else:
+                main.append('<p class="mt-4">You haven\'t created any %s.</p>' % (title.lower()))
+    else:
+        main.append("<h2>%s</h2>" % title)
+        if atype and user and tab != "group":
+            owned = db.assets_by_creator(user["id"], atype)
+            if owned:
+                main.append(
+                    '<div class="dev-asset-list">%s</div>'
+                    % "".join(_dev_asset_row("asset", a, suffix) for a in owned)
+                )
+            else:
+                main.append('<p class="mt-4">You haven\'t created any %s.</p>' % title.lower())
+        else:
+            main.append('<p class="mt-2">This feature is not available right now.</p>')
+    main.append("</div>")
+    body = '<div class="develop-creations">%s%s</div>' % (side_html, "".join(main))
+    return html.replace("{{DEV_BODY}}", body)
+
+
 def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     name = esc(place.get("name") or "Untitled")
     raw_desc = (place.get("description") or "").strip()
@@ -911,14 +1170,10 @@ SITE_JS = r"""
   function placeSettingsMenu() {
     if (!setBtn || !setMenu) return;
     var r = setBtn.getBoundingClientRect();
-    var w = setMenu.offsetWidth || 180;
-    var left = r.right - w;
-    if (left < 8) left = 8;
-    if (left + w > window.innerWidth - 8) left = Math.max(8, window.innerWidth - w - 8);
     setMenu.style.position = 'fixed';
     setMenu.style.top = Math.round(r.bottom) + 'px';
-    setMenu.style.left = Math.round(left) + 'px';
-    setMenu.style.right = 'auto';
+    setMenu.style.right = '10px';
+    setMenu.style.left = 'auto';
     setMenu.style.zIndex = '10050';
   }
   if (setBtn && setMenu) {
@@ -936,6 +1191,27 @@ SITE_JS = r"""
       if (setMenu.classList.contains('open')) placeSettingsMenu();
     });
   }
+
+  var gearDrops = document.querySelectorAll('.ecs-gear-dd');
+  function closeGearDrops(except) {
+    for (var g = 0; g < gearDrops.length; g++) {
+      if (gearDrops[g] !== except) gearDrops[g].classList.remove('open');
+    }
+  }
+  for (var gd = 0; gd < gearDrops.length; gd++) {
+    (function (box) {
+      var btn = box.querySelector('.ecs-gear-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var open = !box.classList.contains('open');
+        closeGearDrops(box);
+        box.classList.toggle('open', open);
+      });
+    })(gearDrops[gd]);
+  }
+  document.addEventListener('click', function () { closeGearDrops(); });
 
   var aeDrops = document.querySelectorAll('.ae-dd');
   function closeAeDrops(except) {
@@ -1030,6 +1306,7 @@ SITE_JS = r"""
       if (gearMenu) gearMenu.classList.remove('open');
       if (loginBar) loginBar.classList.remove('open');
       closeAeDrops();
+      closeGearDrops();
       closePlayModal();
     }
   });
@@ -1250,12 +1527,8 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         cats = db.list_assets_filtered(keyword=keyword) if keyword else []
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, buy=True) for a in cats))
         html = replace_ul_inner(html, "group-list", "".join(group_card(g) for g in (db.search_groups(keyword) if keyword else [])))
-    if "create" in name:
-        html = html.replace('action="create.html"', 'action="/places/create"')
-        html = html.replace('action="create-loggedin.html"', 'action="/places/create"')
-        html = html.replace('action="https://www.roblox.com/places/create"', 'action="/places/create"')
-        mine = db.places_by_creator(user["id"]) if user else []
-        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in mine), count=1)
+    if "create" in name or "develop" in name:
+        html = fill_develop(html, user, qs, suffix)
     if "signup" in name or "login" in name or "landing" in name or "index" in name:
         if 'name="gender"' not in html:
             html = html.replace(
@@ -1413,6 +1686,12 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
     if "robux" in name and user:
         html = html.replace("{{ROBUX}}", str(user.get("robux") or 0))
     html = html.replace("{{VERIFIED_BADGE}}", "")
+    html = html.replace("{{DEV_BODY}}", "")
+    html = html.replace("{{VIEW}}", "0")
+    html = html.replace("{{TAB_MY}}", "")
+    html = html.replace("{{TAB_GROUP}}", "")
+    html = html.replace("{{TAB_LIBRARY}}", "")
+    html = html.replace("{{TAB_DEVEX}}", "")
     html = html.replace("{{GROUP_LETTER}}", "G")
     if "</body>" in html:
         html = html.replace("</body>", SITE_JS + "\n</body>", 1)

@@ -21,65 +21,13 @@
 <div class="container-main" id="container-main">
 <div class="content">
 <div class="ecs-develop">
-<div id="DevelopTabs" class="tab-container develop-tabs">
-<a class="tab-item tab-item-selected" href="/create-loggedin.html">My Creations</a>
-<a class="tab-item" href="/create-loggedin.html">Group Creations</a>
-<a class="tab-item" href="/catalog-loggedin.html">Library</a>
+<div class="vtab-bar ecs-vtabs develop-vtabs">
+<a class="vtab {{TAB_MY}}" href="/create-loggedin.html?tab=my&amp;View={{VIEW}}">My Creations</a>
+<a class="vtab {{TAB_GROUP}}" href="/create-loggedin.html?tab=group&amp;View={{VIEW}}">Group Creations</a>
+<a class="vtab {{TAB_LIBRARY}}" href="/create-loggedin.html?tab=library">Library</a>
+<a class="vtab {{TAB_DEVEX}}" href="/create-loggedin.html?tab=devex">Developer Exchange</a>
 </div>
-<div class="develop-body build-page">
-<aside class="develop-left menu-area">
-<a class="tab-item tab-item-selected" href="/create.html">Places</a>
-<a class="tab-item" href="/create.html">Games</a>
-<a class="tab-item" href="/catalog.html">Models</a>
-<a class="tab-item" href="/catalog.html">Decals</a>
-<a class="tab-item" href="/catalog.html">Badges</a>
-<a class="tab-item" href="/catalog.html">Game Passes</a>
-<a class="tab-item" href="/catalog.html">Audio</a>
-<a class="tab-item" href="/catalog.html">Animations</a>
-<a class="tab-item" href="/catalog.html">Meshes</a>
-<a class="tab-item" href="/catalog.html">Shirts</a>
-<a class="tab-item" href="/catalog.html">T-Shirts</a>
-<a class="tab-item" href="/catalog.html">Pants</a>
-<div id="StudioWidget" class="dev-widget">
-<div class="widget-name"><h3><span class="brand-name">ROBLOX</span> Studio</h3></div>
-<div class="widget-body">
-<p class="list-content">Build places on this server with the Computer client.</p>
-<a class="studio-launch" href="/download.html">Get the client</a>
-</div>
-</div>
-<div id="CommunityWidget" class="dev-widget">
-<div class="widget-name"><h3>Creator Corner</h3></div>
-<div class="widget-body">
-<p class="list-content">Tips and notes for people making places here.</p>
-<a href="/help.html">Open Help</a>
-</div>
-</div>
-</aside>
-<div class="develop-right content-area">
-<a class="create-new-button btn-medium btn-primary" href="#placeForm">Create New Place</a>
-<div class="status-confirm AlertMessage">Place settings live on this tab. Games you publish show on Discover.</div>
-<div class="section-header creation-head">
-<h2 class="header-text">Places</h2>
-</div>
-<ul class="hlist games game-cards" id="my-places-list"></ul>
-<form id="placeForm" method="POST" action="/places/create">
-<input id="TemplateID" name="TemplateID" type="hidden" value="95206881">
-<h2 id="StudioGameTemplates">Starting layouts</h2>
-<div class="templates"><div class="template" placeid="95206881"><img src="/static/placeholder.png" alt="Baseplate"><p>Baseplate</p></div><div class="template" placeid="6560363541"><img src="/static/placeholder.png" alt="Classic Baseplate"><p>Classic Baseplate</p></div><div class="template" placeid="95206192"><img src="/static/placeholder.png" alt="Flat Terrain"><p>Flat Terrain</p></div><div class="template" placeid="203812057"><img src="/static/placeholder.png" alt="Obby"><p>Obby</p></div><div class="template" placeid="215383192"><img src="/static/placeholder.png" alt="Racing"><p>Racing</p></div><div class="template" placeid="203885589"><img src="/static/placeholder.png" alt="Combat"><p>Combat</p></div><div class="template" placeid="379736082"><img src="/static/placeholder.png" alt="Starting Place"><p>Starting Place</p></div><div class="template" placeid="203783329"><img src="/static/placeholder.png" alt="City"><p>City</p></div></div>
-<label class="form-label" for="Name">Name:</label>
-<input class="text-box text-box-medium" id="Name" name="Name" type="text" value="">
-<label class="form-label" for="Description">Description:</label>
-<textarea class="text-box text-area-medium" id="Description" name="Description" rows="4"></textarea>
-<label class="form-label" for="Genre">Genre:</label>
-<select class="form-select" id="Genre" name="Genre"><option>All</option><option>Adventure</option><option>Building</option><option>Comedy</option><option>Fighting</option><option>FPS</option><option>Horror</option><option>Medieval</option><option>Military</option><option>Naval</option><option>RPG</option><option>Sci-Fi</option><option>Sports</option><option>Town and City</option><option>Western</option></select>
-<label class="form-label" for="MaxPlayersInput">Maximum Visitor Count:</label>
-<select class="form-select" id="MaxPlayersInput" name="NumberOfPlayersMax"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option><option>46</option><option>47</option><option>48</option><option>49</option><option>50</option></select>
-<div id="buttonRow">
-<a class="btn-medium btn-primary" id="finishButton">Create Place</a>
-</div>
-</form>
-</div>
-</div>
+<div class="develop-body">{{DEV_BODY}}</div>
 </div>
 </div>
 </div>
