@@ -1,9 +1,12 @@
 @import url("/static/ecs/nav-icons.css");
-/* Official Roblox dark-theme colors. Flat. No gradients. No neon. */
+@import url("/static/ecs/pages.css");
+/* Official Roblox dark colors + a light-to-dark wash like roblox.com dark. */
 html, body {
   margin: 0;
   padding: 0;
-  background: #191b1d;
+  background-color: #191b1d;
+  background-image: linear-gradient(180deg, #2c2e31 0%, #232527 22%, #191b1d 62%, #141516 100%);
+  background-attachment: fixed;
   color: #fff;
   font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -14,10 +17,14 @@ a:hover { text-decoration: underline; }
 img { max-width: 100%; border: 0; vertical-align: middle; }
 * { box-sizing: border-box; }
 
-#wrap { min-height: 100vh; background: #191b1d; padding-top: 40px; }
-.rbx-body, .dark-theme { background: #191b1d; color: #fff; }
+#wrap {
+  min-height: 100vh;
+  background: transparent;
+  padding-top: 40px;
+}
+.rbx-body, .dark-theme { background: transparent; color: #fff; }
 
-/* ---- header: one compact row, like current roblox.com ---- */
+/* ---- header: compact row, light-to-dark like Roblox dark ---- */
 #header.rbx-header, .rbx-header {
   position: fixed;
   top: 0;
@@ -25,7 +32,7 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
   right: 0;
   z-index: 1030;
   height: 40px;
-  background: #232527;
+  background: linear-gradient(180deg, #323537 0%, #232527 72%, #1c1e20 100%);
   border-bottom: 1px solid #111;
   padding: 0;
 }
@@ -63,8 +70,9 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
   padding: 0 8px 0 2px;
   height: 40px;
 }
-.navbar-brand .brand-text, .navbar-brand .icon-logo { color: #fff; }
-.navbar-brand .icon-logo-r { display: none; color: #fff; }
+.navbar-brand .brand-text { color: #fff; }
+.navbar-brand .icon-logo { margin: 0; }
+.navbar-brand .icon-logo-r { color: #fff; }
 .nav.rbx-navbar {
   list-style: none;
   margin: 0;
@@ -219,7 +227,7 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
   left: 0;
   bottom: 0;
   width: 175px;
-  background: #191b1d;
+  background: linear-gradient(180deg, #232527 0%, #191b1d 100%);
   border-right: 1px solid #111;
   overflow-y: auto;
   z-index: 1020;
@@ -547,8 +555,8 @@ h3 { font-size: 18px; }
 @media (max-width: 767px) {
   .hidden-xs, .hidden-sm { display: none !important; }
   .navbar-brand { font-size: 16px; padding: 0 6px 0 0; }
-  .navbar-brand .icon-logo { display: none; }
-  .navbar-brand .icon-logo-r { display: inline; letter-spacing: 0; font-size: 20px; }
+  .navbar-brand .icon-logo { display: none !important; }
+  .navbar-brand .icon-logo-r { display: block !important; }
   .rbx-navbar-search { max-width: none; margin: 0 4px; flex: 1 1 auto; }
   .rbx-menu-item { padding: 0 6px; }
   .robux-amount { font-size: 13px; }

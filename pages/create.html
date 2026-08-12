@@ -3,26 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Create Experience - ROBLOX</title>
-<link rel="icon" href="https://images.rbxcdn.com/3b43a5c16ec359053fef735551716fc5.ico">
+<title>Develop - ROBLOX</title>
+<link rel="icon" href="/static/ecs/logo_R.svg">
 <link rel="stylesheet" href="/static/site.css">
 
 </head>
-<body id="rbx-body" class="rbx-body dark-theme">
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
     <div class="rbx-navbar-header">
       <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
-      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
     </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
+<div class="ecs-develop">
+<div class="vtab-bar">
+<a class="vtab active" href="/create-loggedin.html">My Creations</a>
+<a class="vtab" href="/create-loggedin.html">Group Creations</a>
+</div>
+<div class="develop-body">
+<aside class="develop-left">
+<p class="browse-by">Creations</p>
+<ul class="menu-vertical">
+<li class="menu-option"><a href="/create.html">Games</a></li>
+<li class="menu-option"><a href="/create.html">Places</a></li>
+<li class="menu-option"><a href="/catalog.html">Shirts</a></li>
+<li class="menu-option"><a href="/catalog.html">T-Shirts</a></li>
+<li class="menu-option"><a href="/catalog.html">Pants</a></li>
+<li class="menu-option"><a href="/catalog.html">Decals</a></li>
+<li class="menu-option"><a href="/catalog.html">Models</a></li>
+</ul>
+</aside>
+<div class="develop-right">
 <h1>Create</h1>
 <div class="section">
-<div class="container-header"><h3>My Experiences</h3></div>
+<div class="container-header"><h3 class="ecs-row-title">My Games</h3></div>
 <ul class="hlist games game-cards" id="my-places-list"></ul>
 </div>
 <form id="placeForm" method="POST" action="/places/create">
@@ -43,19 +62,21 @@
 </form>
 </div>
 </div>
+</div>
+</div>
+</div>
 <footer class="container-footer" id="footer-container">
-<div class="footer">
-<ul class="footer-links">
-<li class="footer-link"><a class="text-footer-nav" href="about.html">About Us</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="jobs.html">Jobs</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="blog.html">Blog</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="parents.html">Parents</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="help.html">Help</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="terms.html">Terms</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="privacy.html">Privacy</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="credits.html">Credits</a></li>
-</ul>
-<p class="text-footer footer-note">ROBLOX and the ROBLOX logo are trademarks of their respective owners. This is a private revival.</p>
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="about.html">About Us</a>
+<a class="text-footer-nav" href="jobs.html">Jobs</a>
+<a class="text-footer-nav" href="blog.html">Blog</a>
+<a class="text-footer-nav" href="privacy.html">Privacy</a>
+<a class="text-footer-nav" href="help.html">Help</a>
+<a class="text-footer-nav" href="terms.html">Terms</a>
+<a class="text-footer-nav" href="credits.html">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="terms.html">Terms and Conditions</a>.</p>
 </div></footer>
 </div>
 </body>

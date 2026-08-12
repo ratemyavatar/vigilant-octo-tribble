@@ -592,7 +592,11 @@ class Handler(BaseHTTPRequestHandler):
             form = self.parse_form()
             aid = form.get("id") or form.get("assetId") or q.get("id") or 0
             ok, reason = db.buy_asset(user["id"], aid)
-            return json_bytes({"ok": ok, "reason": reason}, 200 if ok else 400)
+            accept = (self.headers.get("Accept") or "").lower()
+            if "application/json" in accept:
+                return json_bytes({"ok": ok, "reason": reason}, 200 if ok else 400)
+            self.redirect("/catalog-loggedin.html")
+            return False
 
         if low in ("/friends/accept", "/friends/accept/") and method == "POST":
             if not user:
@@ -665,7 +669,7 @@ class Handler(BaseHTTPRequestHandler):
                     updates[allowed[part]] = color
             if updates:
                 db.save_user_settings(user["id"], updates)
-            self.redirect("/avatar-loggedin.html?tab=body")
+            self.redirect("/avatar-loggedin.html")
             return False
 
         if low in ("/avatar/type", "/avatar/type/") and method == "POST":

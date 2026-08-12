@@ -1,0 +1,204 @@
+/* Economy Simulator 2016 page chrome. Dark colors, light wash only. */
+#navigation .nav-divider {
+  height: 2px;
+  background: #2d2f31;
+  margin: 4px 10px 6px;
+  list-style: none;
+}
+#navigation .upgrade-now {
+  display: block;
+  margin: 10px 10px 16px;
+  background: #01a2fd;
+  color: #fff !important;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 4px;
+  text-decoration: none !important;
+}
+#navigation .upgrade-now:hover { background: #3ab8ff; }
+
+.ecs-card, .section-content.ecs-card {
+  background: #232527;
+}
+.ecs-page-title { font-size: 32px; font-weight: 700; margin: 0 0 12px; }
+.ecs-row-title {
+  font-weight: 300;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin: 10px 0;
+}
+.ecs-subhead { font-weight: 300; font-size: 22px; }
+.hello-message { font-weight: 600; font-size: 36px; margin: 0 0 8px; }
+.ecs-hello {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.ecs-hello-shot {
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
+  overflow: hidden;
+  border: 1px solid #2d2f31;
+  background: #232527;
+  flex: 0 0 120px;
+}
+.ecs-hello-shot .avatar-card-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+.signup-kicker { text-align: center; font-size: 12px; color: #bdbebe; margin: 8px 0 4px; }
+.ecs-login .login-header { text-align: center; font-size: 28px; }
+
+.cc-avatar-img {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin: 0 auto;
+  background: #191b1d;
+}
+.cc-thumb {
+  background: #191b1d;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.game-card, .list-item.game-card { width: 160px; }
+.game-card-container.sgc, .sgc {
+  background: #2d2f31;
+  padding-bottom: 8px;
+}
+.sgc-name, .game-card-name { font-weight: 300; font-size: 16px; }
+.sgc-playing, .game-card-info { font-size: 12px; color: #bdbebe; }
+.sgc-vote, .ecs-vote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 8px;
+}
+.vote-bar {
+  flex: 1;
+  height: 5px;
+  background: #3c3e40;
+  display: inline-block;
+}
+.vote-fill { display: block; width: 70%; height: 5px; background: #757575; }
+.btn-play-green {
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
+  background: #02b757 !important;
+  padding: 8px 18px;
+}
+.btn-play-green:hover { background: #3fc679 !important; }
+
+.ecs-game-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.ecs-game .game-left { flex: 1 1 58%; min-width: 240px; }
+.ecs-game .game-right { flex: 1 1 280px; }
+.profile-header-inner {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.profile-shot {
+  width: 110px;
+  border: 1px solid #2d2f31;
+  background: #191b1d;
+  flex: 0 0 110px;
+}
+.profile-shot .avatar-card-image { width: 110px; height: 110px; object-fit: cover; }
+.profile-name { font-size: 30px; font-weight: 400; }
+
+.ecs-catalog { padding: 8px 10px 16px; }
+.ecs-catalog-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ecs-catalog-top .ecs-page-title { flex: 0 0 auto; margin: 0; }
+.catalog-search { flex: 1; min-width: 220px; }
+.browse-by { font-size: 12px; font-weight: 600; color: #bdbebe; margin: 0 0 2px; padding-left: 4px; }
+.browse-cat { font-size: 20px; font-weight: 700; margin: 0 0 8px; padding-left: 4px; }
+.catalog-legend { margin-top: 16px; font-size: 13px; color: #bdbebe; }
+.legend-entry { margin: 10px 0; }
+.legend-title { font-weight: 600; color: #fff; margin: 4px 0 0; }
+.legend-desc { margin: 0; line-height: 1.3; }
+.catalog-results-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.catalog-showing { font-size: 14px; font-weight: 700; margin: 0; }
+.sort-by-label { font-weight: 600; margin-right: 4px; }
+.btn-legacy {
+  background: #2d2f31;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.btn-legacy:hover { background: #3c3e40; }
+
+.inventory-layout, .groups-layout, .develop-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+.inventory-cats, .groups-side, .develop-left {
+  width: 180px;
+  flex: 0 0 180px;
+}
+.inventory-main, .groups-main, .develop-right { flex: 1; min-width: 0; }
+.category-title { font-weight: 300; font-size: 22px; }
+.catalog-cats a {
+  display: block;
+  padding: 8px 12px;
+  font-weight: 300;
+  font-size: 18px;
+}
+.catalog-cats a:hover {
+  color: #00a2ff !important;
+  box-shadow: 4px 0 0 0 #00a2ff inset;
+}
+
+.ecs-footer .footer-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 10px;
+}
+.ecs-footer .text-footer-nav {
+  font-size: 18px;
+  font-weight: 300;
+  color: #b8b8b8 !important;
+}
+
+.gender-button .icon-male, .gender-button .icon-female { flex: 0 0 28px; }
+
+@media (max-width: 767px) {
+  .ecs-hello-shot, .ecs-hello-shot .avatar-card-image { width: 72px; height: 72px; }
+  .ecs-hello { gap: 10px; }
+  .hello-message { font-size: 24px; }
+  .inventory-cats, .groups-side, .develop-left { width: 100%; flex-basis: 100%; }
+  .profile-header-inner { flex-wrap: wrap; }
+}

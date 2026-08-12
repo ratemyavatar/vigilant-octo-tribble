@@ -180,20 +180,20 @@ def game_card(place: dict, suffix: str) -> str:
     name = esc(place.get("name") or "Untitled")
     href = "/game%s?id=%s" % (suffix, pid)
     thumb = "/thumbs/place.ashx?id=%s" % pid
+    playing = int(place.get("visits") or 0)
     return (
         '<li class="list-item game-card game-tile" title="%s">'
-        '<div class="game-card-container">'
+        '<div class="game-card-container sgc">'
         '<a class="game-card-link" href="%s">'
         '<div class="game-card-thumb-container">'
-        '<span class="thumbnail-2d-container game-card-thumb">'
-        '<img src="%s" alt="%s" title="%s">'
-        "</span></div>"
-        '<div class="game-card-name game-name-title" title="%s">%s</div>'
-        '<div class="game-card-info">'
-        '<span class="info-label icon-playing-counts-gray"><svg class="rbx-icon icon-sm"><use href="#icon-playing"></use></svg></span>'
-        '<span class="info-label playing-counts-label">%s</span>'
-        "</div></a></div></li>"
-    ) % (name, href, thumb, name, name, name, name, int(place.get("visits") or 0))
+        '<img class="game-card-thumb sgc-thumb" src="%s" alt="%s" title="%s">'
+        "</div>"
+        '<div class="game-card-name game-name-title sgc-name" title="%s">%s</div>'
+        '<div class="game-card-info sgc-playing">%s Playing</div>'
+        '<div class="sgc-vote"><span class="icon-thumbs-up"></span>'
+        '<span class="vote-bar"><span class="vote-fill"></span></span></div>'
+        "</a></div></li>"
+    ) % (name, href, thumb, name, name, name, name, playing)
 
 
 def friend_card(user: dict, suffix: str) -> str:
@@ -252,14 +252,13 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
         '<a href="#" class="item-card-link">'
         '<div class="item-card-thumb-container">'
         '<img class="item-card-thumb" src="/thumbs/asset.ashx?id=%s" alt="%s">'
-        '<span class="item-type-badge"><svg class="rbx-icon icon-sm"><use href="#%s"></use></svg></span>'
         "</div>"
         '<div class="text-overflow item-card-name" title="%s">%s</div>'
         "</a>"
         '<div class="text-overflow item-card-price">'
         '<span class="icon-robux-16x16"></span><span class="text-robux">%s</span>'
         "</div>%s</div></li>"
-    ) % (aid, name, _type_icon(asset.get("asset_type")), name, name, price, extra)
+    ) % (aid, name, name, name, price, extra)
 
 
 def people_card(user: dict, suffix: str) -> str:
@@ -1101,7 +1100,11 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wearing=True) for a in wearing), count=1)
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in shown), count=1)
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
-        html = html.replace("{{R6_FIGURE}}", r6_figure(user, wearing))
+        html = html.replace(
+            "{{R6_FIGURE}}",
+            '<img class="cc-avatar-img" src="/thumbs/avatar.ashx?userId=%s" alt="Avatar">'
+            % user["id"],
+        )
         s = db.get_user_settings(user)
         html = html.replace("{{HEAD_COLOR}}", s.get("head_color") or "#F5CD30")
         html = html.replace("{{TORSO_COLOR}}", s.get("torso_color") or "#0D69AC")
@@ -1134,7 +1137,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         for o in outfits:
             cards.append(
                 '<li class="list-item outfit-card"><div class="item-card-container">'
-                '<img class="item-card-thumb" src="/static/placeholder.svg" alt="">'
+                '<img class="item-card-thumb" src="/static/placeholder.png" alt="">'
                 '<div class="item-card-name">%s</div>'
                 '<form method="post" action="/avatar/outfit/wear" class="item-buy-form">'
                 '<input type="hidden" name="id" value="%s">'

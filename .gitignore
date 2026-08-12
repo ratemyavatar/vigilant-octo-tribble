@@ -12,3 +12,5 @@ data/renders/*
 !data/renders/assets/.gitkeep
 __pycache__/
 *.pyc
+image-search/
+*.zip

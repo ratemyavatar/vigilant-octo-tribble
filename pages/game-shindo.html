@@ -4,39 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Game - ROBLOX</title>
-<link rel="icon" href="https://images.rbxcdn.com/3b43a5c16ec359053fef735551716fc5.ico">
+<link rel="icon" href="/static/ecs/logo_R.svg">
 <link rel="stylesheet" href="/static/site.css">
 
 </head>
-<body id="rbx-body" class="rbx-body dark-theme">
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
 <div id="wrap" class="wrap no-gutter-ads dark-theme">
 <div id="header" class="navbar-fixed-top rbx-header" role="navigation">
   <div class="container-fluid">
     <div class="rbx-navbar-header">
       <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
-      <a class="navbar-brand" href="/"><span class="brand-text">ROBLOX</span></a>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
     </div>
   </div>
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="game-main-content">
+<div class="ecs-game">
+<h1 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h1>
+<div class="game-main-content ecs-game-grid">
+<div class="game-left">
 <div class="game-thumb-container">
 <img class="carousel-thumb" src="/thumbs/place.ashx?id={{GAME_ID}}" alt="{{GAME_NAME}}">
 </div>
-<div class="game-calls-to-action">
-<h2 class="game-name" title="{{GAME_NAME}}">{{GAME_NAME}}</h2>
-<div class="game-creator"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
-<div class="game-play-button-container">
-<div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
-<a class="btn-primary-lg rbx-play-button" href="#" data-placeid="{{GAME_ID}}">Play</a>
+<div class="ecs-vote">
+<span class="icon-thumbs-up"></span>
+<span class="vote-bar"><span class="vote-fill"></span></span>
+<span class="icon-thumbs-down"></span>
 </div>
-{{FAVORITE_FORM}}
-</div></div></div>
 <div class="section game-about-container">
 <div class="container-header"><h3>Description</h3></div>
 <div class="section-content">
 <pre class="game-description linkify">{{GAME_DESC}}</pre>
+</div></div>
+</div>
+<div class="game-right">
+<div class="game-creator ecs-card"><span class="text-label">By</span> <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></div>
+<div class="game-play-button-container">
+<div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
+<a class="btn-primary-lg rbx-play-button btn-play-green" href="#" data-placeid="{{GAME_ID}}">Play</a>
+</div>
+{{FAVORITE_FORM}}
+</div>
 <ul class="game-stats-container">
 <li class="game-stat"><p class="text-label">Playing</p><p class="text-lead">{{PLAYING}}</p></li>
 <li class="game-stat"><p class="text-label">Visits</p><p class="text-lead">{{VISITS}}</p></li>
@@ -45,31 +54,32 @@
 <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
 <li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
 </ul>
-</div></div>
-<div class="section">
+</div>
+</div>
+<div class="section ecs-card">
 <div class="container-header"><h3>Servers</h3></div>
 <div class="section-content"><ul class="vlist server-list"></ul>
 <p class="list-content">No running servers. Play starts one.</p></div>
 </div>
 <div class="container-list">
-<div class="container-header"><h3>Recommended</h3></div>
+<div class="container-header"><h3 class="ecs-row-title">Recommended</h3></div>
 <ul class="hlist games game-cards" id="recommended-list"></ul>
 </div>
 </div>
 </div>
+</div>
 <footer class="container-footer" id="footer-container">
-<div class="footer">
-<ul class="footer-links">
-<li class="footer-link"><a class="text-footer-nav" href="about.html">About Us</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="jobs.html">Jobs</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="blog.html">Blog</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="parents.html">Parents</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="help.html">Help</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="terms.html">Terms</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="privacy.html">Privacy</a></li>
-<li class="footer-link"><a class="text-footer-nav" href="credits.html">Credits</a></li>
-</ul>
-<p class="text-footer footer-note">ROBLOX and the ROBLOX logo are trademarks of their respective owners. This is a private revival.</p>
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="about.html">About Us</a>
+<a class="text-footer-nav" href="jobs.html">Jobs</a>
+<a class="text-footer-nav" href="blog.html">Blog</a>
+<a class="text-footer-nav" href="privacy.html">Privacy</a>
+<a class="text-footer-nav" href="help.html">Help</a>
+<a class="text-footer-nav" href="terms.html">Terms</a>
+<a class="text-footer-nav" href="credits.html">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="terms.html">Terms and Conditions</a>.</p>
 </div></footer>
 </div>
 </body>
