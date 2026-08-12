@@ -545,42 +545,65 @@
 .item-price { font-size: 20px; margin: 0 0 10px; }
 .btn-item-buy { display: block; width: 100%; max-width: none; }
 
-/* ECS starting launcher */
-.ecs-launcher {
-  width: min(420px, 92vw) !important;
-  padding: 0 20px 20px !important;
-  background: linear-gradient(180deg, #2c2e31 0%, #191b1d 100%) !important;
+/* Official 2016 ProtocolHandler launcher popup (dark). ECS site has no web popup. */
+.ph-modal-popup {
+  width: min(400px, 92vw) !important;
+  padding: 8px 24px 28px !important;
+  background: #232527 !important;
   border: 1px solid #111;
   text-align: center;
 }
-.ecs-launcher-bar {
-  height: 8px;
-  margin: 0 -20px 16px;
-  background: linear-gradient(90deg, #007100 0%, #40c140 55%, #02b757 100%);
+.ph-modal-header {
+  height: 18px;
+  position: relative;
 }
-.ecs-launcher-close {
+.ph-close {
   position: absolute;
-  top: 14px;
-  right: 12px;
+  top: 0;
+  right: -8px;
+  background: #2d2f31;
+  color: #fff;
+  border: 0;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
 }
-.ecs-launcher-logo { width: 72px; height: 72px; margin: 8px auto 10px; display: block; }
-.ecs-launcher-title { margin: 0 0 6px; color: #fff !important; }
-.ecs-launcher-copy, .ecs-launcher-name { color: #fff !important; }
-.ecs-launcher-dots { display: flex; justify-content: center; gap: 6px; margin: 10px 0 12px; }
-.ecs-launcher-dots span {
-  width: 8px;
-  height: 8px;
+.ph-logo-row { margin: 8px 0 14px; }
+.play-logo-image { width: 90px; height: 90px; display: block; margin: 0 auto; }
+.ph-copy {
+  font-size: 18px;
+  color: #fff !important;
+  margin: 0 0 16px;
+  line-height: 1.35;
+}
+.ph-startingdialog-spinner-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  height: 24px;
+  align-items: center;
+}
+.ph-startingdialog-spinner-row span {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #40c140;
-  animation: ecs-dot 1s ease-in-out infinite;
+  background: #00a2ff;
+  animation: ph-dot 1s ease-in-out infinite;
 }
-.ecs-launcher-dots span:nth-child(2) { animation-delay: 0.15s; }
-.ecs-launcher-dots span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes ecs-dot {
+.ph-startingdialog-spinner-row span:nth-child(2) { animation-delay: 0.15s; }
+.ph-startingdialog-spinner-row span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ph-dot {
   0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
   40% { opacity: 1; transform: translateY(-4px); }
 }
-.ecs-launcher-btns { justify-content: center; }
+.ph-install-btn {
+  display: inline-block;
+  margin: 4px 0 12px;
+}
+.ph-help { margin: 0; font-size: 13px; }
+.ph-help a { color: #00a2ff !important; }
 @media (max-width: 767px) {
   .menu-area, .groups-2016 .groups-side { width: 100%; flex-basis: 100%; }
   .profile-header-top { flex-wrap: wrap; }

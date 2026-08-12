@@ -1036,29 +1036,43 @@ SITE_JS = r"""
     if (document.getElementById('rbx-play-modal')) return;
     var box = document.createElement('div');
     box.id = 'rbx-play-modal';
-    box.className = 'modal-container';
+    box.className = 'modal-container protocol-handler-container';
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-modal', 'true');
     box.innerHTML = '<div class="modal-backdrop" id="rbx-play-backdrop"></div>'
-      + '<div class="modal-window ecs-launcher">'
-      + '<div class="ecs-launcher-bar"></div>'
-      + '<button type="button" class="modal-close ecs-launcher-close" id="rbx-play-close" aria-label="Close">x</button>'
-      + '<img class="ecs-launcher-logo" src="/static/ecs/logo_R.svg" alt="R">'
-      + '<h3 class="ecs-launcher-title">Starting ROBLOX</h3>'
-      + '<p class="ecs-launcher-copy" id="rbx-play-status">Roblox is now loading. Get ready to play!</p>'
-      + '<div class="ecs-launcher-dots" aria-hidden="true"><span></span><span></span><span></span></div>'
-      + '<p class="text-lead ecs-launcher-name" id="rbx-play-name"></p>'
-      + '<div class="modal-btns ecs-launcher-btns">'
-      + '<a class="btn-secondary-md" href="/download.html">Download</a> '
-      + '<button type="button" class="btn-play-green" id="rbx-play-retry">Retry</button> '
-      + '<button type="button" class="btn-secondary-md" id="rbx-play-cancel">Cancel</button>'
+      + '<div class="modal-window ph-modal-popup">'
+      + '<div class="ph-modal-header"><button type="button" class="ph-close" id="rbx-play-close" aria-label="Close">x</button></div>'
+      + '<div id="ph-starting">'
+      + '<div class="ph-logo-row"><img class="play-logo-image" src="/static/ecs/logo_R.svg" width="90" height="90" alt="R"></div>'
+      + '<p class="ph-copy" id="rbx-play-status">Roblox is now loading. Get ready to play!</p>'
+      + '<div class="ph-startingdialog-spinner-row" aria-hidden="true"><span></span><span></span><span></span></div>'
+      + '</div>'
+      + '<div id="ph-install" hidden>'
+      + '<div class="ph-logo-row"><img class="play-logo-image" src="/static/ecs/logo_R.svg" width="90" height="90" alt="R"></div>'
+      + '<p class="ph-copy">You\'re moments away from getting into the game!</p>'
+      + '<a class="btn-primary-md ph-install-btn" id="ProtocolHandlerInstallButton" href="/download.html">Download and Install Roblox</a>'
+      + '<p class="ph-help"><a href="/help.html">Click here for help</a></p>'
       + '</div></div>';
     document.body.appendChild(box);
   }
   var lastPlaceId = '';
+  var phTimer = null;
+  function showPhStarting() {
+    var a = document.getElementById('ph-starting');
+    var b = document.getElementById('ph-install');
+    if (a) a.hidden = false;
+    if (b) b.hidden = true;
+  }
+  function showPhInstall() {
+    var a = document.getElementById('ph-starting');
+    var b = document.getElementById('ph-install');
+    if (a) a.hidden = true;
+    if (b) b.hidden = false;
+  }
   function closePlayModal() {
     var m = document.getElementById('rbx-play-modal');
     if (m) m.classList.remove('open');
+    if (phTimer) { window.clearTimeout(phTimer); phTimer = null; }
   }
   function launchGame(placeId) {
     if (!placeId) return;
@@ -1066,10 +1080,11 @@ SITE_JS = r"""
     ensurePlayModal();
     var modal = document.getElementById('rbx-play-modal');
     var status = document.getElementById('rbx-play-status');
-    var nameEl = document.getElementById('rbx-play-name');
     if (modal) modal.classList.add('open');
+    showPhStarting();
     if (status) status.textContent = 'Roblox is now loading. Get ready to play!';
-    if (nameEl) nameEl.textContent = '';
+    if (phTimer) window.clearTimeout(phTimer);
+    phTimer = window.setTimeout(showPhInstall, 8000);
     fetch('/game/get-join-script?placeId=' + encodeURIComponent(lastPlaceId), {
       credentials: 'same-origin'
     }).then(function (r) {
@@ -1079,9 +1094,9 @@ SITE_JS = r"""
       if (!data) return;
       if (data.error || !data.joinScriptUrl) {
         if (status) status.textContent = data.error || 'Could not start the client.';
+        showPhInstall();
         return;
       }
-      if (nameEl && data.placeName) nameEl.textContent = data.placeName;
       var href = (data.prefix || '') + (data.joinScriptUrl || '');
       var aTag = document.createElement('a');
       aTag.setAttribute('href', href);
@@ -1090,6 +1105,7 @@ SITE_JS = r"""
       setTimeout(function () { aTag.remove(); }, 1000);
     }).catch(function () {
       if (status) status.textContent = 'Could not start the client.';
+      showPhInstall();
     });
   }
   function launchPlace(placeId) { launchGame(placeId); }
@@ -1101,7 +1117,7 @@ SITE_JS = r"""
       return;
     }
     if (t.id === 'rbx-play-retry') {
-      launchPlace(lastPlaceId);
+      launchGame(lastPlaceId);
       return;
     }
     var play = t.closest ? t.closest('.rbx-play-button, .VisitButtonPlayGLI a, a[href*="/play"]') : null;
