@@ -55,6 +55,62 @@ def fill_lua(name: str, mapping: dict) -> str:
     return text
 
 
+RENDERS = DATA / "renders"
+
+
+def rewrite_thumbs(html: str, user: dict | None) -> str:
+    """Point snapshot CDN thumbs at on-site /thumbs/ routes."""
+    html = re.sub(
+        r'https?://tr\.rbxcdn\.com/([a-f0-9]+)/\d+/\d+/AvatarHeadshot/\w+',
+        r'/thumbs/headshot.ashx?hash=\1',
+        html,
+        flags=re.I,
+    )
+    html = re.sub(
+        r'https?://tr\.rbxcdn\.com/([a-f0-9]+)/\d+/\d+/Image/\w+',
+        r'/thumbs/asset.ashx?hash=\1',
+        html,
+        flags=re.I,
+    )
+    html = re.sub(
+        r'https?://t[0-7]\.rbxcdn\.com/([a-f0-9]+)',
+        r'/thumbs/asset.ashx?hash=\1',
+        html,
+        flags=re.I,
+    )
+    uid = user["id"] if user else 0
+    html = re.sub(
+        r'(<img[^>]*id=home-avatar-thumb[^>]*)src=""',
+        r'\1src="/thumbs/headshot.ashx?userId=%s"' % uid,
+        html,
+    )
+    html = re.sub(
+        r'(<img[^>]*src="")([^>]*id=home-avatar-thumb)',
+        r'<img alt=avatar src="/thumbs/headshot.ashx?userId=%s" id=home-avatar-thumb' % uid,
+        html,
+    )
+    return html
+
+
+def render_png(kind: str, key: str) -> bytes:
+    """On-site render file, or placeholder if RCC is down / file missing."""
+    kind = kind.lower()
+    if kind in ("headshot", "avatar"):
+        folder, placeholder = "headshots", RENDERS / "placeholder-headshot.png"
+    elif kind in ("place", "game"):
+        folder, placeholder = "places", RENDERS / "placeholder-place.png"
+    else:
+        folder, placeholder = "assets", RENDERS / "placeholder-place.png"
+    key = re.sub(r"[^a-zA-Z0-9_-]", "", str(key or "")) or "0"
+    target = RENDERS / folder / (key + ".png")
+    if target.is_file() and target.stat().st_size > 0:
+        return target.read_bytes()
+    # RCC down or never rendered — on-site placeholder
+    if placeholder.is_file():
+        return placeholder.read_bytes()
+    return _placeholder_png()
+
+
 def inject_nav(html: str, user: dict | None) -> str:
     if user:
         nav = (
@@ -388,8 +444,30 @@ class Handler(BaseHTTPRequestHandler):
                         return 200, "application/octet-stream", fp.read_bytes()
             return 404, "text/plain", b"asset not found"
 
-        if low.startswith("/thumbs/"):
-            return 200, "image/png", _placeholder_png()
+        if low.startswith("/thumbs/") or low.startswith("/renders/"):
+            kind = "asset"
+            if "headshot" in low or "avatar" in low:
+                kind = "headshot"
+            elif "place" in low or "game" in low:
+                kind = "place"
+            key = (
+                q.get("userId")
+                or q.get("userid")
+                or q.get("assetId")
+                or q.get("assetid")
+                or q.get("id")
+                or q.get("hash")
+                or "0"
+            )
+            if method == "POST":
+                body = self.read_body()
+                folder = "headshots" if kind == "headshot" else ("places" if kind == "place" else "assets")
+                dest = RENDERS / folder
+                dest.mkdir(parents=True, exist_ok=True)
+                safe = re.sub(r"[^a-zA-Z0-9_-]", "", str(key)) or "0"
+                (dest / (safe + ".png")).write_bytes(body)
+                return json_bytes({"ok": True, "url": "/thumbs/%s.ashx?id=%s" % (kind, safe)})
+            return 200, "image/png", render_png(kind, key)
 
         if "marketplace/productinfo" in low or "marketplace/productdetails" in low:
             aid = int(q.get("assetId") or q.get("productId") or 0)
@@ -585,6 +663,7 @@ class Handler(BaseHTTPRequestHandler):
         if page.suffix.lower() == ".html":
             html = data.decode("utf-8", "replace")
             html = inject_nav(html, user)
+            html = rewrite_thumbs(html, user)
             # wire forms
             html = html.replace(
                 '<form class="login-form" name="loginForm">',

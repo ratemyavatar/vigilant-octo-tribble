@@ -62,6 +62,18 @@ Implemented (2016-era names):
 
 Cookie: .ROBLOSECURITY (same name the client expects).
 
+## Headshots and place renders
+
+All thumbs are on-site (not rbxcdn):
+
+- `/thumbs/headshot.ashx?userId=1` or `?hash=...`
+- `/thumbs/asset.ashx?id=...` or `?hash=...`
+- `/thumbs/place.ashx?id=...`
+
+Files live in `data/renders/headshots/`, `places/`, `assets/`.
+If RCC is down or the PNG is missing, the site serves `data/renders/placeholder-headshot.png` or `placeholder-place.png`.
+RCC can POST a finished PNG to the same `/thumbs/...` URL to replace the placeholder.
+
 ## Pages
 
 HTML is in pages/. Logged-in twins end with -loggedin.html.

@@ -5,5 +5,10 @@ data/renders/*
 !data/assets/.gitkeep
 !data/places/.gitkeep
 !data/renders/.gitkeep
+!data/renders/placeholder-headshot.png
+!data/renders/placeholder-place.png
+!data/renders/headshots/.gitkeep
+!data/renders/places/.gitkeep
+!data/renders/assets/.gitkeep
 __pycache__/
 *.pyc
