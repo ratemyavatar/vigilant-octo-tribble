@@ -154,6 +154,9 @@ def render_png(kind: str, key: str) -> bytes:
     if target.is_file() and target.stat().st_size > 0:
         return target.read_bytes()
     # RCC down or never rendered — on-site placeholder
+    extra = ROOT / "static" / "placeholder.png"
+    if extra.is_file():
+        return extra.read_bytes()
     if placeholder.is_file():
         return placeholder.read_bytes()
     return _placeholder_png()
@@ -804,7 +807,7 @@ class Handler(BaseHTTPRequestHandler):
         user = self.current_user()
         # static data files
         rel = path.lstrip("/")
-        if rel.startswith("data/"):
+        if rel.startswith("static/") or rel.startswith("data/"):
             fp = (ROOT / rel).resolve()
             if str(fp).startswith(str(ROOT)) and fp.is_file():
                 ctype = mimetypes.guess_type(str(fp))[0] or "application/octet-stream"
@@ -823,6 +826,12 @@ class Handler(BaseHTTPRequestHandler):
         ctype = mimetypes.guess_type(str(page))[0] or "application/octet-stream"
         if page.suffix.lower() == ".html":
             html = data.decode("utf-8", "replace")
+            if 'href="/static/site.css"' not in html:
+                html = html.replace(
+                    "</head>",
+                    '<link rel="stylesheet" href="/static/site.css"></head>',
+                    1,
+                )
             html = inject_nav(html, user)
             html = rewrite_thumbs(html, user)
             html = rewrite_offsite(html, user is not None)

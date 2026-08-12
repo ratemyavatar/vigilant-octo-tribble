@@ -1,61 +1,25 @@
-<div id="wrap" class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled="false">
-<div id="navigation-container" class="light-theme gotham-font" data-number-of-autocomplete-suggestions="7">
-    <div id="header" class="navbar-fixed-top rbx-header" data-isauthenticated="true" role="navigation">
+<div id="wrap" class="wrap no-gutter-ads logged-in dark-theme">
+<div id="header" class="navbar-fixed-top rbx-header" data-isauthenticated="true" role="navigation">
   <div class="container-fluid">
     <div class="rbx-navbar-header">
-      <div id="header-menu-icon" class="rbx-nav-collapse"><button type="button" class="btn-primary-xs btn-min-width" id="skip-to-main-content">Skip to Main Content</button></div>
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/home-loggedin.html">
-          <span class="icon-logo"></span><span class="icon-logo-r"></span>
-        </a>
-      </div>
+      <a class="navbar-brand" href="/home-loggedin.html"><span class="brand-text">ROBLOX</span></a>
     </div>
-    <ul class="nav rbx-navbar hidden-xs hidden-sm col-md-5 col-lg-4">
-      <li><a class="font-header-2 nav-menu-title text-header" href="/discover.html">Discover</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/catalog-loggedin.html">Avatar Shop</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/create-loggedin.html">Create</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/robux-loggedin.html">Robux</a></li>
-      <li><a class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" href="/credits-loggedin.html">made by thuggy</a></li>
+    <ul class="nav rbx-navbar">
+      <li><a class="nav-menu-title text-header" href="/home-loggedin.html">Home</a></li>
+      <li><a class="nav-menu-title text-header" href="/discover.html">Discover</a></li>
+      <li><a class="nav-menu-title text-header" href="/catalog-loggedin.html">Catalog</a></li>
+      <li><a class="nav-menu-title text-header" href="/create-loggedin.html">Create</a></li>
+      <li><a class="nav-menu-title text-header" href="/friends-loggedin.html">Friends</a></li>
+      <li><a class="nav-menu-title text-header" href="/messages-loggedin.html">Messages</a></li>
+      <li><a class="nav-menu-title text-header" href="/avatar-loggedin.html">Avatar</a></li>
+      <li><a class="nav-menu-title text-header" href="/profile-loggedin.html">{{USERNAME}}</a></li>
+      <li><a class="nav-menu-title text-header" href="/settings-loggedin.html">Settings</a></li>
+      <li><a class="nav-menu-title signup-button" href="/credits-loggedin.html">made by thuggy</a></li>
+      <li><a class="nav-menu-title" href="/logout">Logout</a></li>
     </ul>
-    <ul class="nav rbx-navbar hidden-md hidden-lg col-xs-12">
-      <li><a class="font-header-2 nav-menu-title text-header" href="/discover.html">Discover</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/catalog-loggedin.html">Avatar Shop</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/create-loggedin.html">Create</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/robux-loggedin.html">Robux</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/home-loggedin.html">Home</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/profile-loggedin.html">{{USERNAME}}</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/friends-loggedin.html">Friends</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/messages-loggedin.html">Messages</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/avatar-loggedin.html">Avatar</a></li>
-      <li><a class="font-header-2 nav-menu-title text-header" href="/settings-loggedin.html">Settings</a></li>
-      <li><a class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" href="/logout">Logout</a></li>
-    </ul>
-    <div id="right-navigation-header">
-      <div class="navbar-right rbx-navbar-right">
-        <ul class="nav navbar-right rbx-navbar-right-nav">
-          <li class="login-action"><span class="age-bracket-label-username font-header-2">{{USERNAME}}</span></li>
-          <li class="login-action"><a class="font-header-2 nav-menu-title text-header" href="/robux-loggedin.html"><span class="icon-robux-16x16"></span> {{ROBUX}}</a></li>
-          <li class="login-action"><a class="font-header-2 rbx-navbar-login nav-menu-title rbx-menu-item" href="/settings-loggedin.html">Settings</a></li>
-          <li class="login-action"><a class="rbx-navbar-signup btn-growth-sm nav-menu-title signup-button" href="/logout">Logout</a></li>
-        </ul>
-      </div>
+    <div class="navbar-right">
+      <span class="age-bracket-label-username">{{USERNAME}}</span>
+      <a class="nav-menu-title" href="/robux-loggedin.html">R$ {{ROBUX}}</a>
     </div>
   </div>
 </div>
-<div id="left-navigation-container"></div>
-</div>
-<style type="text/css">
-@media (max-width: 991px) {
-  .rbx-header .container-fluid { padding: 8px; }
-  .rbx-navbar.hidden-xs, .rbx-navbar.hidden-sm { display: none !important; }
-  .rbx-navbar.hidden-md { display: flex !important; flex-wrap: wrap; width: 100%; float: none; }
-  .rbx-navbar.hidden-md > li { display: inline-block; margin: 4px 8px 4px 0; }
-  .navbar-login-bar { display: flex !important; flex-wrap: wrap; white-space: normal; width: 100%; }
-  .navbar-login-bar .input-field { width: 46%; min-width: 110px; margin: 0 6px 6px 0; }
-  .container-main { padding-top: 12px !important; padding-left: 12px !important; padding-right: 12px !important; margin-left: 0 !important; }
-  .rbx-left-col, #navigation.rbx-left-col { display: none !important; }
-  .login-container, .login-section, .content { max-width: 100%; }
-  .home-header h1 { font-size: 22px; }
-  .game-card, .list-item.game-card { width: 46%; max-width: 160px; }
-}
-</style>
