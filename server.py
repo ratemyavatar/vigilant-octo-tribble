@@ -614,6 +614,33 @@ class Handler(BaseHTTPRequestHandler):
             self.redirect("/friends-loggedin.html#requests-pane")
             return False
 
+        if low in ("/avatar/outfit/create", "/avatar/outfit/create/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.create_outfit(user["id"], form.get("name") or "Outfit")
+            self.redirect("/avatar-loggedin.html?tab=outfits")
+            return False
+
+        if low in ("/avatar/outfit/wear", "/avatar/outfit/wear/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.wear_outfit(user["id"], form.get("id") or 0)
+            self.redirect("/avatar-loggedin.html?tab=outfits")
+            return False
+
+        if low in ("/avatar/outfit/delete", "/avatar/outfit/delete/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.delete_outfit(user["id"], form.get("id") or 0)
+            self.redirect("/avatar-loggedin.html?tab=outfits")
+            return False
+
         if low in ("/avatar/colors", "/avatar/colors/") and method == "POST":
             if not user:
                 self.redirect("/signup.html")

@@ -352,64 +352,57 @@ CREATE = """<h1>Create</h1>
     MAXP,
 )
 
-AVATAR = """<div class="avatar-editor-page">
-<div class="container-header avatar-editor-header"><h1>Avatar Editor</h1></div>
-<div class="avatar-editor-layout">
-<div class="avatar-left">
-  <div class="avatar-preview-stage section-content">
-    <div id="avatar-thumbnail" class="avatar-thumbnail-3d">
-      {{R6_FIGURE}}
+AVATAR = """<div class="character-customizer">
+<h1 class="cc-title">Character Customizer</h1>
+<div class="cc-row">
+<div class="cc-left">
+  <h2 class="cc-h2">Avatar</h2>
+  <div class="cc-thumb">{{R6_FIGURE}}</div>
+  <p class="mb-0">Something wrong with your Avatar?</p>
+  <p class="mb-0"><a href="/avatar-loggedin.html">Click here to re-draw it!</a></p>
+  <h2 class="cc-h2">Avatar Colors</h2>
+  <div class="cc-mannequin">
+    <div class="cc-head" data-part="head" style="background:{{HEAD_COLOR}}"></div>
+    <div class="cc-torso" data-part="torso" style="background:{{TORSO_COLOR}}">
+      <div class="cc-arm-l" data-part="left_arm" style="background:{{LEFT_ARM_COLOR}}"></div>
+      <div class="cc-arm-r" data-part="right_arm" style="background:{{RIGHT_ARM_COLOR}}"></div>
     </div>
-    <div class="avatar-type-toggle">
-      <form method="post" action="/avatar/type" class="inline-form">
-        <input type="hidden" name="avatar_type" value="R6">
-        <button type="submit" class="tab {{R6_ACTIVE}}">R6</button>
-      </form>
-      <form method="post" action="/avatar/type" class="inline-form">
-        <input type="hidden" name="avatar_type" value="R15">
-        <button type="submit" class="tab {{R15_ACTIVE}}">R15</button>
-      </form>
+    <div class="cc-legs">
+      <div class="cc-leg-l" data-part="left_leg" style="background:{{LEFT_LEG_COLOR}}"></div>
+      <div class="cc-leg-r" data-part="right_leg" style="background:{{RIGHT_LEG_COLOR}}"></div>
     </div>
-    <form method="get" action="/avatar-loggedin.html" class="redraw-row">
-      <button type="submit" class="btn-secondary-xs">Redraw Avatar</button>
-    </form>
   </div>
-  <div class="currently-wearing section-content">
-    <h3>Currently Wearing</h3>
-    <ul class="hlist item-cards" id="wearing-list"></ul>
-  </div>
+  <form method="post" action="/avatar/colors" id="skinForm" class="cc-picker" hidden>
+    <input type="hidden" name="part" id="color-part" value="all">
+    <p class="cc-picker-close" id="color-close">Close</p>
+    <div class="color-palette">{{COLOR_SWATCHES}}</div>
+  </form>
 </div>
-<div class="avatar-right">
-  <ul class="nav nav-tabs rbx-tabs-horizontal" role="tablist">
-    <li class="rbx-tab {{TAB_RECENT}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=recent">Recent</a></li>
-    <li class="rbx-tab {{TAB_CLOTHING}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=clothing">Clothing</a></li>
-    <li class="rbx-tab {{TAB_ACCESSORIES}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=accessories">Accessories</a></li>
-    <li class="rbx-tab {{TAB_BODY}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=body">Head &amp; Body</a></li>
-    <li class="rbx-tab {{TAB_ANIM}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=animations">Animations</a></li>
-  </ul>
-  <div class="rbx-tab-submenu">{{AVATAR_SUBCATS}}</div>
-  <div id="body-colors" class="section-content body-colors-panel" {{BODY_HIDDEN}}>
-    <h3>Skin Tone</h3>
-    <p class="list-content">Tap a color to paint the whole avatar. Advanced colors each part.</p>
-    <form method="post" action="/avatar/colors" id="skinForm">
-      <input type="hidden" name="part" id="color-part" value="all">
-      <div class="color-palette">{{COLOR_SWATCHES}}</div>
-      <h3>Advanced</h3>
-      <div class="body-part-picks">
-        <button type="button" class="btn-secondary-xs color-part selected" data-part="all">All</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="head">Head</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="torso">Torso</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="left_arm">Left Arm</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="right_arm">Right Arm</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="left_leg">Left Leg</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="right_leg">Right Leg</button>
-      </div>
+<div class="cc-right">
+  <div class="vtab-bar">
+    <a class="vtab {{TAB_WARDROBE}}" href="/avatar-loggedin.html?tab=wardrobe">Wardrobe</a>
+    <a class="vtab {{TAB_OUTFITS}}" href="/avatar-loggedin.html?tab=outfits">Outfits</a>
+  </div>
+  <div class="wardrobe-panel" {{WARDROBE_HIDDEN}}>
+    <p class="cc-cats">{{AVATAR_SUBCATS}}</p>
+    <p class="cc-cats"><a href="/catalog-loggedin.html">Shop</a> | <a href="/catalog-loggedin.html">Create</a></p>
+    <div class="row wardrobe-grid">
+      <ul class="hlist item-cards" id="wardrobe-list"></ul>
+    </div>
+    <p class="list-content">No items available</p>
+  </div>
+  <div class="outfits-panel" {{OUTFITS_HIDDEN}}>
+    <form method="post" action="/avatar/outfit/create" class="create-outfit-form">
+      <input class="input-field" name="name" placeholder="Outfit name" maxlength="25">
+      <button type="submit" class="btn-growth-sm">Create Outfit</button>
     </form>
+    <ul class="hlist outfit-list"></ul>
+    <p class="list-content outfit-empty">No outfits</p>
   </div>
-  <div class="section-content wardrobe-panel" {{WARDROBE_HIDDEN}}>
-    <ul class="hlist item-cards" id="wardrobe-list"></ul>
-    <p class="list-content">No Search Results Found</p>
-  </div>
+  <div class="divider-top"></div>
+  <h2 class="cc-h2">Currently Wearing</h2>
+  <ul class="hlist item-cards" id="wearing-list"></ul>
+  <p class="list-content wearing-empty">You aren't wearing anything</p>
 </div>
 </div>
 </div>"""
@@ -478,146 +471,95 @@ GROUPS = """<div class="container-header"><h1>Groups</h1></div>
 </div>
 </div>"""
 
-SETTINGS = """<h1 class="user-account-header">Settings</h1>
-<div id="user-account" class="rbx-tabs-horizontal">
-<ul id="horizontal-tabs" class="nav nav-tabs" role="tablist">
-<li class="rbx-tab active"><a class="rbx-tab-heading" href="#account-info" data-tab="account-info">Account Info</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#security" data-tab="security">Security</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#privacy" data-tab="privacy">Privacy</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#billing" data-tab="billing">Billing</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#notifications" data-tab="notifications">Notifications</a></li>
-<li class="rbx-tab"><a class="rbx-tab-heading" href="#parental-controls" data-tab="parental-controls">Parental Controls</a></li>
+SETTINGS = """<div class="my-settings">
+<h1 class="user-account-header">My Settings</h1>
+<ul class="settings-tabs">
+<li class="{{TAB_ACCOUNT}}"><a href="/settings-loggedin.html?tab=account">Account Info</a></li>
+<li class="{{TAB_SECURITY}}"><a href="/settings-loggedin.html?tab=security">Security</a></li>
+<li class="{{TAB_PRIVACY}}"><a href="/settings-loggedin.html?tab=privacy">Privacy</a></li>
+<li class="{{TAB_BILLING}}"><a href="/settings-loggedin.html?tab=billing">Billing</a></li>
 </ul>
-<div class="tab-content rbx-tab-content">
-<div id="account-info" class="tab-pane settings-tab-pane active">
-<form id="settingsForm" method="post" action="/settings/update">
-<input type="hidden" name="tab" value="account-info">
-<div class="section-content">
-<h3>Account Info</h3>
-<div class="form-group"><label class="form-label" for="username">Username</label>
-<input class="text-box text-box-medium" id="username" name="username" type="text" value="{{USERNAME}}"></div>
-<div class="form-group"><label class="form-label" for="display_name">Display Name</label>
-<input class="text-box text-box-medium" id="display_name" name="display_name" type="text" value="{{DISPLAY_NAME}}"></div>
-<div class="form-group"><label class="form-label" for="email">Email</label>
-<input class="text-box text-box-medium" id="email" name="email" type="email" value="{{EMAIL}}" placeholder="Saved on this server only">
-<p class="list-content">This is not sent to roblox.com.</p></div>
-<div class="form-group"><label class="form-label" for="status">Status</label>
-<input class="text-box text-box-medium" id="status" name="status" type="text" maxlength="140" value="{{STATUS}}"></div>
-<div class="form-group"><label class="form-label" for="blurb">About</label>
-<textarea class="text-box text-area-medium" id="blurb" name="blurb" rows="4">{{BLURB}}</textarea></div>
+
+<div class="settings-pane" {{PANE_ACCOUNT}}>
+  <h3 class="settings-sub">Account Info</h3>
+  <div class="settings-card">
+    <p class="acct-row">Username: <span class="acct-val">{{USERNAME}}</span></p>
+    <p class="acct-row">Password: <span class="acct-val">**********</span></p>
+    <p class="acct-row">Email Address: <span class="acct-val">{{EMAIL}}</span></p>
+  </div>
+  <h3 class="settings-sub">Personal</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/update">
+      <input type="hidden" name="tab" value="account-info">
+      <textarea class="desc-input" name="blurb" rows="3" placeholder="About">{{BLURB}}</textarea>
+      <p class="list-content">Do not provide any details that can be used to identify you outside ROBLOX.</p>
+      <div class="bday-grid">
+        <input class="input-field disabled-fake" value="Birthday" readonly>
+        <input class="input-field" name="birthday" value="{{BIRTHDAY}}" placeholder="Month/Day/Year">
+      </div>
+      <div class="gender-grid">
+        <input class="input-field disabled-fake" value="Gender" readonly>
+        <label class="gender-card {{GENDER_MALE}}"><input type="radio" name="gender" value="Male" {{GENDER_MALE_CHECKED}}> Male</label>
+        <label class="gender-card {{GENDER_FEMALE}}"><input type="radio" name="gender" value="Female" {{GENDER_FEMALE_CHECKED}}> Female</label>
+      </div>
+      <div class="form-group"><label class="form-label">Display Name</label>
+      <input class="input-field" name="display_name" value="{{DISPLAY_NAME}}"></div>
+      <div class="form-group"><label class="form-label">Status</label>
+      <input class="input-field" name="status" value="{{STATUS}}"></div>
+      <div class="save-right"><button type="submit" class="btn-settings-save">Save</button></div>
+    </form>
+  </div>
 </div>
-<div class="section-content">
-<h3>Personal</h3>
-<div class="form-group"><label class="form-label" for="birthday">Birthday</label>
-<input class="text-box text-box-medium" id="birthday" name="birthday" type="text" value="{{BIRTHDAY}}"></div>
-<div class="form-group"><label class="form-label" for="gender">Gender</label>
-<select class="input-field rbx-select" id="gender" name="gender">{{GENDER_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="language">Language</label>
-<select class="input-field rbx-select" id="language" name="language">{{LANGUAGE_OPTS}}</select></div>
-<button type="submit" class="btn-primary-md" id="settingsSave">Save</button>
+
+<div class="settings-pane" {{PANE_SECURITY}}>
+  <h3 class="settings-sub">Password</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/password">
+      <div class="form-group"><label class="form-label">Current Password</label>
+      <input class="input-field" name="current_password" type="password"></div>
+      <div class="form-group"><label class="form-label">New Password</label>
+      <input class="input-field" name="new_password" type="password"></div>
+      <button type="submit" class="btn-settings-save">Change Password</button>
+    </form>
+  </div>
+  <h3 class="settings-sub">Secure Sign Out</h3>
+  <div class="settings-card settings-row-split">
+    <p>Sign out of all other sessions</p>
+    <form method="post" action="/settings/sessions/logout"><button type="submit" class="btn-settings-save">Sign Out</button></form>
+  </div>
 </div>
-</form>
+
+<div class="settings-pane" {{PANE_PRIVACY}}>
+  <h3 class="settings-sub">Privacy Setting</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/update">
+      <input type="hidden" name="tab" value="privacy">
+      <p class="acct-row">Who can message me:</p>
+      <select class="input-field" name="who_message">{{WHO_MESSAGE_OPTS}}</select>
+      <p class="acct-row">Who can Invite me to VIP Servers:</p>
+      <select class="input-field" name="who_join">{{WHO_JOIN_OPTS}}</select>
+      <p class="acct-row">Who can follow me into the game:</p>
+      <select class="input-field" name="who_chat_game">{{WHO_CHAT_GAME_OPTS}}</select>
+      <p class="acct-row">Who can see my inventory:</p>
+      <select class="input-field" name="who_inventory">{{WHO_INVENTORY_OPTS}}</select>
+      <p class="acct-row">Who can trade with me:</p>
+      <select class="input-field" name="who_trade">{{WHO_TRADE_OPTS}}</select>
+      <div class="save-right"><button type="submit" class="btn-settings-save">Save</button></div>
+    </form>
+  </div>
 </div>
-<div id="security" class="tab-pane settings-tab-pane">
-<div class="section-content">
-<h3>Password</h3>
-<form id="passwordForm" method="post" action="/settings/password">
-<div class="form-group"><label class="form-label" for="current_password">Current Password</label>
-<input class="text-box text-box-medium" id="current_password" name="current_password" type="password" autocomplete="current-password"></div>
-<div class="form-group"><label class="form-label" for="new_password">New Password</label>
-<input class="text-box text-box-medium" id="new_password" name="new_password" type="password" autocomplete="new-password"></div>
-<button type="submit" class="btn-primary-md">Change Password</button>
-</form>
-</div>
-<form method="post" action="/settings/update">
-<input type="hidden" name="tab" value="security">
-<div class="section-content">
-<h3>2-Step Verification</h3>
-<label class="form-label checkbox-row"><input type="checkbox" name="two_step" value="1" {{TWO_STEP_CHECKED}}> Require extra check on this account</label>
-<p class="list-content">Stored on this server only. No email or SMS is sent.</p>
-</div>
-<div class="section-content">
-<h3>Where You're Logged In</h3>
-<p class="list-content">Active sessions: {{SESSION_COUNT}}</p>
-</div>
-<button type="submit" class="btn-primary-md">Save</button>
-</form>
-<form method="post" action="/settings/sessions/logout" class="section-content">
-<button type="submit" class="btn-secondary-md">Log Out of All Other Sessions</button>
-</form>
-</div>
-<div id="privacy" class="tab-pane settings-tab-pane">
-<form method="post" action="/settings/update">
-<input type="hidden" name="tab" value="privacy">
-<div class="section-content">
-<h3>Communication</h3>
-<div class="form-group"><label class="form-label" for="who_message">Who can message me?</label>
-<select class="input-field rbx-select" id="who_message" name="who_message">{{WHO_MESSAGE_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="who_chat_app">Who can chat with me in app?</label>
-<select class="input-field rbx-select" id="who_chat_app" name="who_chat_app">{{WHO_CHAT_APP_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="who_chat_game">Who can chat with me in experiences?</label>
-<select class="input-field rbx-select" id="who_chat_game" name="who_chat_game">{{WHO_CHAT_GAME_OPTS}}</select></div>
-</div>
-<div class="section-content">
-<h3>Other Settings</h3>
-<div class="form-group"><label class="form-label" for="who_join">Who can join me in experiences?</label>
-<select class="input-field rbx-select" id="who_join" name="who_join">{{WHO_JOIN_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="who_inventory">Who can see my inventory?</label>
-<select class="input-field rbx-select" id="who_inventory" name="who_inventory">{{WHO_INVENTORY_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="who_trade">Who can trade with me?</label>
-<select class="input-field rbx-select" id="who_trade" name="who_trade">{{WHO_TRADE_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="who_friends">Who can see my friends list?</label>
-<select class="input-field rbx-select" id="who_friends" name="who_friends">{{WHO_FRIENDS_OPTS}}</select></div>
-<button type="submit" class="btn-primary-md">Save</button>
-</div>
-</form>
-</div>
-<div id="billing" class="tab-pane settings-tab-pane">
-<div class="section-content">
-<h3>Subscriptions</h3>
-<p class="list-content">Premium is not sold on this private server.</p>
-<p class="list-content">Robux balance: <span class="text-robux">R$ {{ROBUX}}</span></p>
-<p class="list-content">No live payments. This page does not take cards.</p>
-<a class="btn-secondary-md" href="/promocodes-loggedin.html">Redeem Code</a>
-<a class="btn-secondary-md" href="/robux-loggedin.html">Robux</a>
-</div>
-</div>
-<div id="notifications" class="tab-pane settings-tab-pane">
-<form method="post" action="/settings/update">
-<input type="hidden" name="tab" value="notifications">
-<div class="section-content">
-<h3>Notification Stream</h3>
-<label class="form-label checkbox-row"><input type="checkbox" name="notify_messages" value="1" {{NOTIFY_MESSAGES_CHECKED}}> Messages</label>
-<label class="form-label checkbox-row"><input type="checkbox" name="notify_friends" value="1" {{NOTIFY_FRIENDS_CHECKED}}> Friend requests</label>
-<label class="form-label checkbox-row"><input type="checkbox" name="notify_trades" value="1" {{NOTIFY_TRADES_CHECKED}}> Trades</label>
-<label class="form-label checkbox-row"><input type="checkbox" name="notify_updates" value="1" {{NOTIFY_UPDATES_CHECKED}}> Experience updates</label>
-<button type="submit" class="btn-primary-md">Save</button>
-</div>
-</form>
-</div>
-<div id="parental-controls" class="tab-pane settings-tab-pane">
-<form method="post" action="/settings/update">
-<input type="hidden" name="tab" value="parental-controls">
-<div class="section-content">
-<h3>Account Restrictions</h3>
-<label class="form-label checkbox-row"><input type="checkbox" name="account_restrictions" value="1" {{RESTRICTIONS_CHECKED}}> Limit to milder experiences</label>
-<div class="form-group"><label class="form-label" for="content_maturity">Content maturity</label>
-<select class="input-field rbx-select" id="content_maturity" name="content_maturity">{{MATURITY_OPTS}}</select></div>
-<div class="form-group"><label class="form-label" for="monthly_spend">Monthly spending limit</label>
-<select class="input-field rbx-select" id="monthly_spend" name="monthly_spend">{{SPEND_OPTS}}</select></div>
-</div>
-<div class="section-content">
-<h3>Account PIN</h3>
-<p class="list-content">{{PIN_STATUS}}</p>
-<div class="form-group"><label class="form-label" for="new_pin">Set or change PIN</label>
-<input class="text-box text-box-medium" id="new_pin" name="new_pin" type="password" inputmode="numeric" autocomplete="off"></div>
-<label class="form-label checkbox-row"><input type="checkbox" name="clear_pin" value="1"> Turn PIN off</label>
-<button type="submit" class="btn-primary-md">Save</button>
-</div>
-</form>
-</div>
+
+<div class="settings-pane" {{PANE_BILLING}}>
+  <h3 class="settings-sub">Billing</h3>
+  <div class="settings-card">
+    <p class="list-content">Premium is not sold on this private server.</p>
+    <p class="list-content">Robux balance: <span class="text-robux"><span class="icon-robux-16x16"></span> R$ {{ROBUX}}</span></p>
+    <p class="list-content">No live payments. This page does not take cards.</p>
+    <a class="btn-secondary-md" href="/promocodes-loggedin.html">Redeem Code</a>
+  </div>
 </div>
 </div>"""
+
 
 INVENTORY = """<div class="container-header"><h1>Inventory</h1></div>
 <p class="menu-vertical catalog-cats">

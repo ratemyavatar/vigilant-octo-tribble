@@ -1,3 +1,4 @@
+@import url("/static/ecs/nav-icons.css");
 /* Official Roblox dark-theme colors. Flat. No gradients. No neon. */
 html, body {
   margin: 0;
@@ -741,4 +742,80 @@ h3 { font-size: 18px; }
 @media (max-width: 767px) {
   .avatar-left { width: 100%; flex-basis: 100%; }
   .r6-figure { width: 120px; height: 192px; }
+}
+
+/* Economy Simulator 2016 Character Customizer + My Settings, dark colors */
+.cc-title { font-size: 30px; font-weight: 700; margin: 0 0 12px; }
+.cc-h2 { font-size: 24px; font-weight: 400; margin: 16px 0 10px; }
+.cc-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.cc-left { width: 280px; flex: 0 0 280px; }
+.cc-right { flex: 1; min-width: 0; }
+.cc-thumb { background: #232527; min-height: 220px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 8px; }
+.cc-mannequin { position: relative; width: 200px; margin: 12px auto 0; min-height: 300px; }
+.cc-head { height: 50px; width: 60px; margin: 0 auto; cursor: pointer; border: 1px solid #2d2f31; }
+.cc-torso { height: 110px; width: 120px; margin: 10px auto 0; position: relative; cursor: pointer; border: 1px solid #2d2f31; }
+.cc-arm-l { height: 110px; width: 40px; position: absolute; left: -50px; top: 0; cursor: pointer; border: 1px solid #2d2f31; }
+.cc-arm-r { height: 110px; width: 40px; position: absolute; right: -50px; top: 0; cursor: pointer; border: 1px solid #2d2f31; }
+.cc-legs { width: 120px; margin: 10px auto 0; overflow: hidden; }
+.cc-leg-l, .cc-leg-r { width: calc(50% - 5px); height: 110px; cursor: pointer; border: 1px solid #2d2f31; }
+.cc-leg-l { float: left; }
+.cc-leg-r { float: right; }
+.cc-picker {
+  width: 220px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: #232527;
+  border: 1px solid #2d2f31;
+  padding: 8px 10px;
+  margin: 12px auto 0;
+}
+.cc-picker-close { cursor: pointer; margin: 0 0 8px; color: #bdbebe; }
+.cc-cats { text-align: center; color: #00a2ff; margin: 6px 0; line-height: 1.8; }
+.cc-cat { color: #00a2ff !important; cursor: pointer; }
+.cc-cat.selected { font-weight: 700; color: #fff !important; }
+.cc-cat-label { color: #bdbebe; }
+.vtab-bar { border-bottom: 2px solid #2d2f31; margin-bottom: 12px; }
+.vtab {
+  display: inline-block;
+  padding: 10px 12px 8px;
+  margin-right: 4px;
+  border: 1px solid #2d2f31;
+  border-bottom: 0;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  background: #191b1d;
+}
+.vtab.active { background: #232527; }
+.divider-top { border-top: 2px solid #2d2f31; margin: 20px 0 12px; }
+.create-outfit-form { display: flex; gap: 8px; margin-bottom: 12px; }
+.create-outfit-form .input-field { flex: 1; }
+
+.my-settings { max-width: 780px; }
+.settings-tabs { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; border-bottom: 1px solid #2d2f31; }
+.settings-tabs li { margin-right: 4px; }
+.settings-tabs a { display: block; padding: 10px 14px; color: #bdbebe !important; font-weight: 700; text-decoration: none !important; }
+.settings-tabs li.active a { color: #fff !important; border-bottom: 2px solid #00a2ff; }
+.settings-sub { font-size: 20px; font-weight: 400; margin: 16px 0 8px; }
+.settings-card { background: #232527; padding: 16px; margin-bottom: 12px; }
+.acct-row { color: #bdbebe; margin: 0 0 8px; }
+.acct-val { color: #fff; }
+.desc-input { width: 100%; background: #191b1d; border: 1px solid #2d2f31; color: #fff; padding: 6px 8px; }
+.bday-grid, .gender-grid { display: flex; gap: 0; margin: 10px 0; }
+.bday-grid .input-field, .gender-grid .input-field, .gender-card { flex: 1; }
+.disabled-fake { color: #8d8d8d !important; }
+.gender-card { background: #191b1d; border: 1px solid #2d2f31; text-align: center; padding: 10px 6px; cursor: pointer; }
+.gender-card.selected { border-color: #00a2ff; }
+.save-right { text-align: right; margin-top: 12px; }
+.btn-settings-save {
+  background: #232527;
+  border: 1px solid #2d2f31;
+  color: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn-settings-save:hover { background: #2d2f31; }
+.settings-row-split { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+@media (max-width: 767px) {
+  .cc-left { width: 100%; flex-basis: 100%; }
 }

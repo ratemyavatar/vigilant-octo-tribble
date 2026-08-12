@@ -536,6 +536,13 @@ def fill_settings(html: str, user: dict) -> str:
     html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
     html = html.replace('value="{{USERNAME}}"', 'value="%s"' % esc(user["username"]))
     html = html.replace("{{USERNAME}}", esc(user["username"]))
+    tab = ""
+    # filled later from qs in prepare; defaults
+    g = (user.get("gender") or "Male")
+    html = html.replace("{{GENDER_MALE_CHECKED}}", "checked" if g == "Male" else "")
+    html = html.replace("{{GENDER_FEMALE_CHECKED}}", "checked" if g == "Female" else "")
+    html = html.replace("{{GENDER_MALE}}", "selected" if g == "Male" else "")
+    html = html.replace("{{GENDER_FEMALE}}", "selected" if g == "Female" else "")
     return html
 
 
@@ -638,6 +645,22 @@ SITE_JS = r"""
     });
   }
   if (panes.length && location.hash) showTab(location.hash.replace('#', ''));
+
+
+  var picker = document.querySelector('.cc-picker');
+  var mannequin = document.querySelectorAll('.cc-mannequin [data-part]');
+  var closePicker = document.getElementById('color-close');
+  for (var m = 0; m < mannequin.length; m++) {
+    mannequin[m].addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (partField) partField.value = this.getAttribute('data-part') || 'all';
+      if (picker) picker.hidden = false;
+    });
+  }
+  if (closePicker) closePicker.addEventListener('click', function () {
+    if (picker) picker.hidden = true;
+  });
 
   var partBtns = document.querySelectorAll('.color-part');
   var partField = document.getElementById('color-part');
@@ -1039,66 +1062,96 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             html = html.replace("{{GROUP_JOIN}}", "")
     if "setting" in name and user:
         html = fill_settings(html, user)
+        stab = (qs.get("tab") or "account").lower()
+        for key, token in (("account","ACCOUNT"),("security","SECURITY"),("privacy","PRIVACY"),("billing","BILLING")):
+            html = html.replace("{{TAB_%s}}" % token, "active" if stab == key else "")
+            html = html.replace("{{PANE_%s}}" % token, "" if stab == key else 'style="display:none"')
     if "avatar" in name and user:
-        tab = (qs.get("tab") or "accessories").lower()
+        tab = (qs.get("tab") or "wardrobe").lower()
         category = qs.get("category") or category
         wearing = db.list_wearing(user["id"])
         owned = db.list_inventory(user["id"])
-        clothing = {"Shirt", "Pants", "T-Shirt"}
-        accessories = {"Hat", "Hair", "Face", "Gear", "Accessory"}
-        if tab == "clothing":
-            cats = clothing
-            owned = [a for a in owned if (a.get("asset_type") or "") in cats]
-            if category in cats:
-                owned = [a for a in owned if (a.get("asset_type") or "") == category]
-        elif tab == "accessories":
-            cats = accessories
-            owned = [a for a in owned if (a.get("asset_type") or "") in cats]
-            if category in cats:
-                owned = [a for a in owned if (a.get("asset_type") or "") == category]
-        elif tab == "recent":
-            owned = wearing[:]
-        elif tab == "animations":
-            owned = []
-        elif tab == "body":
-            owned = []
-        if category not in ("", "All") and tab not in ("body", "animations", "recent"):
-            if qs.get("category"):
-                owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        catmap = {
+            "Heads": None,
+            "Faces": "Face",
+            "T-Shirts": "Shirt",
+            "Shirts": "Shirt",
+            "Pants": "Pants",
+            "Gear": "Gear",
+            "Hats": "Hat",
+            "Hair": "Hair",
+            "Face": "Face",
+            "Neck": "Accessory",
+            "Shoulder": "Accessory",
+            "Front": "Accessory",
+            "Back": "Accessory",
+            "Waist": "Accessory",
+            "Torsos": None,
+            "L Arms": None,
+            "R Arms": None,
+            "L Legs": None,
+            "R Legs": None,
+            "Packages": None,
+        }
+        shown = owned
+        if category in catmap:
+            mapped = catmap[category]
+            shown = [a for a in owned if (a.get("asset_type") or "") == mapped] if mapped else []
         wear_ids = {a["id"] for a in wearing}
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wearing=True) for a in wearing), count=1)
-        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in owned), count=1)
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in shown), count=1)
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
         html = html.replace("{{R6_FIGURE}}", r6_figure(user, wearing))
         s = db.get_user_settings(user)
-        at = (s.get("avatar_type") or "R6").upper()
-        html = html.replace("{{R6_ACTIVE}}", "active" if at == "R6" else "")
-        html = html.replace("{{R15_ACTIVE}}", "active" if at == "R15" else "")
-        for key, val in (("recent", "TAB_RECENT"), ("clothing", "TAB_CLOTHING"), ("accessories", "TAB_ACCESSORIES"), ("body", "TAB_BODY"), ("animations", "TAB_ANIM")):
-            html = html.replace("{{%s}}" % val, "active" if tab == key else "")
+        html = html.replace("{{HEAD_COLOR}}", s.get("head_color") or "#F5CD30")
+        html = html.replace("{{TORSO_COLOR}}", s.get("torso_color") or "#0D69AC")
+        html = html.replace("{{LEFT_ARM_COLOR}}", s.get("left_arm_color") or "#F5CD30")
+        html = html.replace("{{RIGHT_ARM_COLOR}}", s.get("right_arm_color") or "#F5CD30")
+        html = html.replace("{{LEFT_LEG_COLOR}}", s.get("left_leg_color") or "#4B974B")
+        html = html.replace("{{RIGHT_LEG_COLOR}}", s.get("right_leg_color") or "#4B974B")
         html = html.replace("{{COLOR_SWATCHES}}", color_swatches())
-        html = html.replace("{{BODY_HIDDEN}}", "" if tab == "body" else 'style="display:none"')
-        html = html.replace("{{WARDROBE_HIDDEN}}", 'style="display:none"' if tab == "body" else "")
-        sub = ""
-        if tab == "clothing":
-            sub = "".join(
-                '<a href="/avatar-loggedin.html?tab=clothing&category=%s">%s</a>' % (c, c)
-                for c in ("Shirt", "Pants")
+        html = html.replace("{{TAB_WARDROBE}}", "active" if tab != "outfits" else "")
+        html = html.replace("{{TAB_OUTFITS}}", "active" if tab == "outfits" else "")
+        html = html.replace("{{WARDROBE_HIDDEN}}", 'style="display:none"' if tab == "outfits" else "")
+        html = html.replace("{{OUTFITS_HIDDEN}}", "" if tab == "outfits" else 'style="display:none"')
+        groups = [
+            ["Heads", "Faces", "T-Shirts", "Shirts", "Pants", "Gear"],
+            ["Hats", "Hair", "Face", "Neck", "Shoulder", "Front", "Back", "Waist"],
+            ["Torsos", "L Arms", "R Arms", "L Legs", "R Legs", "Packages"],
+        ]
+        labels = ["", "Accessories", ""]
+        bits = []
+        for lab, grp in zip(labels, groups):
+            line = ('<span class="cc-cat-label">%s </span>' % lab) if lab else ""
+            parts = []
+            for c in grp:
+                cls = "cc-cat selected" if category == c else "cc-cat"
+                parts.append('<a class="%s" href="/avatar-loggedin.html?tab=wardrobe&category=%s">%s</a>' % (cls, c, c))
+            bits.append('<span class="cc-cat-line">' + line + " | ".join(parts) + "</span>")
+        html = html.replace("{{AVATAR_SUBCATS}}", "<br>".join(bits))
+        outfits = db.list_outfits(user["id"])
+        cards = []
+        for o in outfits:
+            cards.append(
+                '<li class="list-item outfit-card"><div class="item-card-container">'
+                '<img class="item-card-thumb" src="/static/placeholder.svg" alt="">'
+                '<div class="item-card-name">%s</div>'
+                '<form method="post" action="/avatar/outfit/wear" class="item-buy-form">'
+                '<input type="hidden" name="id" value="%s">'
+                '<button type="submit" class="btn-primary-xs">Wear</button></form>'
+                '<form method="post" action="/avatar/outfit/delete" class="item-buy-form">'
+                '<input type="hidden" name="id" value="%s">'
+                '<button type="submit" class="btn-secondary-xs">Delete</button></form>'
+                "</div></li>" % (esc(o.get("name") or "Outfit"), o["id"], o["id"])
             )
-        elif tab == "accessories":
-            sub = "".join(
-                '<a href="/avatar-loggedin.html?tab=accessories&category=%s">%s</a>' % (c, c)
-                for c in ("Hat", "Hair", "Face", "Gear", "Accessory")
-            )
-        elif tab == "body":
-            sub = '<a href="/avatar-loggedin.html?tab=body">Skin Tone</a>'
-        elif tab == "animations":
-            sub = '<span class="text-label">Emotes and animations are not on this server.</span>'
-        else:
-            sub = '<a href="/avatar-loggedin.html?tab=recent">Currently Wearing</a>'
-        html = html.replace("{{AVATAR_SUBCATS}}", sub)
-        if owned:
-            html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
+        html = replace_ul_inner(html, "outfit-list", "".join(cards))
+        if outfits:
+            html = html.replace('<p class="list-content outfit-empty">No outfits</p>', "")
+        if shown:
+            html = html.replace('<p class="list-content">No items available</p>', "", 1)
+        if wearing:
+            html = html.replace('<p class="list-content wearing-empty">You aren\'t wearing anything</p>', "")
+
     if "promo" in name or "redeem" in name:
         html = html.replace('action="promocodes.html"', 'action="/promo/redeem"')
         html = html.replace('action="promocodes-loggedin.html"', 'action="/promo/redeem"')

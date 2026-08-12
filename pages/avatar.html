@@ -20,64 +20,57 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="avatar-editor-page">
-<div class="container-header avatar-editor-header"><h1>Avatar Editor</h1></div>
-<div class="avatar-editor-layout">
-<div class="avatar-left">
-  <div class="avatar-preview-stage section-content">
-    <div id="avatar-thumbnail" class="avatar-thumbnail-3d">
-      {{R6_FIGURE}}
+<div class="character-customizer">
+<h1 class="cc-title">Character Customizer</h1>
+<div class="cc-row">
+<div class="cc-left">
+  <h2 class="cc-h2">Avatar</h2>
+  <div class="cc-thumb">{{R6_FIGURE}}</div>
+  <p class="mb-0">Something wrong with your Avatar?</p>
+  <p class="mb-0"><a href="/avatar-loggedin.html">Click here to re-draw it!</a></p>
+  <h2 class="cc-h2">Avatar Colors</h2>
+  <div class="cc-mannequin">
+    <div class="cc-head" data-part="head" style="background:{{HEAD_COLOR}}"></div>
+    <div class="cc-torso" data-part="torso" style="background:{{TORSO_COLOR}}">
+      <div class="cc-arm-l" data-part="left_arm" style="background:{{LEFT_ARM_COLOR}}"></div>
+      <div class="cc-arm-r" data-part="right_arm" style="background:{{RIGHT_ARM_COLOR}}"></div>
     </div>
-    <div class="avatar-type-toggle">
-      <form method="post" action="/avatar/type" class="inline-form">
-        <input type="hidden" name="avatar_type" value="R6">
-        <button type="submit" class="tab {{R6_ACTIVE}}">R6</button>
-      </form>
-      <form method="post" action="/avatar/type" class="inline-form">
-        <input type="hidden" name="avatar_type" value="R15">
-        <button type="submit" class="tab {{R15_ACTIVE}}">R15</button>
-      </form>
+    <div class="cc-legs">
+      <div class="cc-leg-l" data-part="left_leg" style="background:{{LEFT_LEG_COLOR}}"></div>
+      <div class="cc-leg-r" data-part="right_leg" style="background:{{RIGHT_LEG_COLOR}}"></div>
     </div>
-    <form method="get" action="/avatar-loggedin.html" class="redraw-row">
-      <button type="submit" class="btn-secondary-xs">Redraw Avatar</button>
-    </form>
   </div>
-  <div class="currently-wearing section-content">
-    <h3>Currently Wearing</h3>
-    <ul class="hlist item-cards" id="wearing-list"></ul>
-  </div>
+  <form method="post" action="/avatar/colors" id="skinForm" class="cc-picker" hidden>
+    <input type="hidden" name="part" id="color-part" value="all">
+    <p class="cc-picker-close" id="color-close">Close</p>
+    <div class="color-palette">{{COLOR_SWATCHES}}</div>
+  </form>
 </div>
-<div class="avatar-right">
-  <ul class="nav nav-tabs rbx-tabs-horizontal" role="tablist">
-    <li class="rbx-tab {{TAB_RECENT}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=recent">Recent</a></li>
-    <li class="rbx-tab {{TAB_CLOTHING}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=clothing">Clothing</a></li>
-    <li class="rbx-tab {{TAB_ACCESSORIES}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=accessories">Accessories</a></li>
-    <li class="rbx-tab {{TAB_BODY}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=body">Head &amp; Body</a></li>
-    <li class="rbx-tab {{TAB_ANIM}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=animations">Animations</a></li>
-  </ul>
-  <div class="rbx-tab-submenu">{{AVATAR_SUBCATS}}</div>
-  <div id="body-colors" class="section-content body-colors-panel" {{BODY_HIDDEN}}>
-    <h3>Skin Tone</h3>
-    <p class="list-content">Tap a color to paint the whole avatar. Advanced colors each part.</p>
-    <form method="post" action="/avatar/colors" id="skinForm">
-      <input type="hidden" name="part" id="color-part" value="all">
-      <div class="color-palette">{{COLOR_SWATCHES}}</div>
-      <h3>Advanced</h3>
-      <div class="body-part-picks">
-        <button type="button" class="btn-secondary-xs color-part selected" data-part="all">All</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="head">Head</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="torso">Torso</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="left_arm">Left Arm</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="right_arm">Right Arm</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="left_leg">Left Leg</button>
-        <button type="button" class="btn-secondary-xs color-part" data-part="right_leg">Right Leg</button>
-      </div>
+<div class="cc-right">
+  <div class="vtab-bar">
+    <a class="vtab {{TAB_WARDROBE}}" href="/avatar-loggedin.html?tab=wardrobe">Wardrobe</a>
+    <a class="vtab {{TAB_OUTFITS}}" href="/avatar-loggedin.html?tab=outfits">Outfits</a>
+  </div>
+  <div class="wardrobe-panel" {{WARDROBE_HIDDEN}}>
+    <p class="cc-cats">{{AVATAR_SUBCATS}}</p>
+    <p class="cc-cats"><a href="/catalog-loggedin.html">Shop</a> | <a href="/catalog-loggedin.html">Create</a></p>
+    <div class="row wardrobe-grid">
+      <ul class="hlist item-cards" id="wardrobe-list"></ul>
+    </div>
+    <p class="list-content">No items available</p>
+  </div>
+  <div class="outfits-panel" {{OUTFITS_HIDDEN}}>
+    <form method="post" action="/avatar/outfit/create" class="create-outfit-form">
+      <input class="input-field" name="name" placeholder="Outfit name" maxlength="25">
+      <button type="submit" class="btn-growth-sm">Create Outfit</button>
     </form>
+    <ul class="hlist outfit-list"></ul>
+    <p class="list-content outfit-empty">No outfits</p>
   </div>
-  <div class="section-content wardrobe-panel" {{WARDROBE_HIDDEN}}>
-    <ul class="hlist item-cards" id="wardrobe-list"></ul>
-    <p class="list-content">No Search Results Found</p>
-  </div>
+  <div class="divider-top"></div>
+  <h2 class="cc-h2">Currently Wearing</h2>
+  <ul class="hlist item-cards" id="wearing-list"></ul>
+  <p class="list-content wearing-empty">You aren't wearing anything</p>
 </div>
 </div>
 </div>

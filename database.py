@@ -180,6 +180,17 @@ def init():
             played_at INTEGER NOT NULL,
             PRIMARY KEY(user_id, place_id)
         );
+        CREATE TABLE IF NOT EXISTS outfits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            colors TEXT DEFAULT '{}',
+            created_at INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS outfit_items (
+            outfit_id INTEGER NOT NULL,
+            asset_id INTEGER NOT NULL
+        );
         """
     )
     con.commit()
@@ -1243,3 +1254,65 @@ def iso(ts):
         return datetime.datetime.utcfromtimestamp(int(ts or time.time())).strftime("%Y-%m-%dT%H:%M:%S.000Z")
     except Exception:
         return "2020-01-01T00:00:00.000Z"
+
+
+
+def create_outfit(user_id, name):
+    name = (name or "").strip() or "Outfit"
+    wearing = list_wearing(user_id)
+    user = get_user(user_id)
+    colors = json.dumps(get_user_settings(user))
+    con = connect()
+    cur = con.execute(
+        "INSERT INTO outfits (user_id, name, colors, created_at) VALUES (?,?,?,?)",
+        (user_id, name[:25], colors, int(time.time())),
+    )
+    oid = cur.lastrowid
+    for a in wearing:
+        con.execute("INSERT INTO outfit_items (outfit_id, asset_id) VALUES (?,?)", (oid, a["id"]))
+    con.commit()
+    con.close()
+    return oid
+
+
+def list_outfits(user_id):
+    con = connect()
+    rows = con.execute("SELECT * FROM outfits WHERE user_id=? ORDER BY id DESC", (user_id,)).fetchall()
+    out = []
+    for r in rows:
+        d = dict(r)
+        items = con.execute("SELECT asset_id FROM outfit_items WHERE outfit_id=?", (d["id"],)).fetchall()
+        d["asset_ids"] = [i["asset_id"] for i in items]
+        out.append(d)
+    con.close()
+    return out
+
+
+def wear_outfit(user_id, outfit_id):
+    con = connect()
+    row = con.execute("SELECT * FROM outfits WHERE id=? AND user_id=?", (outfit_id, user_id)).fetchone()
+    if not row:
+        con.close()
+        return False
+    items = con.execute("SELECT asset_id FROM outfit_items WHERE outfit_id=?", (outfit_id,)).fetchall()
+    con.close()
+    wearing = list_wearing(user_id)
+    for a in wearing:
+        unwear_asset(user_id, a["id"])
+    for it in items:
+        wear_asset(user_id, it["asset_id"])
+    try:
+        data = json.loads(row["colors"] or "{}")
+        keys = ("head_color","torso_color","left_arm_color","right_arm_color","left_leg_color","right_leg_color")
+        save_user_settings(user_id, {k: data[k] for k in keys if k in data})
+    except Exception:
+        pass
+    return True
+
+
+def delete_outfit(user_id, outfit_id):
+    con = connect()
+    con.execute("DELETE FROM outfit_items WHERE outfit_id=?", (outfit_id,))
+    con.execute("DELETE FROM outfits WHERE id=? AND user_id=?", (outfit_id, user_id))
+    con.commit()
+    con.close()
