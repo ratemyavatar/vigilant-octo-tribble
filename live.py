@@ -828,17 +828,32 @@ SITE_JS = r"""
     setBtn.classList.add('is-spinning');
     window.setTimeout(function () { setBtn.classList.remove('is-spinning'); }, 520);
   }
+  function placeSettingsMenu() {
+    if (!setBtn || !setMenu) return;
+    var r = setBtn.getBoundingClientRect();
+    var w = setMenu.offsetWidth || 180;
+    var left = r.right - w;
+    if (left < 8) left = 8;
+    if (left + w > window.innerWidth - 8) left = Math.max(8, window.innerWidth - w - 8);
+    setMenu.style.position = 'fixed';
+    setMenu.style.top = Math.round(r.bottom) + 'px';
+    setMenu.style.left = Math.round(left) + 'px';
+    setMenu.style.right = 'auto';
+    setMenu.style.zIndex = '10050';
+  }
   if (setBtn && setMenu) {
-    setMenu.style.top = '';
-    setMenu.style.right = '';
-    setMenu.style.left = '';
+    if (setMenu.parentNode !== document.body) document.body.appendChild(setMenu);
     setBtn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       var open = !setMenu.classList.contains('open');
       setMenu.classList.toggle('open', open);
       setBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) placeSettingsMenu();
       spinGear();
+    });
+    window.addEventListener('resize', function () {
+      if (setMenu.classList.contains('open')) placeSettingsMenu();
     });
   }
 
