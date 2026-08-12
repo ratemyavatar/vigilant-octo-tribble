@@ -630,3 +630,115 @@ h3 { font-size: 18px; }
 @media (max-width: 767px) {
   .catalog-left { width: 100%; flex-basis: 100%; }
 }
+
+/* Official-style icon sheet (local SVG symbols) */
+.rbx-icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.rbx-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+  color: #fff;
+  fill: none;
+}
+.rbx-icon.icon-sm { width: 14px; height: 14px; }
+.rbx-icon.logo-r { width: 22px; height: 22px; }
+.icon-nav-menu .rbx-icon,
+.icon-nav-home .rbx-icon,
+.icon-nav-profile .rbx-icon,
+.icon-nav-message .rbx-icon,
+.icon-nav-friends .rbx-icon,
+.icon-nav-charactercustomizer .rbx-icon,
+.icon-nav-inventory .rbx-icon,
+.icon-nav-trade .rbx-icon,
+.icon-nav-group .rbx-icon,
+.icon-nav-search .rbx-icon,
+.icon-nav-settings .rbx-icon,
+.icon-nav-robux .rbx-icon { width: 22px; height: 22px; }
+.menu-vertical .menu-option a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-vertical .rbx-icon { width: 20px; height: 20px; }
+.item-card-thumb-container { position: relative; min-height: 120px; background: #2d2f31; }
+.item-type-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  background: #191b1d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.game-card-info { display: flex; align-items: center; gap: 4px; }
+.icon-playing-counts-gray { color: #bdbebe; display: inline-flex; }
+
+/* Avatar Editor — official two-column */
+.avatar-editor-page { max-width: 1100px; }
+.avatar-editor-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+.avatar-left { width: 300px; flex: 0 0 300px; }
+.avatar-right { flex: 1; min-width: 0; }
+.avatar-preview-stage {
+  text-align: center;
+  min-height: 280px;
+  background: #232527;
+}
+.avatar-thumbnail-3d {
+  background: #191b1d;
+  min-height: 240px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.r6-figure { width: 150px; height: 240px; display: block; margin: 0 auto; }
+.avatar-type-toggle { display: flex; justify-content: center; gap: 0; margin: 8px 0; }
+.avatar-type-toggle .tab { min-width: 64px; }
+.redraw-row { justify-content: center; }
+.currently-wearing .item-card { width: 88px; }
+.rbx-tab-submenu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.rbx-tab-submenu a {
+  background: #2d2f31;
+  color: #fff !important;
+  padding: 6px 10px;
+  text-decoration: none !important;
+  font-weight: 600;
+}
+.rbx-tab-submenu a:hover { background: #3c3e40; }
+.color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.color-dot {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #111;
+  padding: 0;
+  cursor: pointer;
+}
+.color-dot:hover { outline: 2px solid #00a2ff; }
+.body-part-picks { display: flex; flex-wrap: wrap; gap: 6px; }
+.body-part-picks .selected { background: #00a2ff; color: #fff !important; border-color: #00a2ff; }
+@media (max-width: 767px) {
+  .avatar-left { width: 100%; flex-basis: 100%; }
+  .r6-figure { width: 120px; height: 192px; }
+}

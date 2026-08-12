@@ -211,14 +211,14 @@ CATALOG = """<div class="container-header"><h1>Catalog</h1></div>
 <div class="catalog-container">
 <aside class="menu-vertical catalog-left">
 <ul class="menu-vertical">
-<li class="menu-option"><a href="/catalog.html">Featured</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Hat">Hats</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Hair">Hair</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Face">Faces</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Shirt">Shirts</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Pants">Pants</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Gear">Gear</a></li>
-<li class="menu-option"><a href="/catalog.html?category=Accessory">Accessories</a></li>
+<li class="menu-option"><a href="/catalog.html"><svg class="rbx-icon"><use href="#icon-accessory"></use></svg> Featured</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hat"><svg class="rbx-icon"><use href="#icon-hat"></use></svg> Hats</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hair"><svg class="rbx-icon"><use href="#icon-hair"></use></svg> Hair</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Face"><svg class="rbx-icon"><use href="#icon-face"></use></svg> Faces</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Shirt"><svg class="rbx-icon"><use href="#icon-shirt"></use></svg> Shirts</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Pants"><svg class="rbx-icon"><use href="#icon-pants"></use></svg> Pants</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Gear"><svg class="rbx-icon"><use href="#icon-gear"></use></svg> Gear</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Accessory"><svg class="rbx-icon"><use href="#icon-accessory"></use></svg> Accessories</a></li>
 </ul>
 </aside>
 <div class="catalog-right">
@@ -352,28 +352,68 @@ CREATE = """<h1>Create</h1>
     MAXP,
 )
 
-AVATAR = """<div class="container-header"><h1>Avatar Editor</h1></div>
-<div class="avatar-editor">
-<div class="section-content avatar-preview">
-<img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{USERNAME}}">
-<p class="list-content">R6 avatar. Wear items from your inventory.</p>
+AVATAR = """<div class="avatar-editor-page">
+<div class="container-header avatar-editor-header"><h1>Avatar Editor</h1></div>
+<div class="avatar-editor-layout">
+<div class="avatar-left">
+  <div class="avatar-preview-stage section-content">
+    <div id="avatar-thumbnail" class="avatar-thumbnail-3d">
+      {{R6_FIGURE}}
+    </div>
+    <div class="avatar-type-toggle">
+      <form method="post" action="/avatar/type" class="inline-form">
+        <input type="hidden" name="avatar_type" value="R6">
+        <button type="submit" class="tab {{R6_ACTIVE}}">R6</button>
+      </form>
+      <form method="post" action="/avatar/type" class="inline-form">
+        <input type="hidden" name="avatar_type" value="R15">
+        <button type="submit" class="tab {{R15_ACTIVE}}">R15</button>
+      </form>
+    </div>
+    <form method="get" action="/avatar-loggedin.html" class="redraw-row">
+      <button type="submit" class="btn-secondary-xs">Redraw Avatar</button>
+    </form>
+  </div>
+  <div class="currently-wearing section-content">
+    <h3>Currently Wearing</h3>
+    <ul class="hlist item-cards" id="wearing-list"></ul>
+  </div>
 </div>
-<div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards" id="wearing-list"></ul></div>
+<div class="avatar-right">
+  <ul class="nav nav-tabs rbx-tabs-horizontal" role="tablist">
+    <li class="rbx-tab {{TAB_RECENT}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=recent">Recent</a></li>
+    <li class="rbx-tab {{TAB_CLOTHING}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=clothing">Clothing</a></li>
+    <li class="rbx-tab {{TAB_ACCESSORIES}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=accessories">Accessories</a></li>
+    <li class="rbx-tab {{TAB_BODY}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=body">Head &amp; Body</a></li>
+    <li class="rbx-tab {{TAB_ANIM}}"><a class="rbx-tab-heading" href="/avatar-loggedin.html?tab=animations">Animations</a></li>
+  </ul>
+  <div class="rbx-tab-submenu">{{AVATAR_SUBCATS}}</div>
+  <div id="body-colors" class="section-content body-colors-panel" {{BODY_HIDDEN}}>
+    <h3>Skin Tone</h3>
+    <p class="list-content">Tap a color to paint the whole avatar. Advanced colors each part.</p>
+    <form method="post" action="/avatar/colors" id="skinForm">
+      <input type="hidden" name="part" id="color-part" value="all">
+      <div class="color-palette">{{COLOR_SWATCHES}}</div>
+      <h3>Advanced</h3>
+      <div class="body-part-picks">
+        <button type="button" class="btn-secondary-xs color-part selected" data-part="all">All</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="head">Head</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="torso">Torso</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="left_arm">Left Arm</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="right_arm">Right Arm</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="left_leg">Left Leg</button>
+        <button type="button" class="btn-secondary-xs color-part" data-part="right_leg">Right Leg</button>
+      </div>
+    </form>
+  </div>
+  <div class="section-content wardrobe-panel" {{WARDROBE_HIDDEN}}>
+    <ul class="hlist item-cards" id="wardrobe-list"></ul>
+    <p class="list-content">No Search Results Found</p>
+  </div>
 </div>
-<div class="section-content">
-<h2>Wardrobe</h2>
-<p class="menu-vertical catalog-cats">
-<a href="/avatar.html">All</a>
-<a href="/avatar.html?category=Hat">Hats</a>
-<a href="/avatar.html?category=Hair">Hair</a>
-<a href="/avatar.html?category=Face">Faces</a>
-<a href="/avatar.html?category=Shirt">Shirts</a>
-<a href="/avatar.html?category=Pants">Pants</a>
-<a href="/avatar.html?category=Gear">Gear</a>
-</p>
-<ul class="hlist item-cards" id="wardrobe-list"></ul>
-<p class="list-content">No Search Results Found</p>
+</div>
 </div>"""
+
 
 MESSAGES = """<div class="container-header"><h1>Messages</h1></div>
 <ul class="nav nav-tabs" role="tablist">

@@ -487,6 +487,13 @@ DEFAULT_SETTINGS = {
     "notify_friends": True,
     "notify_trades": True,
     "notify_updates": False,
+    "avatar_type": "R6",
+    "head_color": "#F5CD30",
+    "torso_color": "#0D69AC",
+    "left_arm_color": "#F5CD30",
+    "right_arm_color": "#F5CD30",
+    "left_leg_color": "#4B974B",
+    "right_leg_color": "#4B974B",
 }
 
 
@@ -497,9 +504,8 @@ def get_user_settings(user):
         try:
             data = json.loads(raw)
             if isinstance(data, dict):
-                for k in DEFAULT_SETTINGS:
-                    if k in data:
-                        out[k] = data[k]
+                for k, v in data.items():
+                    out[k] = v
         except Exception:
             pass
     if not out.get("display_name"):

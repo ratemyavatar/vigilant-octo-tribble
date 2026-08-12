@@ -166,6 +166,7 @@ def render_png(kind: str, key: str) -> bytes:
 def inject_nav(html: str, user: dict | None) -> str:
     nav_in = (PARTIALS / "nav_in.html").read_text(encoding="utf-8", errors="replace")
     nav_out = (PARTIALS / "nav_out.html").read_text(encoding="utf-8", errors="replace")
+    sprite = (PARTIALS / "icons_sprite.html").read_text(encoding="utf-8", errors="replace")
     if user:
         nav = (
             nav_in.replace("{{USERNAME}}", user["username"])
@@ -174,6 +175,7 @@ def inject_nav(html: str, user: dict | None) -> str:
         )
     else:
         nav = nav_out
+    nav = sprite + "\n" + nav
     # replace existing wrap/header through container-main
     patterns = [
         (r'<div id="wrap"[\s\S]*?<div class="container-main"', nav + '\n    <div class="container-main"'),
@@ -610,6 +612,45 @@ class Handler(BaseHTTPRequestHandler):
             other = form.get("userId") or form.get("id") or 0
             db.decline_friend(user["id"], other)
             self.redirect("/friends-loggedin.html#requests-pane")
+            return False
+
+        if low in ("/avatar/colors", "/avatar/colors/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            color = form.get("color") or ""
+            part = form.get("part") or "all"
+            allowed = {
+                "head": "head_color",
+                "torso": "torso_color",
+                "left_arm": "left_arm_color",
+                "right_arm": "right_arm_color",
+                "left_leg": "left_leg_color",
+                "right_leg": "right_leg_color",
+            }
+            updates = {}
+            if color.startswith("#") and len(color) == 7:
+                if part == "all":
+                    for k in allowed.values():
+                        updates[k] = color
+                elif part in allowed:
+                    updates[allowed[part]] = color
+            if updates:
+                db.save_user_settings(user["id"], updates)
+            self.redirect("/avatar-loggedin.html?tab=body")
+            return False
+
+        if low in ("/avatar/type", "/avatar/type/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            kind = (form.get("avatar_type") or "R6").upper()
+            if kind not in ("R6", "R15"):
+                kind = "R6"
+            db.save_user_settings(user["id"], {"avatar_type": kind})
+            self.redirect("/avatar-loggedin.html")
             return False
 
         if low in ("/avatar/wear", "/avatar/wear/") and method == "POST":

@@ -190,7 +190,7 @@ def game_card(place: dict, suffix: str) -> str:
         "</span></div>"
         '<div class="game-card-name game-name-title" title="%s">%s</div>'
         '<div class="game-card-info">'
-        '<span class="info-label icon-playing-counts-gray"></span>'
+        '<span class="info-label icon-playing-counts-gray"><svg class="rbx-icon icon-sm"><use href="#icon-playing"></use></svg></span>'
         '<span class="info-label playing-counts-label">%s</span>'
         "</div></a></div></li>"
     ) % (name, href, thumb, name, name, name, name, int(place.get("visits") or 0))
@@ -207,6 +207,20 @@ def friend_card(user: dict, suffix: str) -> str:
         '<img alt="%s" class="avatar-card-image" src="/thumbs/headshot.ashx?userId=%s">'
         '</span><span class="text-overflow friend-name">%s</span></a></div></li>'
     ) % (uid, suffix, uid, name, name, uid, name)
+
+
+def _type_icon(asset_type) -> str:
+    m = {
+        "Hat": "icon-hat",
+        "Hair": "icon-hair",
+        "Face": "icon-face",
+        "Shirt": "icon-shirt",
+        "T-Shirt": "icon-shirt",
+        "Pants": "icon-pants",
+        "Gear": "icon-gear",
+        "Accessory": "icon-accessory",
+    }
+    return m.get(asset_type or "Hat", "icon-accessory")
 
 
 def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool = False) -> str:
@@ -238,13 +252,14 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
         '<a href="#" class="item-card-link">'
         '<div class="item-card-thumb-container">'
         '<img class="item-card-thumb" src="/thumbs/asset.ashx?id=%s" alt="%s">'
+        '<span class="item-type-badge"><svg class="rbx-icon icon-sm"><use href="#%s"></use></svg></span>'
         "</div>"
         '<div class="text-overflow item-card-name" title="%s">%s</div>'
         "</a>"
         '<div class="text-overflow item-card-price">'
         '<span class="icon-robux-16x16"></span><span class="text-robux">%s</span>'
         "</div>%s</div></li>"
-    ) % (aid, name, name, name, price, extra)
+    ) % (aid, name, _type_icon(asset.get("asset_type")), name, name, price, extra)
 
 
 def people_card(user: dict, suffix: str) -> str:
@@ -427,7 +442,71 @@ def _checked(val) -> str:
     return "checked" if val else ""
 
 
+
+BRICKCOLORS = [
+    ("#F5CD30", "Bright yellow"),
+    ("#DA8541", "Bright orange"),
+    ("#C4281C", "Bright red"),
+    ("#0D69AC", "Bright blue"),
+    ("#4B974B", "Bright green"),
+    ("#6B327C", "Bright violet"),
+    ("#D7C59A", "Light orange"),
+    ("#CC8E69", "Nougat"),
+    ("#A05F35", "Brown"),
+    ("#694028", "Reddish brown"),
+    ("#A3A2A5", "Medium stone grey"),
+    ("#1B2A35", "Black"),
+    ("#F8F8F8", "White"),
+    ("#287F47", "Dark green"),
+    ("#2154B9", "Deep blue"),
+    ("#FF98DC", "Pink"),
+]
+
+
+def r6_figure(user: dict, wearing=None) -> str:
+    s = db.get_user_settings(user)
+    head = s.get("head_color") or "#F5CD30"
+    torso = s.get("torso_color") or "#0D69AC"
+    la = s.get("left_arm_color") or head
+    ra = s.get("right_arm_color") or head
+    ll = s.get("left_leg_color") or "#4B974B"
+    rl = s.get("right_leg_color") or "#4B974B"
+    types = {(a.get("asset_type") or "").lower() for a in (wearing or [])}
+    hat = ""
+    if any(x in types for x in ("hat", "hair", "accessory")):
+        hat = '<rect x="46" y="8" width="44" height="10" fill="#2d2f31"/><rect x="40" y="16" width="56" height="6" fill="#232527"/>'
+    shirt = ""
+    if any(x in types for x in ("shirt", "t-shirt", "tshirt")):
+        shirt = '<rect x="44" y="56" width="48" height="10" fill="rgba(255,255,255,0.18)"/>'
+    return (
+        '<svg class="r6-figure" viewBox="0 0 136 220" role="img" aria-label="Avatar">'
+        '<rect class="r6-head" x="44" y="18" width="48" height="48" fill="%s"/>'
+        '<rect x="56" y="34" width="6" height="6" fill="#111"/>'
+        '<rect x="74" y="34" width="6" height="6" fill="#111"/>'
+        '<rect x="58" y="48" width="20" height="4" fill="#111"/>'
+        '%s'
+        '<rect class="r6-torso" x="44" y="68" width="48" height="62" fill="%s"/>'
+        '%s'
+        '<rect class="r6-arm-l" x="26" y="68" width="18" height="62" fill="%s"/>'
+        '<rect class="r6-arm-r" x="92" y="68" width="18" height="62" fill="%s"/>'
+        '<rect class="r6-leg-l" x="44" y="130" width="24" height="70" fill="%s"/>'
+        '<rect class="r6-leg-r" x="68" y="130" width="24" height="70" fill="%s"/>'
+        "</svg>"
+    ) % (head, hat, torso, shirt, la, ra, ll, rl)
+
+
+def color_swatches() -> str:
+    bits = []
+    for hexv, name in BRICKCOLORS:
+        bits.append(
+            '<button type="submit" name="color" value="%s" class="color-dot" style="background:%s" title="%s" aria-label="%s"></button>'
+            % (hexv, hexv, name, name)
+        )
+    return "".join(bits)
+
+
 def fill_settings(html: str, user: dict) -> str:
+
     s = db.get_user_settings(user)
     privacy = ["Everyone", "Friends", "No one"]
     html = html.replace("{{DISPLAY_NAME}}", esc(s.get("display_name") or user.get("username") or ""))
@@ -559,6 +638,18 @@ SITE_JS = r"""
     });
   }
   if (panes.length && location.hash) showTab(location.hash.replace('#', ''));
+
+  var partBtns = document.querySelectorAll('.color-part');
+  var partField = document.getElementById('color-part');
+  for (var c = 0; c < partBtns.length; c++) {
+    partBtns[c].addEventListener('click', function (e) {
+      e.preventDefault();
+      for (var k = 0; k < partBtns.length; k++) partBtns[k].classList.remove('selected');
+      this.classList.add('selected');
+      if (partField) partField.value = this.getAttribute('data-part') || 'all';
+    });
+  }
+
 
   function ensurePlayModal() {
     if (document.getElementById('rbx-play-modal')) return;
@@ -949,14 +1040,63 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
     if "setting" in name and user:
         html = fill_settings(html, user)
     if "avatar" in name and user:
+        tab = (qs.get("tab") or "accessories").lower()
+        category = qs.get("category") or category
         wearing = db.list_wearing(user["id"])
         owned = db.list_inventory(user["id"])
-        if category not in ("", "All"):
-            owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        clothing = {"Shirt", "Pants", "T-Shirt"}
+        accessories = {"Hat", "Hair", "Face", "Gear", "Accessory"}
+        if tab == "clothing":
+            cats = clothing
+            owned = [a for a in owned if (a.get("asset_type") or "") in cats]
+            if category in cats:
+                owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        elif tab == "accessories":
+            cats = accessories
+            owned = [a for a in owned if (a.get("asset_type") or "") in cats]
+            if category in cats:
+                owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        elif tab == "recent":
+            owned = wearing[:]
+        elif tab == "animations":
+            owned = []
+        elif tab == "body":
+            owned = []
+        if category not in ("", "All") and tab not in ("body", "animations", "recent"):
+            if qs.get("category"):
+                owned = [a for a in owned if (a.get("asset_type") or "") == category]
         wear_ids = {a["id"] for a in wearing}
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wearing=True) for a in wearing), count=1)
         html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in owned), count=1)
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
+        html = html.replace("{{R6_FIGURE}}", r6_figure(user, wearing))
+        s = db.get_user_settings(user)
+        at = (s.get("avatar_type") or "R6").upper()
+        html = html.replace("{{R6_ACTIVE}}", "active" if at == "R6" else "")
+        html = html.replace("{{R15_ACTIVE}}", "active" if at == "R15" else "")
+        for key, val in (("recent", "TAB_RECENT"), ("clothing", "TAB_CLOTHING"), ("accessories", "TAB_ACCESSORIES"), ("body", "TAB_BODY"), ("animations", "TAB_ANIM")):
+            html = html.replace("{{%s}}" % val, "active" if tab == key else "")
+        html = html.replace("{{COLOR_SWATCHES}}", color_swatches())
+        html = html.replace("{{BODY_HIDDEN}}", "" if tab == "body" else 'style="display:none"')
+        html = html.replace("{{WARDROBE_HIDDEN}}", 'style="display:none"' if tab == "body" else "")
+        sub = ""
+        if tab == "clothing":
+            sub = "".join(
+                '<a href="/avatar-loggedin.html?tab=clothing&category=%s">%s</a>' % (c, c)
+                for c in ("Shirt", "Pants")
+            )
+        elif tab == "accessories":
+            sub = "".join(
+                '<a href="/avatar-loggedin.html?tab=accessories&category=%s">%s</a>' % (c, c)
+                for c in ("Hat", "Hair", "Face", "Gear", "Accessory")
+            )
+        elif tab == "body":
+            sub = '<a href="/avatar-loggedin.html?tab=body">Skin Tone</a>'
+        elif tab == "animations":
+            sub = '<span class="text-label">Emotes and animations are not on this server.</span>'
+        else:
+            sub = '<a href="/avatar-loggedin.html?tab=recent">Currently Wearing</a>'
+        html = html.replace("{{AVATAR_SUBCATS}}", sub)
         if owned:
             html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
     if "promo" in name or "redeem" in name:
