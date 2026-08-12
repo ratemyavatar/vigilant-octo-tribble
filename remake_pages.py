@@ -53,15 +53,15 @@ TPL_HTML = "".join(
 FOOTER = """<footer class="container-footer" id="footer-container">
 <div class="footer ecs-footer">
 <div class="footer-link-row">
-<a class="text-footer-nav" href="about.html">About Us</a>
-<a class="text-footer-nav" href="jobs.html">Jobs</a>
-<a class="text-footer-nav" href="blog.html">Blog</a>
-<a class="text-footer-nav" href="privacy.html">Privacy</a>
-<a class="text-footer-nav" href="help.html">Help</a>
-<a class="text-footer-nav" href="terms.html">Terms</a>
-<a class="text-footer-nav" href="credits.html">Credits</a>
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
 </div>
-<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="terms.html">Terms and Conditions</a>.</p>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
 </div></footer>"""
 
 GENDER = """<div class="form-group gender-container"><label class="text-label">Gender</label>
@@ -138,11 +138,11 @@ SIGNUP = """<div id="react-login-container" class="login-container ecs-login">
 
 HOME = """<div class="ecs-dash">
 <div class="ecs-hello">
-<a href="/profile-loggedin.html" class="avatar avatar-headshot-lg ecs-hello-shot">
+<a href="/profile" class="avatar avatar-headshot-lg ecs-hello-shot">
 <img alt="avatar" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" id="home-avatar-thumb" class="avatar-card-image">
 </a>
 <div class="home-header-content">
-<h1 class="hello-message"><a href="/profile-loggedin.html">Hello, {{USERNAME}}!</a>{{VERIFIED_BADGE}}</h1>
+<h1 class="hello-message"><a href="/profile">Hello, {{USERNAME}}!</a>{{VERIFIED_BADGE}}</h1>
 <p class="profile-status text-lead">{{STATUS}}</p>
 <form class="status-update-form" method="post" action="/settings/update">
 <input class="input-field" name="status" maxlength="140" placeholder="What are you up to?">
@@ -151,7 +151,7 @@ HOME = """<div class="ecs-dash">
 </div>
 </div>
 <div class="section home-friends ecs-card">
-<div class="container-header"><h3 class="ecs-row-title">Friends (0)</h3><a href="friends.html" class="btn-secondary-xs">See All</a></div>
+<div class="container-header"><h3 class="ecs-row-title">Friends (0)</h3><a href="/friends" class="btn-secondary-xs">See All</a></div>
 <div class="section-content"><ul class="hlist friend-list"></ul></div>
 </div>
 <div class="container-list home-continue">
@@ -163,18 +163,18 @@ HOME = """<div class="ecs-dash">
 <ul class="hlist games game-cards" id="favorites-list"></ul>
 </div>
 <div class="container-list home-games">
-<div class="container-header"><h3 class="ecs-row-title">Recommended</h3><a href="games.html" class="btn-secondary-xs">See All</a></div>
+<div class="container-header"><h3 class="ecs-row-title">Recommended</h3><a href="/games" class="btn-secondary-xs">See All</a></div>
 <ul class="hlist games game-cards game-tile-list" id="games-list"></ul>
 </div>
 <div class="container-list home-creations">
-<div class="container-header"><h3 class="ecs-row-title">My Creations</h3><a href="create.html" class="btn-secondary-xs">Create</a></div>
+<div class="container-header"><h3 class="ecs-row-title">My Creations</h3><a href="/develop" class="btn-secondary-xs">Create</a></div>
 <ul class="hlist games game-cards" id="my-places-list"></ul>
 </div>
 </div>"""
 
 DISCOVER = """<div class="games-list-container ecs-games">
 <div class="ecs-games-bar">
-<form class="games-filter-bar" method="get" action="/games.html">
+<form class="games-filter-bar" method="get" action="/games">
 <input class="input-field" name="keyword" placeholder="Search games" value="{{SEARCH_KEYWORD}}">
 <select class="input-field rbx-select" name="genre">{{GENRE_OPTS}}</select>
 <select class="input-field rbx-select" name="sort">{{SORT_OPTS}}</select>
@@ -228,7 +228,7 @@ FRIENDS = """<div class="section friends-content ecs-friends">
 </div>"""
 
 CAT_NAV = "".join(
-    '<li class="menu-option"><a href="/catalog.html?category=%s">%s</a></li>'
+    '<li class="menu-option"><a href="/catalog?category=%s">%s</a></li>'
     % (slug, label)
     for slug, label in [
         ("", "Featured"),
@@ -245,7 +245,7 @@ CAT_NAV = "".join(
 CATALOG = """<div class="ecs-catalog">
 <div class="ecs-catalog-top">
 <h1 class="ecs-page-title">Catalog</h1>
-<form class="games-filter-bar catalog-search" method="get" action="/catalog.html">
+<form class="games-filter-bar catalog-search" method="get" action="/catalog">
 <input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
 <select class="input-field rbx-select" name="category">{{CATEGORY_OPTS}}</select>
 <button type="submit" class="btn-legacy">Search</button>
@@ -268,7 +268,7 @@ CATALOG = """<div class="ecs-catalog">
 <div class="catalog-right">
 <div class="catalog-results-head">
 <h2 class="catalog-showing">FEATURED ITEMS ON ROBLOX</h2>
-<form method="get" action="/catalog.html" class="sort-by-form">
+<form method="get" action="/catalog" class="sort-by-form">
 <span class="sort-by-label">Sort By:</span>
 <select class="input-field rbx-select" name="sort">{{CATALOG_SORT_OPTS}}</select>
 </form>
@@ -298,7 +298,7 @@ PROFILE = """<div class="ecs-profile">
 </div>
 <div class="header-details">
 <ul class="details-info">
-<li><div class="text-label">Friends</div><a class="text-name" href="/friends.html"><h3>{{FRIEND_COUNT}}</h3></a></li>
+<li><div class="text-label">Friends</div><a class="text-name" href="/friends"><h3>{{FRIEND_COUNT}}</h3></a></li>
 <li><div class="text-label">Followers</div><h3 class="text-name">{{FOLLOWER_COUNT}}</h3></li>
 <li><div class="text-label">Following</div><h3 class="text-name">{{FOLLOWING_COUNT}}</h3></li>
 </ul>
@@ -338,7 +338,7 @@ PROFILE = """<div class="ecs-profile">
 </div>
 
 <div class="section home-friends">
-<div class="container-header"><h3 class="ecs-subtitle">Friends (0)</h3><a href="friends.html" class="see-all">See All</a></div>
+<div class="container-header"><h3 class="ecs-subtitle">Friends (0)</h3><a href="/friends" class="see-all">See All</a></div>
 <div class="ecs-card"><ul class="hlist friend-list"></ul></div>
 </div>
 
@@ -399,12 +399,12 @@ GAME = """<div class="ecs-game ecs-game-2016">
     </div>
     <div class="ecs-game-right">
       <div class="ecs-builder">
-        <a class="ecs-builder-shot-link" href="/profile.html?id={{CREATOR_ID}}">
+        <a class="ecs-builder-shot-link" href="/profile/user/{{CREATOR_ID}}">
           <img class="ecs-builder-shot" src="/thumbs/headshot.ashx?userId={{CREATOR_ID}}" alt="{{CREATOR_NAME}}">
         </a>
         <div class="ecs-builder-copy">
           <p class="ecs-builder-label">Builder:</p>
-          <a class="ecs-builder-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a>
+          <a class="ecs-builder-name" href="/profile/user/{{CREATOR_ID}}">{{CREATOR_NAME}}</a>
         </div>
       </div>
       <div class="divider-top ecs-game-div"></div>
@@ -454,7 +454,7 @@ ITEM = """<div class="ecs-item">
       <img class="item-detail-thumb" src="/thumbs/asset.ashx?id={{ITEM_ID}}" alt="{{ITEM_NAME}}">
     </div>
     <div class="item-copy">
-      <p class="text-label">By <a class="text-name" href="/profile.html?id={{CREATOR_ID}}">{{CREATOR_NAME}}</a></p>
+      <p class="text-label">By <a class="text-name" href="/profile/user/{{CREATOR_ID}}">{{CREATOR_NAME}}</a></p>
       <p class="item-desc">{{ITEM_DESC}}</p>
     </div>
     <div class="item-buy-col ecs-card">
@@ -471,10 +471,10 @@ ITEM = """<div class="ecs-item">
 
 CREATE = """<div class="ecs-develop">
 <div class="vtab-bar ecs-vtabs develop-vtabs">
-<a class="vtab {{TAB_MY}}" href="/create-loggedin.html?tab=my&amp;View={{VIEW}}">My Creations</a>
-<a class="vtab {{TAB_GROUP}}" href="/create-loggedin.html?tab=group&amp;View={{VIEW}}">Group Creations</a>
-<a class="vtab {{TAB_LIBRARY}}" href="/create-loggedin.html?tab=library">Library</a>
-<a class="vtab {{TAB_DEVEX}}" href="/create-loggedin.html?tab=devex">Developer Exchange</a>
+<a class="vtab {{TAB_MY}}" href="/develop?tab=my&amp;View={{VIEW}}">My Creations</a>
+<a class="vtab {{TAB_GROUP}}" href="/develop?tab=group&amp;View={{VIEW}}">Group Creations</a>
+<a class="vtab {{TAB_LIBRARY}}" href="/develop?tab=library">Library</a>
+<a class="vtab {{TAB_DEVEX}}" href="/develop?tab=devex">Developer Exchange</a>
 </div>
 <div class="develop-body">{{DEV_BODY}}</div>
 </div>"""
@@ -488,7 +488,7 @@ AVATAR = """<div class="character-customizer">
     <img class="cc-avatar-img" src="/thumbs/avatar.ashx?userId={{PROFILE_ID}}" alt="Avatar">
   </div>
   <p class="mb-0">Something wrong with your Avatar?</p>
-  <p class="mb-0"><a href="/avatar-loggedin.html">Click here to re-draw it!</a></p>
+  <p class="mb-0"><a href="/avatar">Click here to re-draw it!</a></p>
   <h2 class="cc-h2">Avatar Colors</h2>
   <div class="cc-mannequin">
     <div class="cc-head" data-part="head" style="background:{{HEAD_COLOR}}"></div>
@@ -509,55 +509,55 @@ AVATAR = """<div class="character-customizer">
 </div>
 <div class="cc-right">
   <div class="vtab-bar">
-    <a class="vtab {{TAB_WARDROBE}}" href="/avatar-loggedin.html?tab=wardrobe">Wardrobe</a>
-    <a class="vtab {{TAB_OUTFITS}}" href="/avatar-loggedin.html?tab=outfits">Outfits</a>
+    <a class="vtab {{TAB_WARDROBE}}" href="/avatar?tab=wardrobe">Wardrobe</a>
+    <a class="vtab {{TAB_OUTFITS}}" href="/avatar?tab=outfits">Outfits</a>
   </div>
   <div class="wardrobe-panel" {{WARDROBE_HIDDEN}}>
     <div class="ae-catbar" data-current="{{AVATAR_CATEGORY}}">
       <div class="ae-dd">
         <button type="button" class="ae-dd-btn">Recent <span class="ae-caret"></span></button>
         <div class="ae-dd-menu">
-          <a href="/avatar-loggedin.html?tab=wardrobe">All Items</a>
+          <a href="/avatar?tab=wardrobe">All Items</a>
         </div>
       </div>
       <div class="ae-dd">
         <button type="button" class="ae-dd-btn">Clothing <span class="ae-caret"></span></button>
         <div class="ae-dd-menu">
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Shirts">Shirts</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=T-Shirts">T-Shirts</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Pants">Pants</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Shirts">Shirts</a>
+          <a href="/avatar?tab=wardrobe&amp;category=T-Shirts">T-Shirts</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Pants">Pants</a>
         </div>
       </div>
       <div class="ae-dd">
         <button type="button" class="ae-dd-btn">Accessories <span class="ae-caret"></span></button>
         <div class="ae-dd-menu">
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Hats">Hats</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Hair">Hair</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Face">Face</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Neck">Neck</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Shoulder">Shoulder</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Front">Front</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Back">Back</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Waist">Waist</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Gear">Gear</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Hats">Hats</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Hair">Hair</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Face">Face</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Neck">Neck</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Shoulder">Shoulder</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Front">Front</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Back">Back</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Waist">Waist</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Gear">Gear</a>
         </div>
       </div>
       <div class="ae-dd">
         <button type="button" class="ae-dd-btn">Head &amp; Body <span class="ae-caret"></span></button>
         <div class="ae-dd-menu">
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Heads">Heads</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Faces">Faces</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Torsos">Torsos</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=L Arms">Left Arms</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=R Arms">Right Arms</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=L Legs">Left Legs</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=R Legs">Right Legs</a>
-          <a href="/avatar-loggedin.html?tab=wardrobe&amp;category=Packages">Packages</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Heads">Heads</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Faces">Faces</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Torsos">Torsos</a>
+          <a href="/avatar?tab=wardrobe&amp;category=L Arms">Left Arms</a>
+          <a href="/avatar?tab=wardrobe&amp;category=R Arms">Right Arms</a>
+          <a href="/avatar?tab=wardrobe&amp;category=L Legs">Left Legs</a>
+          <a href="/avatar?tab=wardrobe&amp;category=R Legs">Right Legs</a>
+          <a href="/avatar?tab=wardrobe&amp;category=Packages">Packages</a>
           <a href="#" id="ae-skin-tone">Skin Tone</a>
         </div>
       </div>
     </div>
-    <p class="ae-shop"><a href="/catalog-loggedin.html">Shop</a> <span class="ae-sep">|</span> <a href="/catalog-loggedin.html">Create</a></p>
+    <p class="ae-shop"><a href="/catalog">Shop</a> <span class="ae-sep">|</span> <a href="/catalog">Create</a></p>
     <div class="row wardrobe-grid">
       <ul class="hlist item-cards" id="wardrobe-list"></ul>
     </div>
@@ -624,7 +624,7 @@ GROUPS = """<div class="ecs-groups groups-2016">
 </aside>
 <div class="groups-main" id="mid-column">
 <div id="SearchControls">
-<form method="get" action="/groups.html" class="group-search-bar">
+<form method="get" action="/groups" class="group-search-bar">
 <input class="input-field SearchKeyword" name="keyword" placeholder="Search all groups" value="{{SEARCH_KEYWORD}}" maxlength="100">
 <button type="submit" class="group-search-button">Search</button>
 </form>
@@ -660,10 +660,10 @@ GROUPS = """<div class="ecs-groups groups-2016">
 SETTINGS = """<div class="my-settings">
 <h1 class="user-account-header">My Settings</h1>
 <ul class="settings-tabs">
-<li class="{{TAB_ACCOUNT}}"><a href="/settings-loggedin.html?tab=account">Account Info</a></li>
-<li class="{{TAB_SECURITY}}"><a href="/settings-loggedin.html?tab=security">Security</a></li>
-<li class="{{TAB_PRIVACY}}"><a href="/settings-loggedin.html?tab=privacy">Privacy</a></li>
-<li class="{{TAB_BILLING}}"><a href="/settings-loggedin.html?tab=billing">Billing</a></li>
+<li class="{{TAB_ACCOUNT}}"><a href="/settings?tab=account">Account Info</a></li>
+<li class="{{TAB_SECURITY}}"><a href="/settings?tab=security">Security</a></li>
+<li class="{{TAB_PRIVACY}}"><a href="/settings?tab=privacy">Privacy</a></li>
+<li class="{{TAB_BILLING}}"><a href="/settings?tab=billing">Billing</a></li>
 </ul>
 
 <div class="settings-pane" {{PANE_ACCOUNT}}>
@@ -741,13 +741,13 @@ SETTINGS = """<div class="my-settings">
     <p class="list-content">Premium is not sold on this private server.</p>
     <p class="list-content">Robux balance: <span class="text-robux"><span class="icon-robux-16x16"></span> R$ {{ROBUX}}</span></p>
     <p class="list-content">No live payments. This page does not take cards.</p>
-    <a class="btn-secondary-md" href="/promocodes-loggedin.html">Redeem Code</a>
+    <a class="btn-secondary-md" href="/promocodes">Redeem Code</a>
   </div>
 </div>
 </div>"""
 
 INV_CATS = "".join(
-    '<a href="/inventory.html?category=%s">%s</a>' % (c, n)
+    '<a href="/inventory?category=%s">%s</a>' % (c, n)
     for c, n in [
         ("", "Heads"),
         ("Face", "Faces"),
@@ -766,7 +766,7 @@ INVENTORY = """<div class="ecs-inventory">
 <aside class="inventory-cats ecs-card">
 <h2 class="category-title">CATEGORY</h2>
 <div class="menu-vertical catalog-cats">
-<a href="/inventory.html">All</a>
+<a href="/inventory">All</a>
 %s
 </div>
 </aside>
@@ -781,8 +781,8 @@ INVENTORY = """<div class="ecs-inventory">
 TRADES = """<div class="ecs-money">
 <h1 class="ecs-page-title">Trade</h1>
 <div class="vtab-bar">
-<a class="vtab active" href="/trades-loggedin.html">Trade</a>
-<a class="vtab" href="/robux-loggedin.html">Summary</a>
+<a class="vtab active" href="/trades">Trade</a>
+<a class="vtab" href="/robux">Summary</a>
 </div>
 <div class="section-content ecs-card">
 <h3>Send a Trade</h3>
@@ -803,7 +803,7 @@ TRADES = """<div class="ecs-money">
 
 SEARCH = """<div class="ecs-search">
 <h1 class="ecs-page-title">Search</h1>
-<form action="/search.html" method="get" class="games-filter-bar">
+<form action="/search" method="get" class="games-filter-bar">
 <input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
 <button type="submit" class="btn-primary-md">Search</button>
 </form>
@@ -837,6 +837,39 @@ PROMO = """<h1>Redeem ROBLOX Promotions</h1>
 <button type="submit" class="btn-primary-md">Redeem</button>
 </form></div>"""
 
+
+DOWNLOAD = """<div class="ecs-download">
+  <h1 class="dl-title">Download</h1>
+  <p class="dl-sub">Download the ROBLOX Player to get into the game.</p>
+  <div class="dl-grid">
+    <div class="dl-col">
+      <a class="dl-card" href="#computer">
+        <img class="dl-card-img" src="/static/ecs/dl-player.svg" alt="Download the Computer Player">
+        <h4 class="dl-card-name">Download the Computer Player</h4>
+      </a>
+    </div>
+    <div class="dl-col">
+      <a class="dl-card" href="#studio">
+        <img class="dl-card-img" src="/static/ecs/dl-studio.svg" alt="ROBLOX Studio for Computer">
+        <h4 class="dl-card-name">ROBLOX Studio for Computer</h4>
+      </a>
+    </div>
+  </div>
+  <div class="dl-help ecs-card" id="computer">
+    <h2>Computer Player</h2>
+    <p class="list-content">Install the Computer client, then point it at this site. There is no Linux client in the official dumps.</p>
+    <ol class="list-content">
+      <li>Install the Computer client on your machine</li>
+      <li>Point it at this site URL</li>
+      <li>Press Play on an experience</li>
+    </ol>
+  </div>
+  <div class="dl-help ecs-card" id="studio">
+    <h2>Studio</h2>
+    <p class="list-content">Studio uses the same Computer client. Build a place on Develop after the client is pointed at this server.</p>
+  </div>
+</div>"""
+
 SIMPLE = {
     "about": ("About Us", '<h1>About Us</h1><div class="section-content ecs-card"><p class="list-content">ROBLOX is a place to imagine, create, and play together.</p></div>'),
     "jobs": ("Jobs", '<h1>Jobs</h1><div class="section-content ecs-card"><p class="list-content">No open jobs.</p></div>'),
@@ -847,8 +880,7 @@ SIMPLE = {
     "accessibility": ("Accessibility", '<h1>Accessibility</h1><div class="section-content ecs-card"><p class="list-content">This site uses a simple dark layout for readability.</p></div>'),
     "credits": ("Credits", '<h1>Credits</h1><div class="section-content ecs-card"><h2>made by thuggy</h2><p class="list-content">made by thuggy</p></div>'),
     "blog": ("Blog", '<h1>Blog News</h1><div class="section-content ecs-card"><ul class="blog-news"></ul><p class="list-content">No Search Results Found</p></div>'),
-    "download": ("Download", '<h1>Download ROBLOX</h1><div class="section-content ecs-card"><p class="list-content">Install the ROBLOX client for Computer, then point it at this site.</p><p class="list-content">Computer is the desktop client. There is no Linux client in the official dumps.</p><p class="list-content">Play on a game page opens a launcher popup that fires the roblox-player URI.</p><ol class="list-content"><li>Install the Computer client</li><li>Point it at this site URL</li><li>Press Play on an experience</li></ol></div>'),
-    "robux": ("Robux", '<h1>Buy Robux</h1><div class="section-content ecs-card"><p class="list-content">Your balance: <span class="text-robux"><span class="icon-robux-16x16"></span> R$ {{ROBUX}}</span></p><p class="list-content">Robux on this private server is stored in the local database. Purchasing is not connected to roblox.com.</p><div class="robux-products"><div class="section-content"><h3>400 Robux</h3><p class="list-content">Not for sale here.</p></div><div class="section-content"><h3>800 Robux</h3><p class="list-content">Not for sale here.</p></div><div class="section-content"><h3>1700 Robux</h3><p class="list-content">Not for sale here.</p></div></div><a class="btn-secondary-md" href="/promocodes-loggedin.html">Redeem Code</a></div>'),
+    "robux": ("Robux", '<h1>Buy Robux</h1><div class="section-content ecs-card"><p class="list-content">Your balance: <span class="text-robux"><span class="icon-robux-16x16"></span> R$ {{ROBUX}}</span></p><p class="list-content">Robux on this private server is stored in the local database. Purchasing is not connected to roblox.com.</p><div class="robux-products"><div class="section-content"><h3>400 Robux</h3><p class="list-content">Not for sale here.</p></div><div class="section-content"><h3>800 Robux</h3><p class="list-content">Not for sale here.</p></div><div class="section-content"><h3>1700 Robux</h3><p class="list-content">Not for sale here.</p></div></div><a class="btn-secondary-md" href="/promocodes">Redeem Code</a></div>'),
     "premium": ("Premium", '<h1>Builders Club</h1><div class="section-content ecs-card"><p class="list-content">Builders Club / Premium is not sold on this private server.</p><p class="list-content"><span class="icon-bc"></span> Upgrade is local only.</p></div>'),
     "giftcards": ("Gift Cards", '<h1>Gift Cards</h1><div class="section-content ecs-card"><p class="list-content">Gift cards are not sold here.</p></div>'),
     "payment": ("Payment", '<h1>Payment</h1><div class="section-content ecs-card"><p class="list-content">No live payments. This page does not take cards.</p></div>'),
@@ -912,6 +944,8 @@ def main():
     write("promocodes-loggedin.html", page("Promocodes", PROMO))
     write("redeem.html", page("Redeem", PROMO))
     write("redeem-loggedin.html", page("Redeem", PROMO))
+    write("download.html", page("Download", DOWNLOAD))
+    write("download-loggedin.html", page("Download", DOWNLOAD))
 
     for key, (title, inner) in SIMPLE.items():
         html = page(title, inner)

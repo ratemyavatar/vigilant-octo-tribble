@@ -111,6 +111,20 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
   text-decoration: none !important;
 }
 .signup-button:hover, .btn-growth-sm:hover { background: #009960; }
+.nav-download-btn {
+  background: #00a2ff;
+  color: #fff !important;
+  border: 0;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none !important;
+  margin-right: 6px;
+}
+.nav-download-btn:hover { background: #3ab8ff; text-decoration: none !important; }
+.rbx-navbar-phone { display: none; }
+
 
 .rbx-navbar-search {
   flex: 1 1 160px;
@@ -603,12 +617,33 @@ h3 { font-size: 18px; }
 /* phone: compact header + hamburger dropdown sidebar */
 @media (max-width: 767px) {
   .hidden-xs, .hidden-sm { display: none !important; }
+  #wrap { padding-top: 80px; }
+  #header.rbx-header, .rbx-header { height: 80px; }
+  .rbx-header .container-fluid {
+    flex-wrap: wrap;
+    height: 80px;
+    align-content: flex-start;
+  }
+  .rbx-navbar-phone {
+    display: flex;
+    width: 100%;
+    order: 20;
+    justify-content: space-around;
+    height: 40px;
+    border-top: 1px solid #111;
+  }
+  .rbx-navbar-phone .nav-menu-title {
+    padding: 0 6px;
+    font-size: 13px;
+  }
+  #navigation.rbx-left-col, .navigation-overlay { top: 80px; }
   .navbar-brand { font-size: 16px; padding: 0 6px 0 0; }
   .navbar-brand .icon-logo { display: none !important; }
   .navbar-brand .icon-logo-r { display: block !important; }
   .rbx-navbar-search { max-width: none; margin: 0 4px; flex: 1 1 auto; }
   .rbx-menu-item { padding: 0 6px; }
   .robux-amount { font-size: 13px; }
+  .nav-download-item { display: none; }
 
   #navigation.rbx-left-col {
     display: none;

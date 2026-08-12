@@ -325,7 +325,7 @@ def chrome(user, title, inner, active="dash"):
 <header class="adm-top">
   <a class="adm-brand" href="/admin">Management</a>
   <span class="adm-who">signed in as %s</span>
-  <a class="adm-back" href="/home-loggedin.html">Back to ROBLOX</a>
+  <a class="adm-back" href="/home">Back to ROBLOX</a>
 </header>
 %s
 <div class="adm-shell">
@@ -391,7 +391,7 @@ def dash_page(user):
         <label class="adm-label">Alert text</label>
         <input class="adm-input" name="text" value="%s" placeholder="Alert text">
         <label class="adm-label">Optional link</label>
-        <input class="adm-input" name="url" value="%s" placeholder="/games-loggedin.html">
+        <input class="adm-input" name="url" value="%s" placeholder="/games">
         <button class="adm-btn" type="submit">Save alert</button>
       </form>
     </div>
@@ -513,7 +513,7 @@ def user_page(user, q):
             '<button class="adm-btn ghost" type="submit">Reset description</button></form>' % uid
         )
     place_bits = "".join(
-        '<li><a href="/game-loggedin.html?id=%s">%s</a></li>' % (p["id"], esc(p.get("name")))
+        '<li><a href="/games/%s">%s</a></li>' % (p["id"], esc(p.get("name")))
         for p in places
     ) or "<li>None</li>"
     inv_bits = "".join(
@@ -574,7 +574,7 @@ def user_page(user, q):
         <p class="adm-muted">Joined %s</p>
         <p>Robux <strong>R$ %s</strong></p>
         <p>Friends %s · Places %s · Items %s</p>
-        <p><a href="/profile-loggedin.html?id=%s">View profile</a></p>
+        <p><a href="/profile/user/%s">View profile</a></p>
         <p class="adm-muted">About</p>
         <p>%s</p>
       </div>
@@ -762,7 +762,7 @@ def places_page(user):
     for p in places:
         cr = db.get_user(p.get("creator_id") or 0)
         bits.append(
-            "<tr><td>%s</td><td><a href=\"/game-loggedin.html?id=%s\">%s</a></td><td>%s</td><td>%s</td>"
+            "<tr><td>%s</td><td><a href=\"/games/%s\">%s</a></td><td>%s</td><td>%s</td>"
             '<td><form method="post" action="/admin/place/delete" class="inline">'
             '<input type="hidden" name="placeId" value="%s">'
             '<button class="adm-btn ghost" type="submit">Delete</button></form></td></tr>'
@@ -901,7 +901,7 @@ h1{color:#fff}p{color:#bdbebe}a{color:#00a2ff}
 <div class="adm-main" style="max-width:640px;margin:40px auto">
 <h1>Forbidden</h1>
 <p>You do not have access to Management.</p>
-<p><a href="/home-loggedin.html">Back to ROBLOX</a></p>
+<p><a href="/home">Back to ROBLOX</a></p>
 </div>
 </body>
 </html>""",
@@ -913,7 +913,7 @@ def handle(method, path, low, q, user, req):
     if not (low == "/admin" or low.startswith("/admin/") or low.startswith("/admin.html")):
         return None
     if not user:
-        req.redirect("/signup.html")
+        req.redirect("/signup")
         return False
     user = refresh_user(user)
     if is_blocked(user):

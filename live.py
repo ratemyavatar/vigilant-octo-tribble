@@ -184,7 +184,7 @@ def sanitize(html: str) -> str:
 def game_card(place: dict, suffix: str) -> str:
     pid = place["id"]
     name = esc(place.get("name") or "Untitled")
-    href = "/game%s?id=%s" % (suffix, pid)
+    href = "/games/%s" % pid
     thumb = "/thumbs/place.ashx?id=%s" % pid
     if "playing" in place:
         playing = int(place.get("playing") or 0)
@@ -215,11 +215,11 @@ def friend_card(user: dict, suffix: str) -> str:
     return (
         '<li id="friend_%s" class="list-item friend">'
         '<div class="avatar-container">'
-        '<a href="/profile%s?id=%s" class="avatar avatar-card-fullbody friend-link" title="%s">'
+        '<a href="/profile/user/%s" class="avatar avatar-card-fullbody friend-link" title="%s">'
         '<span class="avatar-card-link friend-avatar">'
         '<img alt="%s" class="avatar-card-image" src="/thumbs/headshot.ashx?userId=%s">'
         '</span><span class="text-overflow friend-name">%s%s</span></a></div></li>'
-    ) % (uid, suffix, uid, name, name, uid, name, verified_badge(user))
+    ) % (uid, uid, name, name, uid, name, verified_badge(user))
 
 
 def _type_icon(asset_type) -> str:
@@ -262,7 +262,7 @@ def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool 
     return (
         '<li class="list-item item-card">'
         '<div class="item-card-container">'
-        '<a href="/item-loggedin.html?id=%s" class="item-card-link">'
+        '<a href="/catalog/%s" class="item-card-link">'
         '<div class="item-card-thumb-container">'
         '<img class="item-card-thumb" src="/thumbs/asset.ashx?id=%s" alt="%s">'
         "</div>"
@@ -357,9 +357,9 @@ def server_list_html(place: dict, suffix: str) -> str:
         name = esc(u.get("username") or "Player")
         bits.append(
             '<div class="ecs-sp">'
-            '<a href="/profile%s?id=%s"><img class="ecs-sp-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
-            '<a class="ecs-sp-name" href="/profile%s?id=%s">%s</a></div>'
-            % (suffix, uid, uid, name, suffix, uid, name)
+            '<a href="/profile/user/%s"><img class="ecs-sp-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
+            '<a class="ecs-sp-name" href="/profile/user/%s">%s</a></div>'
+            % (uid, uid, name, uid, name)
         )
     bits.append('</div><div class="divider-top ecs-game-div"></div></div>')
     return "".join(bits)
@@ -377,10 +377,10 @@ def comments_html(place_id: int, suffix: str) -> str:
         when = datetime.utcfromtimestamp(int(c.get("created_at") or time.time())).strftime("%m/%d/%Y")
         bits.append(
             '<div class="ecs-comment">'
-            '<a href="/profile%s?id=%s"><img class="ecs-comment-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
-            '<div class="ecs-comment-body"><p class="ecs-comment-when">%s · <a href="/profile%s?id=%s">%s</a></p>'
+            '<a href="/profile/user/%s"><img class="ecs-comment-shot" src="/thumbs/headshot.ashx?userId=%s" alt="%s"></a>'
+            '<div class="ecs-comment-body"><p class="ecs-comment-when">%s · <a href="/profile/user/%s">%s</a></p>'
             '<p class="ecs-comment-text">%s</p></div></div>'
-            % (suffix, uid, uid, name, when, suffix, uid, name, body)
+            % (uid, uid, name, when, uid, name, body)
         )
     return "".join(bits)
 
@@ -455,7 +455,7 @@ def _dev_asset_row(kind: str, item: dict, suffix: str) -> str:
     iid = item["id"]
     name = esc(item.get("name") or "Untitled")
     if kind == "place":
-        href = "/game%s?id=%s" % (suffix, iid)
+        href = "/games/%s" % iid
         thumb = "/thumbs/place.ashx?id=%s" % iid
         extra = (
             '<p class="dev-meta"><span class="dev-dim">Start Place: </span>'
@@ -463,20 +463,20 @@ def _dev_asset_row(kind: str, item: dict, suffix: str) -> str:
             % (href, name, href)
         )
         gear = (
-            '<a href="/game%s?id=%s">Configure Game</a>'
-            '<a href="/create%s?tab=my&amp;View=9">Configure Start Place</a>'
-            '<a href="/create%s?tab=my&amp;View=21">Create Badge</a>'
-            '<a href="/create%s?tab=my&amp;View=100">Create Pass</a>'
-            % (suffix, iid, suffix, suffix, suffix)
+            '<a href="/games/%s">Configure Game</a>'
+            '<a href="/develop?tab=my&amp;View=9">Configure Start Place</a>'
+            '<a href="/develop?tab=my&amp;View=21">Create Badge</a>'
+            '<a href="/develop?tab=my&amp;View=100">Create Pass</a>'
+            % iid
         )
     else:
-        href = "/item-loggedin.html?id=%s" % iid
+        href = "/catalog/%s" % iid
         thumb = "/thumbs/asset.ashx?id=%s" % iid
         created = datetime.utcfromtimestamp(int(item.get("created_at") or time.time())).strftime("%m/%d/%Y")
         extra = '<p class="dev-meta"><span class="dev-dim">Created: </span>%s</p>' % created
         gear = (
-            '<a href="/item-loggedin.html?id=%s">Configure</a>'
-            '<a href="/create%s?tab=my&amp;View=101">Advertise</a>' % (iid, suffix)
+            '<a href="/catalog/%s">Configure</a>'
+            '<a href="/develop?tab=my&amp;View=101">Advertise</a>' % iid
         )
     return (
         '<div class="dev-asset-row">'
@@ -515,7 +515,7 @@ def fill_develop(html: str, user: dict | None, qs: dict, suffix: str) -> str:
     html = html.replace("{{VIEW}}", str(view))
     for key, token in (("my", "MY"), ("group", "GROUP"), ("library", "LIBRARY"), ("devex", "DEVEX")):
         html = html.replace("{{TAB_%s}}" % token, "active" if tab == key else "")
-    href_base = "/create%s" % suffix
+    href_base = "/develop"
 
     if tab == "devex":
         body = '<div class="dev-pane"><p class="mt-2">This feature is not available right now.</p></div>'
@@ -580,10 +580,10 @@ def fill_develop(html: str, user: dict | None, qs: dict, suffix: str) -> str:
         + '<div id="StudioWidget" class="dev-widget"><div class="widget-name">'
         '<h3><span class="brand-name">ROBLOX</span> Studio</h3></div>'
         '<div class="widget-body"><p class="list-content">Build places on this server with the Computer client.</p>'
-        '<a class="studio-launch" href="/download.html">Get the client</a></div></div>'
+        '<a class="studio-launch" href="/download">Get the client</a></div></div>'
         '<div id="CommunityWidget" class="dev-widget"><div class="widget-name"><h3>Creator Corner</h3></div>'
         '<div class="widget-body"><p class="list-content">Tips and notes for people making places here.</p>'
-        '<a href="/help.html">Open Help</a></div></div></aside>'
+        '<a href="/help">Open Help</a></div></div></aside>'
     )
 
     title = view_meta[1]
@@ -672,7 +672,7 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{UPVOTES}}", str(up))
     html = html.replace("{{DOWNVOTES}}", str(down))
     html = html.replace("{{VOTE_PCT}}", str(pct))
-    html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
+    html = html.replace("/profile.html?id=", "/profile/user/")
     return html
 
 
@@ -690,7 +690,7 @@ def fill_item_detail(html: str, asset: dict, suffix: str) -> str:
     html = html.replace("{{ITEM_PRICE}}", str(int(asset.get("price") or 0)))
     html = html.replace("{{CREATOR_NAME}}", cname)
     html = html.replace("{{CREATOR_ID}}", str(cid))
-    html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
+    html = html.replace("/profile.html?id=", "/profile/user/")
     return html
 
 
@@ -700,7 +700,7 @@ def request_card(user: dict) -> str:
     name = esc(user.get("username") or "")
     return (
         '<li class="list-item"><div class="list-body">'
-        '<a href="/profile-loggedin.html?id=%s">%s</a> '
+        '<a href="/profile/user/%s">%s</a> '
         '<form method="post" action="/friends/accept" class="inline-form">'
         '<input type="hidden" name="userId" value="%s">'
         '<button type="submit" class="btn-primary-xs">Accept</button></form> '
@@ -717,7 +717,7 @@ def group_rail_item(group: dict) -> str:
     letter = esc((group.get("name") or "G")[:1].upper())
     return (
         '<li class="GroupListItemContainer">'
-        '<a class="group-rail-link" href="/groups.html?id=%s">'
+        '<a class="group-rail-link" href="/groups/%s">'
         '<span class="GroupListImageContainer" aria-hidden="true">%s</span>'
         '<span class="GroupListName">%s</span></a></li>'
     ) % (gid, letter, name)
@@ -741,7 +741,7 @@ def group_card(group: dict, joined=False) -> str:
         '<li class="list-item group-card">'
         '<div class="group-card-emblem" aria-hidden="true">%s</div>'
         '<div class="list-body">'
-        '<h2><a href="/groups.html?id=%s">%s</a></h2>'
+        '<h2><a href="/groups/%s">%s</a></h2>'
         '<p class="list-content">%s</p>'
         '<p class="text-label">%s · Members %s</p>%s</div></li>'
     ) % (letter, gid, name, desc, owner, members, join)
@@ -1050,8 +1050,8 @@ SITE_JS = r"""
       + '<div id="ph-install" hidden>'
       + '<div class="ph-logo-row"><img class="play-logo-image" src="/static/ecs/logo_R.svg" width="90" height="90" alt="R"></div>'
       + '<p class="ph-copy">You\'re moments away from getting into the game!</p>'
-      + '<a class="btn-primary-md ph-install-btn" id="ProtocolHandlerInstallButton" href="/download.html">Download and Install Roblox</a>'
-      + '<p class="ph-help"><a href="/help.html">Click here for help</a></p>'
+      + '<a class="btn-primary-md ph-install-btn" id="ProtocolHandlerInstallButton" href="/download">Download and Install Roblox</a>'
+      + '<p class="ph-help"><a href="/help">Click here for help</a></p>'
       + '</div></div>';
     document.body.appendChild(box);
   }
@@ -1088,7 +1088,7 @@ SITE_JS = r"""
     fetch('/game/get-join-script?placeId=' + encodeURIComponent(lastPlaceId), {
       credentials: 'same-origin'
     }).then(function (r) {
-      if (r.status === 401) { window.location.href = '/signup.html'; return null; }
+      if (r.status === 401) { window.location.href = '/signup'; return null; }
       return r.json();
     }).then(function (data) {
       if (!data) return;
@@ -1137,7 +1137,12 @@ SITE_JS = r"""
   var launchQ = /(?:\\?|&)launch=1(?:&|$)/.exec(location.search);
   if (launchQ) {
     var idm = location.search.match(/[?&]id=(\d+)/);
-    if (idm) launchPlace(idm[1]);
+    var pid = idm ? idm[1] : '';
+    if (!pid) {
+      var pm = location.pathname.match(/\/games\/(\d+)/);
+      if (pm) pid = pm[1];
+    }
+    if (pid) launchPlace(pid);
   }
 
   var wrapEl = document.getElementById('wrap');
@@ -1445,7 +1450,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         if user and place.get("creator_id") and user["id"] == place["creator_id"]:
             html = html.replace(
                 "{{GAME_GEAR}}",
-                '<div class="ecs-game-gear"><a href="/create-loggedin.html">Configure</a></div>',
+                '<div class="ecs-game-gear"><a href="/develop">Configure</a></div>',
             )
         else:
             html = html.replace("{{GAME_GEAR}}", "")
@@ -1500,7 +1505,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 html = html.replace(
                     "{{PROFILE_GEAR}}",
                     '<a href="#" id="update-status-link">Update Status</a>'
-                    '<a href="/inventory-loggedin.html">Inventory</a>',
+                    '<a href="/inventory">Inventory</a>',
                 )
                 html = html.replace("{{ADD_FRIEND}}", "")
                 html = html.replace("{{MESSAGE_BTN}}", "")
@@ -1508,8 +1513,8 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 html = html.replace(
                     "{{PROFILE_GEAR}}",
                     (
-                        '<a href="/inventory.html?id=%s">Inventory</a>'
-                        '<a href="/trades-loggedin.html">Trade</a>'
+                        '<a href="/inventory?id=%s">Inventory</a>'
+                        '<a href="/trades">Trade</a>'
                     )
                     % viewed["id"],
                 )
@@ -1522,7 +1527,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 )
                 html = html.replace(
                     "{{MESSAGE_BTN}}",
-                    '<a class="profile-action-btn" href="/messages-loggedin.html#compose-pane">Message</a>',
+                    '<a class="profile-action-btn" href="/messages#compose-pane">Message</a>',
                 )
             else:
                 html = html.replace("{{PROFILE_GEAR}}", "")
@@ -1670,7 +1675,7 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             parts = []
             for c in grp:
                 cls = "cc-cat selected" if category == c else "cc-cat"
-                parts.append('<a class="%s" href="/avatar-loggedin.html?tab=wardrobe&category=%s">%s</a>' % (cls, c, c))
+                parts.append('<a class="%s" href="/avatar?tab=wardrobe&category=%s">%s</a>' % (cls, c, c))
             bits.append('<span class="cc-cat-line">' + line + " | ".join(parts) + "</span>")
         html = html.replace("{{AVATAR_SUBCATS}}", "<br>".join(bits))
         outfits = db.list_outfits(user["id"])

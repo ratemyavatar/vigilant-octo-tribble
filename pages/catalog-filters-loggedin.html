@@ -23,7 +23,7 @@
 <div class="ecs-catalog">
 <div class="ecs-catalog-top">
 <h1 class="ecs-page-title">Catalog</h1>
-<form class="games-filter-bar catalog-search" method="get" action="/catalog.html">
+<form class="games-filter-bar catalog-search" method="get" action="/catalog">
 <input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
 <select class="input-field rbx-select" name="category">{{CATEGORY_OPTS}}</select>
 <button type="submit" class="btn-legacy">Search</button>
@@ -33,7 +33,7 @@
 <aside class="menu-vertical catalog-left">
 <p class="browse-by">Browse by</p>
 <h2 class="browse-cat">Category</h2>
-<ul class="menu-vertical"><li class="menu-option"><a href="/catalog.html?category=">Featured</a></li><li class="menu-option"><a href="/catalog.html?category=Hat">Hats</a></li><li class="menu-option"><a href="/catalog.html?category=Hair">Hair</a></li><li class="menu-option"><a href="/catalog.html?category=Face">Faces</a></li><li class="menu-option"><a href="/catalog.html?category=Shirt">Shirts</a></li><li class="menu-option"><a href="/catalog.html?category=Pants">Pants</a></li><li class="menu-option"><a href="/catalog.html?category=Gear">Gear</a></li><li class="menu-option"><a href="/catalog.html?category=Accessory">Accessories</a></li></ul>
+<ul class="menu-vertical"><li class="menu-option"><a href="/catalog?category=">Featured</a></li><li class="menu-option"><a href="/catalog?category=Hat">Hats</a></li><li class="menu-option"><a href="/catalog?category=Hair">Hair</a></li><li class="menu-option"><a href="/catalog?category=Face">Faces</a></li><li class="menu-option"><a href="/catalog?category=Shirt">Shirts</a></li><li class="menu-option"><a href="/catalog?category=Pants">Pants</a></li><li class="menu-option"><a href="/catalog?category=Gear">Gear</a></li><li class="menu-option"><a href="/catalog?category=Accessory">Accessories</a></li></ul>
 <div class="catalog-legend">
 <details open>
 <summary>Legend</summary>
@@ -46,7 +46,7 @@
 <div class="catalog-right">
 <div class="catalog-results-head">
 <h2 class="catalog-showing">FEATURED ITEMS ON ROBLOX</h2>
-<form method="get" action="/catalog.html" class="sort-by-form">
+<form method="get" action="/catalog" class="sort-by-form">
 <span class="sort-by-label">Sort By:</span>
 <select class="input-field rbx-select" name="sort">{{CATALOG_SORT_OPTS}}</select>
 </form>
@@ -63,15 +63,15 @@
 <footer class="container-footer" id="footer-container">
 <div class="footer ecs-footer">
 <div class="footer-link-row">
-<a class="text-footer-nav" href="about.html">About Us</a>
-<a class="text-footer-nav" href="jobs.html">Jobs</a>
-<a class="text-footer-nav" href="blog.html">Blog</a>
-<a class="text-footer-nav" href="privacy.html">Privacy</a>
-<a class="text-footer-nav" href="help.html">Help</a>
-<a class="text-footer-nav" href="terms.html">Terms</a>
-<a class="text-footer-nav" href="credits.html">Credits</a>
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
 </div>
-<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="terms.html">Terms and Conditions</a>.</p>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
 </div></footer>
 </div>
 </body>

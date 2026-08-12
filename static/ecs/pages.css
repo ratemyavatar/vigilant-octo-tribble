@@ -975,3 +975,60 @@
 @media (max-width: 767px) {
   .develop-creations .develop-left { width: 100%; flex-basis: 100%; }
 }
+
+/* Download page — Korone card grid, dark official colors */
+.ecs-download { max-width: 1100px; padding-top: 4px; }
+.dl-title { color: #fff; font-size: 32px; font-weight: 700; margin: 0 0 6px; }
+.dl-sub { color: #bdbebe; font-size: 14px; margin: 0 0 20px; }
+.dl-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px 12px;
+}
+.dl-col {
+  flex: 1 1 280px;
+  max-width: 360px;
+  padding: 0 12px 24px;
+}
+.dl-card {
+  display: block;
+  background: #232527;
+  border: 1px solid #2d2f31;
+  padding: 20px 16px 12px;
+  text-align: center;
+  text-decoration: none !important;
+  color: #fff !important;
+  filter: grayscale(100%);
+  transition: filter 100ms;
+}
+.dl-card:hover {
+  filter: grayscale(0);
+  transition: filter 200ms;
+  text-decoration: none !important;
+}
+.dl-card-img {
+  width: 100%;
+  height: 100px;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  background: transparent;
+}
+.dl-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 16px 0 0;
+  min-height: 80px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dl-help { margin-bottom: 16px; }
+@media (max-width: 767px) {
+  .dl-title { font-size: 28px; }
+  .dl-col { flex-basis: 50%; max-width: 50%; }
+  .dl-card-name { min-height: 64px; font-size: 14px; }
+}

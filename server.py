@@ -42,6 +42,234 @@ NAV_IN = (PARTIALS / "nav_in.html").read_text(encoding="utf-8", errors="replace"
 AUTH_PAGES = {"login.html", "signup.html", "index.html", "landing.html"}
 
 
+PAGE_ALIASES = {
+    "home": "home",
+    "games": "games",
+    "discover": "games",
+    "game": "game",
+    "catalog": "catalog",
+    "item": "item",
+    "develop": "create",
+    "create": "create",
+    "download": "download",
+    "friends": "friends",
+    "avatar": "avatar",
+    "character": "avatar",
+    "inventory": "inventory",
+    "trades": "trades",
+    "trade": "trades",
+    "groups": "groups",
+    "messages": "messages",
+    "settings": "settings",
+    "search": "search",
+    "signup": "signup",
+    "login": "signup",
+    "robux": "robux",
+    "premium": "premium",
+    "help": "help",
+    "about": "about",
+    "blog": "blog",
+    "privacy": "privacy",
+    "terms": "terms",
+    "credits": "credits",
+    "promocodes": "promocodes",
+    "redeem": "promocodes",
+    "giftcards": "giftcards",
+    "parents": "parents",
+    "jobs": "jobs",
+    "accessibility": "accessibility",
+    "payment": "payment",
+    "landing": "home",
+    "index": "home",
+}
+
+
+def resolve_site_path(path: str):
+    """Map a request path to (page_key, extra_query)."""
+    parts = [p for p in unquote(path).split("/") if p]
+    extra = {}
+    if not parts:
+        return "", extra
+    a = parts[0]
+    if a.lower().endswith(".html"):
+        a = a[:-5]
+    if a.lower().endswith("-loggedin"):
+        a = a[:-9]
+    a = a.lower()
+    if a == "profile" and len(parts) >= 3 and parts[1].lower() == "user":
+        extra["id"] = parts[2]
+        return "profile", extra
+    if a == "profile":
+        return "profile", extra
+    if a in ("games", "game") and len(parts) >= 2 and parts[1].split("?")[0].isdigit():
+        extra["id"] = parts[1].split("?")[0]
+        return "game", extra
+    if a == "catalog" and len(parts) >= 2 and parts[1].split("?")[0].isdigit():
+        extra["id"] = parts[1].split("?")[0]
+        return "item", extra
+    if a == "item" and len(parts) >= 2:
+        extra["id"] = parts[1].split("?")[0]
+        return "item", extra
+    if a == "groups" and len(parts) >= 2 and parts[1].split("?")[0].isdigit():
+        extra["id"] = parts[1].split("?")[0]
+        return "groups", extra
+    if a == "users" and len(parts) >= 2:
+        extra["id"] = parts[1].split("?")[0]
+        return "profile", extra
+    return PAGE_ALIASES.get(a, a), extra
+
+
+def pretty_path(page_key: str, q: dict | None = None) -> str:
+    q = q or {}
+    ident = str(q.get("id") or q.get("placeId") or q.get("userId") or "")
+    if page_key == "game" and ident.isdigit():
+        return "/games/%s" % ident
+    if page_key == "profile" and ident.isdigit():
+        return "/profile/user/%s" % ident
+    if page_key == "item" and ident.isdigit():
+        return "/catalog/%s" % ident
+    if page_key == "groups" and ident.isdigit():
+        return "/groups/%s" % ident
+    slug = {
+        "home": "/home",
+        "games": "/games",
+        "catalog": "/catalog",
+        "download": "/download",
+        "signup": "/signup",
+        "login": "/signup",
+        "create": "/develop",
+        "discover": "/games",
+        "character": "/avatar",
+        "item": "/catalog",
+        "index": "/home",
+        "landing": "/home",
+        "trade": "/trades",
+        "redeem": "/promocodes",
+    }.get(page_key)
+    return slug or ("/" + page_key)
+
+
+def pretty_urls(html: str) -> str:
+    """Rewrite leftover .html / -loggedin links so the address bar stays clean."""
+
+    def _qextra(raw: str) -> str:
+        raw = (raw or "").replace("&amp;", "&")
+        if not raw:
+            return ""
+        if raw.startswith("#"):
+            return raw
+        if raw.startswith("&"):
+            return "?" + raw[1:]
+        if raw.startswith("?"):
+            return raw
+        return "?" + raw
+
+    def _rewrite(kind, ident, extra, quote):
+        extra = _qextra(extra or "")
+        if kind == "game":
+            dest = "/games/%s" % ident
+        elif kind == "profile":
+            dest = "/profile/user/%s" % ident
+        elif kind == "item":
+            dest = "/catalog/%s" % ident
+        else:
+            dest = "/groups/%s" % ident
+        return "%s%s%s" % (quote, dest, extra + quote)
+
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?(?:game|games)(?:-loggedin)?\.html\?id=(\d+)([^'"]*)\2''',
+        lambda m: "%s=%s" % (m.group(1), _rewrite("game", m.group(3), m.group(4), m.group(2))),
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?profile(?:-loggedin)?\.html\?id=(\d+)([^'"]*)\2''',
+        lambda m: "%s=%s" % (m.group(1), _rewrite("profile", m.group(3), m.group(4), m.group(2))),
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?item(?:-loggedin)?\.html\?id=(\d+)([^'"]*)\2''',
+        lambda m: "%s=%s" % (m.group(1), _rewrite("item", m.group(3), m.group(4), m.group(2))),
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?groups(?:-loggedin)?\.html\?id=(\d+)([^'"]*)\2''',
+        lambda m: "%s=%s" % (m.group(1), _rewrite("groups", m.group(3), m.group(4), m.group(2))),
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?(?:create|develop)(?:-loggedin)?\.html''',
+        r"\1=\2/develop",
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?(?:discover|games)(?:-loggedin)?\.html''',
+        r"\1=\2/games",
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?([a-z0-9-]+)-loggedin\.html''',
+        r"\1=\2/\3",
+        html,
+    )
+    html = re.sub(
+        r'''(?i)(href|action)=(['"])/?([a-z0-9-]+)\.html''',
+        r"\1=\2/\3",
+        html,
+    )
+    html = re.sub(r'''(?i)href=(['"])/login\1''', r"href=\1/signup\1", html)
+    html = re.sub(r'''(?i)href=(['"])/create(\?|#|['"])''', r"href=\1/develop\2", html)
+    html = re.sub(r'''(?i)href=(['"])/discover(\?|#|['"])''', r"href=\1/games\2", html)
+    html = re.sub(r'''(?i)(['"])/(?:signup|login)\.html\1''', r"\1/signup\1", html)
+    html = re.sub(r'''(?i)(['"])/help\.html\1''', r"\1/help\1", html)
+    return html
+
+
+def leftover_query(q: dict, dest: str, skip: set) -> str:
+    leftover = []
+    for k, v in q.items():
+        if k in skip:
+            continue
+        leftover.append("%s=%s" % (quote(k), quote(str(v))))
+    if leftover:
+        dest += ("&" if "?" in dest else "?") + "&".join(leftover)
+    return dest
+
+
+def ugly_redirect(path: str, q: dict, user=None) -> str | None:
+    """Send .html / -loggedin / aliases to the clean public URL."""
+    low = path.lower()
+    if any(x in low for x in ("/static/", "/thumbs/", "/data/", "/api/", "/admin")):
+        return None
+    if low.endswith(".ashx") or "/login/" in low:
+        return None
+    key, extra = resolve_site_path(path)
+    if not key:
+        key = "home" if user else "signup"
+    if key == "home" and not user:
+        key = "signup"
+    if key == "signup" and user:
+        key = "home"
+    qq = dict(q)
+    qq.update(extra)
+    dest = pretty_path(key, qq)
+    skip = set()
+    if dest.startswith("/games/") or dest.startswith("/profile/user/") or dest.startswith("/catalog/") or (
+        dest.startswith("/groups/") and dest.count("/") >= 2
+    ):
+        skip.update({"id", "placeId", "placeid", "userId", "userid"})
+    dest = leftover_query(qq, dest, skip)
+    dest_path = dest.split("?", 1)[0]
+    req_path = path.rstrip("/") or "/"
+    dest_cmp = dest_path.rstrip("/") or "/"
+    dirty = low.endswith(".html") or "-loggedin" in low or low.endswith(".aspx")
+    if dest_cmp != req_path or dirty:
+        if dest != path:
+            return dest
+    return None
+
+
+
+
 def next_game_port():
     start = int(CONFIG.get("game_port_start", 53640))
     con = db.connect()
@@ -98,44 +326,44 @@ def rewrite_thumbs(html: str, user: dict | None) -> str:
 
 def rewrite_offsite(html: str, logged_in: bool) -> str:
     """Keep in-site nav from leaving for roblox.com."""
-    s = "-loggedin.html" if logged_in else ".html"
+    s = ""
     pairs = [
-        (r"https?://(?:www\.|web\.)?roblox\.com/info/privacy[^\"'\\s>]*", "privacy" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/info/terms[^\"'\\s>]*", "terms" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/info/help[^\"'\\s>]*", "help" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/help[^\"'\\s>]*", "help" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/search/users[^\"'\\s>]*", "search" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/search/groups[^\"'\\s>]*", "groups" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/discover[^\"'\\s>]*", "discover" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/catalog[^\"'\\s>]*", "catalog" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/develop[^\"'\\s>]*", "create" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/premium/membership[^\"'\\s>]*", "premium" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/upgrades/robux[^\"'\\s>]*", "robux" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/my/groups[^\"'\\s>]*", "groups" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/My/Groups[^\"'\\s>]*", "groups" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/groups[^\"'\\s>]*", "groups" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/my/character[^\"'\\s>]*", "avatar" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/my/avatar[^\"'\\s>]*", "avatar" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/my/account[^\"'\\s>]*", "settings" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/my/messages[^\"'\\s>]*", "messages" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/users/friends[^\"'\\s>]*", "friends" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/users/[^\"'\\s>]*/profile[^\"'\\s>]*", "profile" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/newlogin[^\"'\\s>]*", "login.html"),
-        (r"https?://(?:www\.|web\.)?roblox\.com/login[^\"'\\s>]*", "login.html"),
-        (r"https?://(?:www\.|web\.)?roblox\.com/home[^\"'\\s>]*", "home" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/games/\d+[^\"'\\s>]*", "game" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/games[^\"'\\s>]*", "games" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/giftcards[^\"'\\s>]*", "giftcards" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/places/create[^\"'\\s>]*", "create" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/My/Money\.aspx[^\"'\\s>]*", "trades" + s),
-        (r"https?://forum\.roblox\.com[^\"'\\s>]*", "blog" + s),
-        (r"https?://wiki\.roblox\.com[^\"'\\s>]*", "help" + s),
-        (r"https?://create\.roblox\.com[^\"'\\s>]*", "create" + s),
-        (r"https?://developer\.roblox\.com[^\"'\\s>]*", "help" + s),
-        (r"https?://corp\.roblox\.com[^\"'\\s>]*", "about" + s),
-        (r"https?://en\.help\.roblox\.com[^\"'\\s>]*", "help" + s),
-        (r"https?://blog\.roblox\.com[^\"'\\s>]*", "blog" + s),
-        (r"https?://(?:www\.|web\.)?roblox\.com/?", "home" + s),
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/privacy[^\"'\\s>]*", "/privacy"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/terms[^\"'\\s>]*", "/terms"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/info/help[^\"'\\s>]*", "/help"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/help[^\"'\\s>]*", "/help"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/search/users[^\"'\\s>]*", "/search"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/search/groups[^\"'\\s>]*", "/groups"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/discover[^\"'\\s>]*", "/games"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/catalog[^\"'\\s>]*", "/catalog"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/develop[^\"'\\s>]*", "/develop"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/premium/membership[^\"'\\s>]*", "/premium"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/upgrades/robux[^\"'\\s>]*", "/robux"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/groups[^\"'\\s>]*", "/groups"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/My/Groups[^\"'\\s>]*", "/groups"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/groups[^\"'\\s>]*", "/groups"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/character[^\"'\\s>]*", "/avatar"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/avatar[^\"'\\s>]*", "/avatar"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/account[^\"'\\s>]*", "/settings"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/my/messages[^\"'\\s>]*", "/messages"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/users/friends[^\"'\\s>]*", "/friends"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/users/[^\"'\\s>]*/profile[^\"'\\s>]*", "/profile"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/newlogin[^\"'\\s>]*", "/signup"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/login[^\"'\\s>]*", "/signup"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/home[^\"'\\s>]*", "/home"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/games/\d+[^\"'\\s>]*", "/games"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/games[^\"'\\s>]*", "/games"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/giftcards[^\"'\\s>]*", "/giftcards"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/places/create[^\"'\\s>]*", "/develop"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/My/Money\.aspx[^\"'\\s>]*", "/trades"),
+        (r"https?://forum\.roblox\.com[^\"'\\s>]*", "/blog"),
+        (r"https?://wiki\.roblox\.com[^\"'\\s>]*", "/help"),
+        (r"https?://create\.roblox\.com[^\"'\\s>]*", "/develop"),
+        (r"https?://developer\.roblox\.com[^\"'\\s>]*", "/help"),
+        (r"https?://corp\.roblox\.com[^\"'\\s>]*", "/about"),
+        (r"https?://en\.help\.roblox\.com[^\"'\\s>]*", "/help"),
+        (r"https?://blog\.roblox\.com[^\"'\\s>]*", "/blog"),
+        (r"https?://(?:www\.|web\.)?roblox\.com/?", "/home"),
     ]
     for pat, dest in pairs:
         html = re.sub(pat, dest, html, flags=re.I)
@@ -201,25 +429,19 @@ def inject_nav(html: str, user: dict | None) -> str:
 
 
 def pick_page(name: str, user: dict | None) -> Path:
-    name = name.lstrip("/").split("?")[0]
-    if not name or name == "/":
-        name = "home-loggedin.html" if user else "signup.html"
-    if not name.endswith(".html"):
-        name = name + ".html"
-    if name in ("game-shindo.html", "game-shindo-loggedin.html"):
-        name = "game-loggedin.html" if user else "game.html"
-    if name in ("develop.html", "develop-loggedin.html"):
-        name = "create-loggedin.html" if user else "create.html"
-    landing = {"login.html", "index.html", "landing.html", "signup.html", "home.html"}
-    if name in landing and not user:
-        name = "signup.html"
-    if name in landing and user:
-        name = "home-loggedin.html"
-    if user and name not in AUTH_PAGES:
-        twin = name[:-5] + "-loggedin.html" if not name.endswith("-loggedin.html") else name
+    key, _extra = resolve_site_path(name)
+    if not key:
+        key = "home" if user else "signup"
+    if key == "home" and not user:
+        key = "signup"
+    if key == "signup" and user:
+        key = "home"
+    fname = key + ".html"
+    if user and fname not in AUTH_PAGES:
+        twin = key + "-loggedin.html"
         if (PAGES / twin).exists():
             return PAGES / twin
-    return PAGES / name
+    return PAGES / fname
 
 
 def json_bytes(obj, status=200):
@@ -339,7 +561,7 @@ class Handler(BaseHTTPRequestHandler):
             traceback.print_exc()
             self.send_raw(500, "text/plain", str(e).encode())
 
-    # ----- Roblox client + site API -----
+    # ----- Roblox clientite API -----
     def api(self, method, path, low, q):
         user = self.current_user()
         if user:
@@ -373,7 +595,7 @@ class Handler(BaseHTTPRequestHandler):
             if admin.is_blocked(u):
                 return admin.blocked_page(u)
             sid = db.create_session(u["id"])
-            self.redirect("/home-loggedin.html", set_cookie=sid)
+            self.redirect("/home", set_cookie=sid)
             return False
 
         if low in ("/signup", "/signup/") and method == "POST":
@@ -397,19 +619,19 @@ class Handler(BaseHTTPRequestHandler):
             if not u:
                 return text_bytes("Username taken or invalid", status=400)
             sid = db.create_session(u["id"])
-            self.redirect("/home-loggedin.html", set_cookie=sid)
+            self.redirect("/home", set_cookie=sid)
             return False
 
         if low in ("/logout", "/login/logout.ashx"):
             c = self._cookies()
             if ".ROBLOSECURITY" in c:
                 db.delete_session(c[".ROBLOSECURITY"].value)
-            self.redirect("/login.html", clear_cookie=True)
+            self.redirect("/signup", clear_cookie=True)
             return False
 
         if low in ("/places/create", "/places/create/") and method == "POST":
             if not user:
-                self.redirect("/login.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             pid = db.create_place(
@@ -420,7 +642,7 @@ class Handler(BaseHTTPRequestHandler):
                 form.get("TemplateID") or "",
                 form.get("NumberOfPlayersMax") or 10,
             )
-            self.redirect("/create-loggedin.html?tab=my&View=0")
+            self.redirect("/develop?tab=my&View=0")
             return False
 
         if low in ("/catalog/upload",) and method == "POST":
@@ -450,14 +672,14 @@ class Handler(BaseHTTPRequestHandler):
                 return json_bytes({"id": aid})
             view = form.get("view") or form.get("View") or ""
             if str(view).isdigit():
-                self.redirect("/create-loggedin.html?tab=my&View=%s" % view)
+                self.redirect("/develop?tab=my&View=%s" % view)
             else:
-                self.redirect("/catalog-loggedin.html")
+                self.redirect("/catalog")
             return False
 
         if low in ("/friends/add", "/friends/add/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             other = form.get("userId") or form.get("userid") or ""
@@ -465,7 +687,7 @@ class Handler(BaseHTTPRequestHandler):
                 named = db.get_user_by_name(form.get("username") or "")
                 other = named["id"] if named else 0
             db.request_friend(user["id"], other)
-            self.redirect("/friends-loggedin.html")
+            self.redirect("/friends")
             return False
 
         if "get-join-script" in low:
@@ -492,7 +714,7 @@ class Handler(BaseHTTPRequestHandler):
             if not user:
                 if want_json:
                     return json_bytes({"error": "login"}, 401)
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             try:
                 pid = int(q.get("placeId") or q.get("placeid") or q.get("id") or 0)
@@ -507,12 +729,12 @@ class Handler(BaseHTTPRequestHandler):
                 out["ok"] = True
                 out["uri"] = proto
                 return json_bytes(out)
-            self.redirect("/game-loggedin.html?id=%s&launch=1" % pid)
+            self.redirect("/games/%s?launch=1" % pid)
             return False
 
         if low in ("/settings/update", "/settings/update/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             tab = form.get("tab") or ""
@@ -561,38 +783,38 @@ class Handler(BaseHTTPRequestHandler):
                     updates["language"] = form.get("language")
             if updates:
                 db.save_user_settings(user["id"], updates)
-            dest = "/settings-loggedin.html"
+            dest = "/settings"
             if tab:
                 dest += "#" + tab
             elif "status" in form and "username" not in form:
-                dest = "/home-loggedin.html"
+                dest = "/home"
             self.redirect(dest)
             return False
 
         if low in ("/settings/password", "/settings/password/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             ok = db.update_password(user["id"], form.get("current_password"), form.get("new_password"))
             if not ok:
                 return text_bytes("Current password is wrong or new password is empty", status=400)
-            self.redirect("/settings-loggedin.html#security")
+            self.redirect("/settings#security")
             return False
 
         if low in ("/settings/sessions/logout", "/settings/sessions/logout/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             c = self._cookies()
             sid = c[".ROBLOSECURITY"].value if ".ROBLOSECURITY" in c else ""
             db.delete_other_sessions(user["id"], sid)
-            self.redirect("/settings-loggedin.html#security")
+            self.redirect("/settings#security")
             return False
 
         if low in ("/messages/send", "/messages/send/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             to_id = form.get("toId") or form.get("to") or ""
@@ -600,25 +822,25 @@ class Handler(BaseHTTPRequestHandler):
                 named = db.get_user_by_name(form.get("username") or form.get("to") or "")
                 to_id = named["id"] if named else 0
             db.send_message(user["id"], to_id, form.get("body") or "", form.get("subject") or "")
-            self.redirect("/messages-loggedin.html")
+            self.redirect("/messages")
             return False
 
         if low in ("/groups/create", "/groups/create/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.create_group(user["id"], form.get("name") or "", form.get("description") or "")
-            self.redirect("/groups-loggedin.html")
+            self.redirect("/groups")
             return False
 
         if low in ("/promo/redeem", "/promo/redeem/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.redeem_promo(user["id"], form.get("code") or "")
-            self.redirect("/promocodes-loggedin.html")
+            self.redirect("/promocodes")
             return False
 
         if low in ("/catalog/buy", "/catalog/buy/") and method == "POST":
@@ -630,59 +852,59 @@ class Handler(BaseHTTPRequestHandler):
             accept = (self.headers.get("Accept") or "").lower()
             if "application/json" in accept:
                 return json_bytes({"ok": ok, "reason": reason}, 200 if ok else 400)
-            self.redirect("/catalog-loggedin.html")
+            self.redirect("/catalog")
             return False
 
         if low in ("/friends/accept", "/friends/accept/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             other = form.get("userId") or form.get("id") or 0
             db.accept_friend(user["id"], other)
-            self.redirect("/friends-loggedin.html#requests-pane")
+            self.redirect("/friends#requests-pane")
             return False
 
         if low in ("/friends/decline", "/friends/decline/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             other = form.get("userId") or form.get("id") or 0
             db.decline_friend(user["id"], other)
-            self.redirect("/friends-loggedin.html#requests-pane")
+            self.redirect("/friends#requests-pane")
             return False
 
         if low in ("/avatar/outfit/create", "/avatar/outfit/create/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.create_outfit(user["id"], form.get("name") or "Outfit")
-            self.redirect("/avatar-loggedin.html?tab=outfits")
+            self.redirect("/avatar?tab=outfits")
             return False
 
         if low in ("/avatar/outfit/wear", "/avatar/outfit/wear/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.wear_outfit(user["id"], form.get("id") or 0)
-            self.redirect("/avatar-loggedin.html?tab=outfits")
+            self.redirect("/avatar?tab=outfits")
             return False
 
         if low in ("/avatar/outfit/delete", "/avatar/outfit/delete/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.delete_outfit(user["id"], form.get("id") or 0)
-            self.redirect("/avatar-loggedin.html?tab=outfits")
+            self.redirect("/avatar?tab=outfits")
             return False
 
         if low in ("/avatar/colors", "/avatar/colors/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             color = form.get("color") or ""
@@ -704,86 +926,86 @@ class Handler(BaseHTTPRequestHandler):
                     updates[allowed[part]] = color
             if updates:
                 db.save_user_settings(user["id"], updates)
-            self.redirect("/avatar-loggedin.html")
+            self.redirect("/avatar")
             return False
 
         if low in ("/avatar/type", "/avatar/type/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             kind = (form.get("avatar_type") or "R6").upper()
             if kind not in ("R6", "R15"):
                 kind = "R6"
             db.save_user_settings(user["id"], {"avatar_type": kind})
-            self.redirect("/avatar-loggedin.html")
+            self.redirect("/avatar")
             return False
 
         if low in ("/avatar/wear", "/avatar/wear/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.wear_asset(user["id"], form.get("id") or 0)
-            self.redirect("/avatar-loggedin.html")
+            self.redirect("/avatar")
             return False
 
         if low in ("/avatar/unwear", "/avatar/unwear/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.unwear_asset(user["id"], form.get("id") or 0)
-            self.redirect("/avatar-loggedin.html")
+            self.redirect("/avatar")
             return False
 
         if low in ("/places/favorite", "/places/favorite/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             pid = form.get("placeId") or form.get("id") or 0
             db.toggle_favorite(user["id"], pid)
-            self.redirect("/game-loggedin.html?id=%s" % pid)
+            self.redirect("/games/%s" % pid)
             return False
 
         if low in ("/places/vote", "/places/vote/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             pid = form.get("placeId") or form.get("id") or 0
             up = str(form.get("up") or "1") in ("1", "true", "True", "up")
             ok, reason = db.set_place_vote(user["id"], pid, up)
-            dest = "/game-loggedin.html?id=%s" % pid
+            dest = "/games/%s" % pid
             if not ok and reason == "play":
-                dest += "&vote=play"
+                dest += ("&" if "?" in dest else "?") + "vote=play"
             self.redirect(dest)
             return False
 
         if low in ("/places/comment", "/places/comment/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             pid = form.get("placeId") or form.get("id") or 0
             db.add_place_comment(user["id"], pid, form.get("body") or "")
-            self.redirect("/game-loggedin.html?id=%s#comments-pane" % pid)
+            self.redirect("/games/%s#comments-pane" % pid)
             return False
 
         if low in ("/groups/join", "/groups/join/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             gid = form.get("groupId") or form.get("id") or 0
             db.join_group(gid, user["id"])
-            self.redirect("/groups-loggedin.html?id=%s" % gid)
+            self.redirect("/groups/%s" % gid)
             return False
 
         if low in ("/trades/send", "/trades/send/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             named = db.get_user_by_name(form.get("username") or "")
@@ -794,25 +1016,25 @@ class Handler(BaseHTTPRequestHandler):
                     raw = raw.strip()
                     if raw.isdigit():
                         db.add_trade_item(tid, user["id"], int(raw))
-            self.redirect("/trades-loggedin.html")
+            self.redirect("/trades")
             return False
 
         if low in ("/trades/accept", "/trades/accept/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.set_trade_status(form.get("id") or 0, user["id"], "completed")
-            self.redirect("/trades-loggedin.html")
+            self.redirect("/trades")
             return False
 
         if low in ("/trades/decline", "/trades/decline/") and method == "POST":
             if not user:
-                self.redirect("/signup.html")
+                self.redirect("/signup")
                 return False
             form = self.parse_form()
             db.set_trade_status(form.get("id") or 0, user["id"], "declined")
-            self.redirect("/trades-loggedin.html")
+            self.redirect("/trades")
             return False
 
         # auth ticket
@@ -1163,6 +1385,16 @@ class Handler(BaseHTTPRequestHandler):
         user = self.current_user()
         if user:
             user = admin.refresh_user(user)
+        parsed = urlparse(self.path)
+        qs = parse_qs(parsed.query)
+        q = {k: v[0] if v else "" for k, v in qs.items()}
+        if self.command == "GET":
+            dest = ugly_redirect(path, q, user)
+            if dest:
+                self.redirect(dest)
+                return
+        key, extra = resolve_site_path(path)
+        q.update(extra)
         # static data files
         rel = path.lstrip("/")
         if rel.startswith("static/") or rel.startswith("data/"):
@@ -1200,11 +1432,9 @@ class Handler(BaseHTTPRequestHandler):
             html = inject_nav(html, user)
             html = rewrite_thumbs(html, user)
             html = rewrite_offsite(html, user is not None)
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            q = {k: v[0] if v else "" for k, v in qs.items()}
             html = live.prepare(html, page.name, user, q)
             html = admin.inject_site_alert(html)
+            html = pretty_urls(html)
             # wire forms
             html = html.replace(
                 '<form class="login-form" name="loginForm">',
