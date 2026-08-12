@@ -1,0 +1,61 @@
+<div id="wrap" class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled="false">
+<div id="header" class="navbar-fixed-top rbx-header" data-isauthenticated="true" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div data-behavior="nav-notification" class="rbx-nav-collapse"><span class="icon-nav-menu"></span></div>
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/home-loggedin.html"><span class="icon-logo"></span><span class="icon-logo-r"></span></a>
+      </div>
+    </div>
+    <ul class="nav rbx-navbar hidden-xs hidden-sm col-md-4 col-lg-3">
+      <li><a class="nav-menu-title" href="/games-loggedin.html">Games</a></li>
+      <li><a class="nav-menu-title" href="/catalog-loggedin.html">Catalog</a></li>
+      <li><a class="nav-menu-title" href="/create-loggedin.html">Develop</a></li>
+      <li><a class="buy-robux nav-menu-title" href="/robux-loggedin.html">Robux</a></li>
+    </ul>
+    <div id="navbar-universal-search" class="navbar-left rbx-navbar-search col-xs-5 col-sm-6 col-md-3" role="search">
+      <div class="input-group">
+        <form action="/search.html" method="get">
+          <input id="navbar-search-input" class="form-control input-field" type="text" name="keyword" placeholder="Search" maxlength="120">
+        </form>
+        <div class="input-group-btn">
+          <button id="navbar-search-btn" class="input-addon-btn" type="submit"><span class="icon-nav-search"></span></button>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-right rbx-navbar-right">
+      <ul class="nav navbar-right rbx-navbar-icon-group">
+        <li id="navbar-setting" class="navbar-icon-item">
+          <a class="rbx-menu-item" href="/settings-loggedin.html"><span class="icon-nav-settings" id="nav-settings"></span></a>
+        </li>
+        <li id="navbar-robux" class="navbar-icon-item">
+          <a id="nav-robux-icon" class="nav-robux-icon rbx-menu-item" href="/robux-loggedin.html">
+            <span class="icon-nav-robux" id="nav-robux"></span>
+            <span class="rbx-text-navbar-right" id="nav-robux-amount">{{ROBUX}}</span>
+          </a>
+        </li>
+      </ul>
+      <div class="xsmall age-bracket-label"><span class="age-bracket-label-username">{{USERNAME}}: </span></div>
+    </div>
+  </div>
+</div>
+<div id="navigation" class="rbx-left-col" data-behavior="left-col">
+  <ul>
+    <li class="text-lead"><a class="text-overflow" href="/profile-loggedin.html">{{USERNAME}}</a></li>
+    <li class="rbx-divider"></li>
+  </ul>
+  <div class="rbx-scrollbar" data-toggle="scrollbar">
+    <ul>
+      <li><a href="/home-loggedin.html" id="nav-home"><span class="icon-nav-home"></span><span>Home</span></a></li>
+      <li><a href="/profile-loggedin.html" id="nav-profile"><span class="icon-nav-profile"></span><span>Profile</span></a></li>
+      <li id="navigation-messages"><a href="/messages-loggedin.html" id="nav-message" data-count="0"><span class="icon-nav-message"></span><span>Messages</span></a></li>
+      <li id="navigation-friends"><a href="/friends-loggedin.html" id="nav-friends" data-count="0"><span class="icon-nav-friends"></span><span>Friends</span></a></li>
+      <li><a href="/avatar-loggedin.html" id="nav-character"><span class="icon-nav-charactercustomizer"></span><span>Avatar</span></a></li>
+      <li><a href="/inventory-loggedin.html" id="nav-inventory"><span class="icon-nav-inventory"></span><span>Inventory</span></a></li>
+      <li><a href="/trades-loggedin.html" id="nav-trade"><span class="icon-nav-trade"></span><span>Trade</span></a></li>
+      <li><a href="/groups-loggedin.html" id="nav-group"><span class="icon-nav-group"></span><span>Groups</span></a></li>
+      <li><a href="/blog-loggedin.html" id="nav-blog"><span class="icon-nav-blog"></span><span>Blog</span></a></li>
+      <li class="rbx-upgrade-now"><a href="/premium-loggedin.html" class="btn-secondary-md" id="upgrade-now-button">Upgrade Now</a></li>
+    </ul>
+  </div>
+</div>

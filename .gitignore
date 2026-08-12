@@ -1,0 +1,9 @@
+data/site.db
+data/assets/*
+data/places/*
+data/renders/*
+!data/assets/.gitkeep
+!data/places/.gitkeep
+!data/renders/.gitkeep
+__pycache__/
+*.pyc
