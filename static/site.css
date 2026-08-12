@@ -32,7 +32,7 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
   right: 0;
   z-index: 1030;
   height: 40px;
-  overflow: visible;
+  overflow: visible !important;
   background: linear-gradient(180deg, #323537 0%, #232527 72%, #1c1e20 100%);
   border-bottom: 1px solid #111;
   padding: 0;
@@ -215,19 +215,19 @@ img { max-width: 100%; border: 0; vertical-align: middle; }
 .dropdown-menu, .settings-dropdown,
 #settings-popover {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 40px;
-  right: 0;
+  right: 8px;
   left: auto;
   min-width: 180px;
-  width: auto;
+  width: max-content;
   margin: 0;
   padding: 6px 0;
   list-style: none;
   background: #191b1d !important;
   border: 1px solid #3c3e40;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65);
-  z-index: 6000;
+  z-index: 10050;
 }
 .dropdown-menu.open, .settings-dropdown.open,
 #settings-popover.open { display: block; }

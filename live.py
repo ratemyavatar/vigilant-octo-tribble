@@ -193,15 +193,15 @@ def game_card(place: dict, suffix: str) -> str:
         '<a class="game-card-link" href="%s">'
         '<div class="game-card-thumb-container">'
         '<img class="game-card-thumb sgc-thumb" src="%s" alt="%s" title="%s">'
+        '<span class="btn-play-green rbx-play-button game-card-play" data-placeid="%s">Play</span>'
         "</div>"
         '<div class="game-card-name game-name-title sgc-name" title="%s">%s</div>'
         '<div class="game-card-info sgc-playing">%s Playing</div>'
         '<div class="sgc-vote"><span class="icon-thumbs-up"></span>'
         '<span class="vote-bar"><span class="vote-fill"></span></span></div>'
         "</a>"
-        '<a class="btn-play-green rbx-play-button game-card-play" href="#" data-placeid="%s">Play</a>'
         "</div></li>"
-    ) % (name, href, thumb, name, name, name, name, playing, pid)
+    ) % (name, href, thumb, name, name, pid, name, name, playing)
 
 
 def friend_card(user: dict, suffix: str) -> str:

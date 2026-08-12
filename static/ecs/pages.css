@@ -92,9 +92,15 @@
   display: inline-block;
 }
 .vote-fill { display: block; width: 70%; height: 5px; background: #757575; }
-.btn-play-green {
+.game-play-button-container .btn-play-green {
+  display: block;
   width: 100%;
-  max-width: 200px;
+  max-width: 180px;
+}
+.btn-play-green {
+  display: inline-block;
+  width: auto;
+  max-width: 180px;
   text-align: center;
   background: linear-gradient(180deg, #3ed67a 0%, #02b757 48%, #019a4a 100%) !important;
   color: #fff !important;
@@ -109,17 +115,26 @@
   text-decoration: none !important;
 }
 .btn-item-grad {
-  width: 100%;
-  max-width: none;
-  padding: 6px 10px;
-  font-size: 13px;
-}
-.game-card-play {
   display: block;
-  margin: 0 8px 8px;
+  width: calc(100% - 12px);
   max-width: none;
-  padding: 6px 8px;
-  font-size: 13px;
+  margin: 0 6px 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.game-card-thumb-container { position: relative; overflow: hidden; }
+.game-card-play {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 1.2;
   text-decoration: none !important;
 }
 .verified-badge {
