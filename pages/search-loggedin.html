@@ -20,14 +20,30 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="container-header"><h3>Search</h3></div>
-<div class="section-content">
-<form action="/search.html" method="get">
-<input class="input-field" name="keyword" placeholder="Search">
+<div class="container-header"><h1>Search</h1></div>
+<form action="/search.html" method="get" class="games-filter-bar">
+<input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
 <button type="submit" class="btn-primary-md">Search</button>
 </form>
-<p class="list-content">No Search Results Found</p>
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#people-pane" data-tab="people-pane">People</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#experiences-pane" data-tab="experiences-pane">Experiences</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#catalog-pane" data-tab="catalog-pane">Catalog</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#groups-pane" data-tab="groups-pane">Groups</a></li>
+</ul>
+<div id="people-pane" class="tab-pane settings-tab-pane active section-content">
+<ul class="hlist friend-list"></ul>
 </div>
+<div id="experiences-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="hlist games game-cards"></ul>
+</div>
+<div id="catalog-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="hlist item-cards"></ul>
+</div>
+<div id="groups-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="vlist group-list"></ul>
+</div>
+<p class="list-content">No Search Results Found</p>
 </div>
 </div>
 <footer class="container-footer" id="footer-container">

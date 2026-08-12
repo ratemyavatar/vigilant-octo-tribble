@@ -151,34 +151,105 @@ HOME = """<div class="col-xs-12 home-header">
 <div class="container-header"><h3>Friends (0)</h3><a href="friends.html" class="btn-secondary-xs">See All</a></div>
 <div class="section-content"><ul class="hlist friend-list"></ul></div>
 </div>
+<div class="container-list home-continue">
+<div class="container-header"><h3>Continue</h3></div>
+<ul class="hlist games game-cards" id="continue-list"></ul>
+</div>
+<div class="container-list home-favorites">
+<div class="container-header"><h3>Favorites</h3></div>
+<ul class="hlist games game-cards" id="favorites-list"></ul>
+</div>
 <div class="container-list home-games">
-<div class="container-header"><h3>Experiences</h3><a href="discover.html" class="btn-secondary-xs">See All</a></div>
+<div class="container-header"><h3>Recommended Experiences</h3><a href="discover.html" class="btn-secondary-xs">See All</a></div>
 <ul class="hlist games game-cards game-tile-list" id="games-list"></ul>
+</div>
+<div class="container-list home-creations">
+<div class="container-header"><h3>My Experiences</h3><a href="create.html" class="btn-secondary-xs">Create</a></div>
+<ul class="hlist games game-cards" id="my-places-list"></ul>
 </div>"""
 
 DISCOVER = """<div class="games-list-container">
-<div class="container-header"><h3>Experiences</h3></div>
+<div class="container-header"><h3>Discover</h3></div>
+<form class="games-filter-bar" method="get" action="/discover.html">
+<input class="input-field" name="keyword" placeholder="Search experiences" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="genre">{{GENRE_OPTS}}</select>
+<select class="input-field rbx-select" name="sort">{{SORT_OPTS}}</select>
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
 <ul class="hlist games game-cards game-tile-list" id="games-list"></ul>
 <p class="list-content">No Search Results Found</p>
 </div>"""
 
-FRIENDS = """<div class="section home-friends">
-<div class="container-header"><h3>Friends (0)</h3></div>
+FRIENDS = """<div class="section friends-content">
+<div class="container-header"><h1>Friends</h1></div>
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#friends-pane" data-tab="friends-pane">Friends</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#requests-pane" data-tab="requests-pane">Requests</a></li>
+</ul>
+<div id="friends-pane" class="tab-pane settings-tab-pane active">
 <div class="section-content">
 <form method="post" action="/friends/add" class="add-friend-form">
 <label class="form-label" for="friend-username">Add a Friend</label>
 <input class="input-field" id="friend-username" name="username" placeholder="Username">
-<button type="submit" class="btn-primary-md">Add Friend</button>
+<button type="submit" class="btn-primary-md">Send Request</button>
 </form>
+<h3>Friends (0)</h3>
 <ul class="hlist friend-list"></ul>
 <p class="list-content">No Search Results Found</p>
+</div>
+</div>
+<div id="requests-pane" class="tab-pane settings-tab-pane">
+<div class="section-content">
+<h3>Friend Requests</h3>
+<ul class="vlist request-list"></ul>
+<p class="list-content request-empty">No pending requests.</p>
+</div>
 </div>
 </div>"""
 
 CATALOG = """<div class="container-header"><h1>Catalog</h1></div>
+<div class="catalog-container">
+<aside class="menu-vertical catalog-left">
+<ul class="menu-vertical">
+<li class="menu-option"><a href="/catalog.html">Featured</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hat">Hats</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hair">Hair</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Face">Faces</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Shirt">Shirts</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Pants">Pants</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Gear">Gear</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Accessory">Accessories</a></li>
+</ul>
+</aside>
+<div class="catalog-right">
+<form class="games-filter-bar" method="get" action="/catalog.html">
+<input class="input-field" name="keyword" placeholder="Search catalog" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="category">{{CATEGORY_OPTS}}</select>
+<select class="input-field rbx-select" name="sort">{{CATALOG_SORT_OPTS}}</select>
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
 <div id="catalog-results" class="section-content">
 <ul class="hlist item-cards"></ul>
 <p class="list-content">No Search Results Found</p>
+</div>
+<div class="section-content">
+<h3>Create Item</h3>
+<p class="list-content">Upload an item to this server. Catalog starts empty until someone creates one.</p>
+<form method="post" action="/catalog/upload">
+<label class="form-label">Name</label>
+<input class="input-field" name="name" placeholder="Item name">
+<label class="form-label">Type</label>
+<select class="input-field" name="asset_type">
+<option>Hat</option><option>Hair</option><option>Face</option><option>Shirt</option><option>Pants</option><option>Gear</option><option>Accessory</option>
+</select>
+<label class="form-label">Price (Robux)</label>
+<input class="input-field" name="price" type="number" min="0" value="0">
+<label class="form-label">Description</label>
+<input class="input-field" name="description" placeholder="Description">
+<button type="submit" class="btn-primary-md">Create</button>
+</form>
+</div>
+</div>
 </div>"""
 
 PROFILE = """<div class="section profile-header">
@@ -198,6 +269,10 @@ PROFILE = """<div class="section profile-header">
 <div class="container-header"><h3>About</h3></div>
 <div class="section-content"><p class="list-content profile-blurb">{{PROFILE_BLURB}}</p></div>
 </div>
+<div class="section">
+<div class="container-header"><h3>Currently Wearing</h3></div>
+<div class="section-content"><ul class="hlist item-cards" id="profile-wearing"></ul></div>
+</div>
 <div class="section home-friends">
 <div class="container-header"><h3>Friends (0)</h3></div>
 <div class="section-content"><ul class="hlist friend-list"></ul></div>
@@ -205,6 +280,14 @@ PROFILE = """<div class="section profile-header">
 <div class="container-list">
 <div class="container-header"><h3>Experiences</h3></div>
 <ul class="hlist games game-cards"></ul>
+</div>
+<div class="section">
+<div class="container-header"><h3>Groups</h3></div>
+<div class="section-content"><ul class="vlist group-list"></ul></div>
+</div>
+<div class="container-list">
+<div class="container-header"><h3>Favorites</h3></div>
+<ul class="hlist games game-cards" id="profile-favorites"></ul>
 </div>"""
 
 GAME = """<div class="game-main-content">
@@ -217,7 +300,9 @@ GAME = """<div class="game-main-content">
 <div class="game-play-button-container">
 <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
 <a class="btn-primary-lg rbx-play-button" href="#" data-placeid="{{GAME_ID}}">Play</a>
-</div></div></div></div>
+</div>
+{{FAVORITE_FORM}}
+</div></div></div>
 <div class="section game-about-container">
 <div class="container-header"><h3>Description</h3></div>
 <div class="section-content">
@@ -228,10 +313,24 @@ GAME = """<div class="game-main-content">
 <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
 <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
 <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
+<li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
 </ul>
-</div></div>"""
+</div></div>
+<div class="section">
+<div class="container-header"><h3>Servers</h3></div>
+<div class="section-content"><ul class="vlist server-list"></ul>
+<p class="list-content">No running servers. Play starts one.</p></div>
+</div>
+<div class="container-list">
+<div class="container-header"><h3>Recommended</h3></div>
+<ul class="hlist games game-cards" id="recommended-list"></ul>
+</div>"""
 
-CREATE = """<h1>Create Experience</h1>
+CREATE = """<h1>Create</h1>
+<div class="section">
+<div class="container-header"><h3>My Experiences</h3></div>
+<ul class="hlist games game-cards" id="my-places-list"></ul>
+</div>
 <form id="placeForm" method="POST" action="/places/create">
 <input id="TemplateID" name="TemplateID" type="hidden" value="95206881">
 <h2 id="StudioGameTemplates">GAME TEMPLATES</h2>
@@ -253,14 +352,44 @@ CREATE = """<h1>Create Experience</h1>
     MAXP,
 )
 
-AVATAR = """<div class="container-header"><h1>Avatar</h1></div>
+AVATAR = """<div class="container-header"><h1>Avatar Editor</h1></div>
+<div class="avatar-editor">
+<div class="section-content avatar-preview">
+<img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{USERNAME}}">
+<p class="list-content">R6 avatar. Wear items from your inventory.</p>
+</div>
 <div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards" id="wearing-list"></ul></div>
-<div class="section-content"><h2>Wardrobe</h2><ul class="hlist item-cards" id="wardrobe-list"></ul>
-<p class="list-content">No Search Results Found</p></div>"""
+</div>
+<div class="section-content">
+<h2>Wardrobe</h2>
+<p class="menu-vertical catalog-cats">
+<a href="/avatar.html">All</a>
+<a href="/avatar.html?category=Hat">Hats</a>
+<a href="/avatar.html?category=Hair">Hair</a>
+<a href="/avatar.html?category=Face">Faces</a>
+<a href="/avatar.html?category=Shirt">Shirts</a>
+<a href="/avatar.html?category=Pants">Pants</a>
+<a href="/avatar.html?category=Gear">Gear</a>
+</p>
+<ul class="hlist item-cards" id="wardrobe-list"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>"""
 
-MESSAGES = """<div class="container-header"><h3>Inbox</h3></div>
-<div class="section-content"><ul class="vlist feeds"></ul></div>
-<div class="container-header"><h3>New Message</h3></div>
+MESSAGES = """<div class="container-header"><h1>Messages</h1></div>
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#inbox-pane" data-tab="inbox-pane">Inbox</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#sent-pane" data-tab="sent-pane">Sent</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#compose-pane" data-tab="compose-pane">New Message</a></li>
+</ul>
+<div id="inbox-pane" class="tab-pane settings-tab-pane active">
+<div class="section-content"><ul class="vlist feeds inbox-list"></ul>
+<p class="list-content inbox-empty">No messages.</p></div>
+</div>
+<div id="sent-pane" class="tab-pane settings-tab-pane">
+<div class="section-content"><ul class="vlist sent-list"></ul>
+<p class="list-content sent-empty">No sent messages.</p></div>
+</div>
+<div id="compose-pane" class="tab-pane settings-tab-pane">
 <div class="section-content">
 <form method="post" action="/messages/send">
 <label class="form-label">To</label>
@@ -270,18 +399,44 @@ MESSAGES = """<div class="container-header"><h3>Inbox</h3></div>
 <label class="form-label">Message</label>
 <textarea class="text-box text-area-medium" name="body" rows="4" placeholder="Write a message"></textarea>
 <button type="submit" class="btn-primary-md">Send</button>
-</form></div>"""
+</form></div>
+</div>"""
 
 GROUPS = """<div class="container-header"><h1>Groups</h1></div>
+<div class="section">
+<div class="container-header"><h3>My Groups</h3></div>
+<div class="section-content"><ul class="vlist my-group-list"></ul></div>
+</div>
+<div class="section">
+<div class="container-header"><h3>Find Groups</h3></div>
 <div class="section-content">
+<form method="get" action="/groups.html" class="games-filter-bar">
+<input class="input-field" name="keyword" placeholder="Search groups" value="{{SEARCH_KEYWORD}}">
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
+<ul class="vlist group-list"></ul>
 <p class="list-content">No Search Results Found</p>
+</div>
+</div>
+<div class="section-content">
+<h3>Create Group</h3>
 <form method="post" action="/groups/create">
 <label class="form-label">Name</label>
 <input class="input-field" name="name" placeholder="Group name">
 <label class="form-label">Description</label>
 <input class="input-field" name="description" placeholder="Description">
 <button type="submit" class="btn-primary-md">Create Group</button>
-</form></div>"""
+</form>
+</div>
+<div class="section group-detail">
+<div class="container-header"><h3>{{GROUP_NAME}}</h3></div>
+<div class="section-content">
+<p class="list-content">{{GROUP_DESC}}</p>
+<p class="text-label">Owner {{GROUP_OWNER}} · Members {{GROUP_MEMBERS}}</p>
+{{GROUP_JOIN}}
+<ul class="hlist friend-list group-member-list"></ul>
+</div>
+</div>"""
 
 SETTINGS = """<h1 class="user-account-header">Settings</h1>
 <div id="user-account" class="rbx-tabs-horizontal">
@@ -424,24 +579,61 @@ SETTINGS = """<h1 class="user-account-header">Settings</h1>
 </div>
 </div>"""
 
-INVENTORY = """<div class="container-header"><h3>Inventory</h3></div>
+INVENTORY = """<div class="container-header"><h1>Inventory</h1></div>
+<p class="menu-vertical catalog-cats">
+<a href="/inventory.html">All</a>
+<a href="/inventory.html?category=Hat">Hats</a>
+<a href="/inventory.html?category=Hair">Hair</a>
+<a href="/inventory.html?category=Face">Faces</a>
+<a href="/inventory.html?category=Shirt">Shirts</a>
+<a href="/inventory.html?category=Pants">Pants</a>
+<a href="/inventory.html?category=Gear">Gear</a>
+</p>
 <div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards"></ul></div>
 <div class="section-content"><h2>Items</h2><ul class="hlist item-cards"></ul>
 <p class="list-content">No Search Results Found</p></div>"""
 
 TRADES = """<div class="container-header"><h1>Trade</h1></div>
-<div class="section-content"><h3>Inventory</h3><ul class="hlist item-cards"></ul>
-<h3>Trade</h3><ul class="hlist item-cards"></ul>
-<a class="btn-primary-md" id="shareButton">Trade</a></div>"""
-
-SEARCH = """<div class="container-header"><h3>Search</h3></div>
 <div class="section-content">
-<form action="/search.html" method="get">
-<input class="input-field" name="keyword" placeholder="Search">
+<h3>Send a Trade</h3>
+<form method="post" action="/trades/send">
+<label class="form-label">To</label>
+<input class="input-field" name="username" placeholder="Username">
+<label class="form-label">Your item IDs (comma separated)</label>
+<input class="input-field" name="offer" placeholder="1,2">
+<button type="submit" class="btn-primary-md" id="shareButton">Send Trade</button>
+</form>
+</div>
+<div class="section-content">
+<h3>Open Trades</h3>
+<ul class="vlist trade-list"></ul>
+</div>
+<div class="section-content"><h3>Your Inventory</h3><ul class="hlist item-cards"></ul></div>"""
+
+SEARCH = """<div class="container-header"><h1>Search</h1></div>
+<form action="/search.html" method="get" class="games-filter-bar">
+<input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
 <button type="submit" class="btn-primary-md">Search</button>
 </form>
-<p class="list-content">No Search Results Found</p>
-</div>"""
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#people-pane" data-tab="people-pane">People</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#experiences-pane" data-tab="experiences-pane">Experiences</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#catalog-pane" data-tab="catalog-pane">Catalog</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#groups-pane" data-tab="groups-pane">Groups</a></li>
+</ul>
+<div id="people-pane" class="tab-pane settings-tab-pane active section-content">
+<ul class="hlist friend-list"></ul>
+</div>
+<div id="experiences-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="hlist games game-cards"></ul>
+</div>
+<div id="catalog-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="hlist item-cards"></ul>
+</div>
+<div id="groups-pane" class="tab-pane settings-tab-pane section-content">
+<ul class="vlist group-list"></ul>
+</div>
+<p class="list-content">No Search Results Found</p>"""
 
 PROMO = """<h1>Redeem ROBLOX Promotions</h1>
 <div class="section-content">
@@ -456,14 +648,14 @@ SIMPLE = {
     "about": ("About Us", "<h1>About Us</h1><div class=\"section-content\"><p class=\"list-content\">ROBLOX is a place to imagine, create, and play together.</p></div>"),
     "jobs": ("Jobs", "<h1>Jobs</h1><div class=\"section-content\"><p class=\"list-content\">No open jobs.</p></div>"),
     "parents": ("Parents", "<h1>Parents</h1><div class=\"section-content\"><p class=\"list-content\">This is a private ROBLOX revival. Accounts are local to this server.</p></div>"),
-    "help": ("Help", "<h1>Help</h1><div class=\"section-content\"><p class=\"list-content\">Sign up, create a place on Create, then open it from Discover.</p></div>"),
+    "help": ("Help", "<h1>Help</h1><div class=\"section-content\"><h3>Play</h3><p class=\"list-content\">Open Discover, pick an experience, press Play. A launcher popup fires roblox-player.</p><h3>Create</h3><p class=\"list-content\">Create an experience, then it shows on Discover and your profile.</p><h3>Catalog</h3><p class=\"list-content\">Catalog starts empty. Create an item, then others can buy it with local Robux.</p><h3>Friends and Messages</h3><p class=\"list-content\">Send a friend request from Friends or a profile. Messages stay on this server.</p></div>"),
     "terms": ("Terms", "<h1>Terms</h1><div class=\"section-content\"><p class=\"list-content\">Use this private server at your own risk. Do not use real ROBLOX passwords.</p></div>"),
     "privacy": ("Privacy", "<h1>Privacy</h1><div class=\"section-content\"><p class=\"list-content\">Accounts are stored only in this machine's data/site.db.</p></div>"),
     "accessibility": ("Accessibility", "<h1>Accessibility</h1><div class=\"section-content\"><p class=\"list-content\">This site uses a simple dark layout for readability.</p></div>"),
     "credits": ("Credits", "<h1>Credits</h1><div class=\"section-content\"><h2>made by thuggy</h2><p class=\"list-content\">made by thuggy</p></div>"),
     "blog": ("Blog", "<h1>Blog News</h1><div class=\"section-content\"><ul class=\"blog-news\"></ul><p class=\"list-content\">No Search Results Found</p></div>"),
-    "download": ("Download", "<h1>Download</h1><div class=\"section-content\"><p class=\"list-content\">Install the ROBLOX client for Computer, then point it at this site.</p><p class=\"list-content\">Computer is the desktop client.</p></div>"),
-    "robux": ("Robux", "<h1>Buy Robux</h1><div class=\"section-content\"><p class=\"list-content\">Robux on this private server is stored in the local database. Purchasing is not connected to roblox.com.</p></div>"),
+    "download": ("Download", "<h1>Download</h1><div class=\"section-content\"><p class=\"list-content\">Install the ROBLOX client for Computer, then point it at this site.</p><p class=\"list-content\">Computer is the desktop client. There is no Linux client in the official dumps.</p><p class=\"list-content\">Play on a game page opens a launcher popup that fires the roblox-player URI.</p><ol class=\"list-content\"><li>Install the Computer client</li><li>Point it at this site URL</li><li>Press Play on an experience</li></ol></div>"),
+    "robux": ("Robux", "<h1>Buy Robux</h1><div class=\"section-content\"><p class=\"list-content\">Your balance: <span class=\"text-robux\">R$ {{ROBUX}}</span></p><p class=\"list-content\">Robux on this private server is stored in the local database. Purchasing is not connected to roblox.com.</p><div class=\"robux-products\"><div class=\"section-content\"><h3>400 Robux</h3><p class=\"list-content\">Not for sale here.</p></div><div class=\"section-content\"><h3>800 Robux</h3><p class=\"list-content\">Not for sale here.</p></div><div class=\"section-content\"><h3>1700 Robux</h3><p class=\"list-content\">Not for sale here.</p></div></div><a class=\"btn-secondary-md\" href=\"/promocodes-loggedin.html\">Redeem Code</a></div>"),
     "premium": ("Premium", "<h1>Premium</h1><div class=\"section-content\"><p class=\"list-content\">Premium is not sold on this private server.</p></div>"),
     "giftcards": ("Gift Cards", "<h1>Gift Cards</h1><div class=\"section-content\"><p class=\"list-content\">Gift cards are not sold here.</p></div>"),
     "payment": ("Payment", "<h1>Payment</h1><div class=\"section-content\"><p class=\"list-content\">No live payments. This page does not take cards.</p></div>"),

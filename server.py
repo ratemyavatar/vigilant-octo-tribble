@@ -22,6 +22,7 @@ import database as db
 import api
 import live
 import rcc
+import rbxapi
 
 ROOT = Path(__file__).resolve().parent
 PAGES = ROOT / "pages"
@@ -332,6 +333,9 @@ class Handler(BaseHTTPRequestHandler):
         api_hit = api.handle(method, path, low, q, user, self)
         if api_hit is not None:
             return api_hit
+        rbx_hit = rbxapi.handle(method, path, low, q, user, self)
+        if rbx_hit is not None:
+            return rbx_hit
 
         if low in ("/login", "/login/") and method == "POST":
             form = self.parse_form()
@@ -411,7 +415,11 @@ class Handler(BaseHTTPRequestHandler):
                     rcc.open_job(CONFIG["rcc_soap"], "Render", lua, timeout=int(CONFIG.get("rcc_timeout", 15)))
                 except Exception as e:
                     print("render job", e)
-            return json_bytes({"id": aid})
+            accept = (self.headers.get("Accept") or "").lower()
+            if "application/json" in accept:
+                return json_bytes({"id": aid})
+            self.redirect("/catalog-loggedin.html")
+            return False
 
         if low in ("/friends/add", "/friends/add/") and method == "POST":
             if not user:
@@ -422,7 +430,7 @@ class Handler(BaseHTTPRequestHandler):
             if not str(other).isdigit():
                 named = db.get_user_by_name(form.get("username") or "")
                 other = named["id"] if named else 0
-            db.add_friend(user["id"], other)
+            db.request_friend(user["id"], other)
             self.redirect("/friends-loggedin.html")
             return False
 
@@ -445,6 +453,7 @@ class Handler(BaseHTTPRequestHandler):
             if not pid:
                 pid = int(CONFIG.get("default_place_id") or 1)
             job = self._open_game_job(pid)
+            db.record_play(user["id"], pid)
             place = db.get_place(pid) or {}
             launcher = PUBLIC + "/game/PlaceLauncher.ashx?placeId=%s" % pid
             ticket = uuid.uuid4().hex
@@ -582,6 +591,98 @@ class Handler(BaseHTTPRequestHandler):
             aid = form.get("id") or form.get("assetId") or q.get("id") or 0
             ok, reason = db.buy_asset(user["id"], aid)
             return json_bytes({"ok": ok, "reason": reason}, 200 if ok else 400)
+
+        if low in ("/friends/accept", "/friends/accept/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            other = form.get("userId") or form.get("id") or 0
+            db.accept_friend(user["id"], other)
+            self.redirect("/friends-loggedin.html#requests-pane")
+            return False
+
+        if low in ("/friends/decline", "/friends/decline/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            other = form.get("userId") or form.get("id") or 0
+            db.decline_friend(user["id"], other)
+            self.redirect("/friends-loggedin.html#requests-pane")
+            return False
+
+        if low in ("/avatar/wear", "/avatar/wear/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.wear_asset(user["id"], form.get("id") or 0)
+            self.redirect("/avatar-loggedin.html")
+            return False
+
+        if low in ("/avatar/unwear", "/avatar/unwear/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.unwear_asset(user["id"], form.get("id") or 0)
+            self.redirect("/avatar-loggedin.html")
+            return False
+
+        if low in ("/places/favorite", "/places/favorite/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            pid = form.get("placeId") or form.get("id") or 0
+            db.toggle_favorite(user["id"], pid)
+            self.redirect("/game-loggedin.html?id=%s" % pid)
+            return False
+
+        if low in ("/groups/join", "/groups/join/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            gid = form.get("groupId") or form.get("id") or 0
+            db.join_group(gid, user["id"])
+            self.redirect("/groups-loggedin.html?id=%s" % gid)
+            return False
+
+        if low in ("/trades/send", "/trades/send/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            named = db.get_user_by_name(form.get("username") or "")
+            to_id = named["id"] if named else 0
+            tid = db.create_trade(user["id"], to_id)
+            if tid:
+                for raw in (form.get("offer") or "").split(","):
+                    raw = raw.strip()
+                    if raw.isdigit():
+                        db.add_trade_item(tid, user["id"], int(raw))
+            self.redirect("/trades-loggedin.html")
+            return False
+
+        if low in ("/trades/accept", "/trades/accept/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.set_trade_status(form.get("id") or 0, user["id"], "completed")
+            self.redirect("/trades-loggedin.html")
+            return False
+
+        if low in ("/trades/decline", "/trades/decline/") and method == "POST":
+            if not user:
+                self.redirect("/signup.html")
+                return False
+            form = self.parse_form()
+            db.set_trade_status(form.get("id") or 0, user["id"], "declined")
+            self.redirect("/trades-loggedin.html")
+            return False
 
         # auth ticket
         if low.endswith("/login/negotiate.ashx") or low.endswith("/authentication/negotiate"):

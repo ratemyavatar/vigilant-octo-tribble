@@ -21,9 +21,21 @@
 <div class="container-main" id="container-main">
 <div class="content">
 <div class="container-header"><h1>Trade</h1></div>
-<div class="section-content"><h3>Inventory</h3><ul class="hlist item-cards"></ul>
-<h3>Trade</h3><ul class="hlist item-cards"></ul>
-<a class="btn-primary-md" id="shareButton">Trade</a></div>
+<div class="section-content">
+<h3>Send a Trade</h3>
+<form method="post" action="/trades/send">
+<label class="form-label">To</label>
+<input class="input-field" name="username" placeholder="Username">
+<label class="form-label">Your item IDs (comma separated)</label>
+<input class="input-field" name="offer" placeholder="1,2">
+<button type="submit" class="btn-primary-md" id="shareButton">Send Trade</button>
+</form>
+</div>
+<div class="section-content">
+<h3>Open Trades</h3>
+<ul class="vlist trade-list"></ul>
+</div>
+<div class="section-content"><h3>Your Inventory</h3><ul class="hlist item-cards"></ul></div>
 </div>
 </div>
 <footer class="container-footer" id="footer-container">

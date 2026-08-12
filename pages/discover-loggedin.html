@@ -21,7 +21,13 @@
 <div class="container-main" id="container-main">
 <div class="content">
 <div class="games-list-container">
-<div class="container-header"><h3>Experiences</h3></div>
+<div class="container-header"><h3>Discover</h3></div>
+<form class="games-filter-bar" method="get" action="/discover.html">
+<input class="input-field" name="keyword" placeholder="Search experiences" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="genre">{{GENRE_OPTS}}</select>
+<select class="input-field rbx-select" name="sort">{{SORT_OPTS}}</select>
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
 <ul class="hlist games game-cards game-tile-list" id="games-list"></ul>
 <p class="list-content">No Search Results Found</p>
 </div>

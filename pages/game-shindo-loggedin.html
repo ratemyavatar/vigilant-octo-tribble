@@ -30,7 +30,9 @@
 <div class="game-play-button-container">
 <div id="MultiplayerVisitButton" class="VisitButton VisitButtonPlayGLI" placeid="{{GAME_ID}}">
 <a class="btn-primary-lg rbx-play-button" href="#" data-placeid="{{GAME_ID}}">Play</a>
-</div></div></div></div>
+</div>
+{{FAVORITE_FORM}}
+</div></div></div>
 <div class="section game-about-container">
 <div class="container-header"><h3>Description</h3></div>
 <div class="section-content">
@@ -41,8 +43,18 @@
 <li class="game-stat"><p class="text-label">Created</p><p class="text-lead">{{CREATED}}</p></li>
 <li class="game-stat"><p class="text-label">Max Players</p><p class="text-lead">{{MAX_PLAYERS}}</p></li>
 <li class="game-stat"><p class="text-label">Genre</p><p class="text-lead">{{GENRE}}</p></li>
+<li class="game-stat"><p class="text-label">Favorites</p><p class="text-lead">{{FAVORITE_COUNT}}</p></li>
 </ul>
 </div></div>
+<div class="section">
+<div class="container-header"><h3>Servers</h3></div>
+<div class="section-content"><ul class="vlist server-list"></ul>
+<p class="list-content">No running servers. Play starts one.</p></div>
+</div>
+<div class="container-list">
+<div class="container-header"><h3>Recommended</h3></div>
+<ul class="hlist games game-cards" id="recommended-list"></ul>
+</div>
 </div>
 </div>
 <footer class="container-footer" id="footer-container">

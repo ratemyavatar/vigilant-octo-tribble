@@ -21,9 +21,48 @@
 <div class="container-main" id="container-main">
 <div class="content">
 <div class="container-header"><h1>Catalog</h1></div>
+<div class="catalog-container">
+<aside class="menu-vertical catalog-left">
+<ul class="menu-vertical">
+<li class="menu-option"><a href="/catalog.html">Featured</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hat">Hats</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Hair">Hair</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Face">Faces</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Shirt">Shirts</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Pants">Pants</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Gear">Gear</a></li>
+<li class="menu-option"><a href="/catalog.html?category=Accessory">Accessories</a></li>
+</ul>
+</aside>
+<div class="catalog-right">
+<form class="games-filter-bar" method="get" action="/catalog.html">
+<input class="input-field" name="keyword" placeholder="Search catalog" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="category">{{CATEGORY_OPTS}}</select>
+<select class="input-field rbx-select" name="sort">{{CATALOG_SORT_OPTS}}</select>
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
 <div id="catalog-results" class="section-content">
 <ul class="hlist item-cards"></ul>
 <p class="list-content">No Search Results Found</p>
+</div>
+<div class="section-content">
+<h3>Create Item</h3>
+<p class="list-content">Upload an item to this server. Catalog starts empty until someone creates one.</p>
+<form method="post" action="/catalog/upload">
+<label class="form-label">Name</label>
+<input class="input-field" name="name" placeholder="Item name">
+<label class="form-label">Type</label>
+<select class="input-field" name="asset_type">
+<option>Hat</option><option>Hair</option><option>Face</option><option>Shirt</option><option>Pants</option><option>Gear</option><option>Accessory</option>
+</select>
+<label class="form-label">Price (Robux)</label>
+<input class="input-field" name="price" type="number" min="0" value="0">
+<label class="form-label">Description</label>
+<input class="input-field" name="description" placeholder="Description">
+<button type="submit" class="btn-primary-md">Create</button>
+</form>
+</div>
+</div>
 </div>
 </div>
 </div>

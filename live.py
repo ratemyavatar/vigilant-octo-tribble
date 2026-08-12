@@ -111,6 +111,14 @@ def sanitize(html: str) -> str:
             "game-cards",
             "game-tile-list",
             "list-gallery",
+            "request-list",
+            "inbox-list",
+            "sent-list",
+            "group-list",
+            "my-group-list",
+            "trade-list",
+            "server-list",
+            "group-member-list",
         ),
     )
     for cls in (
@@ -183,9 +191,9 @@ def game_card(place: dict, suffix: str) -> str:
         '<div class="game-card-name game-name-title" title="%s">%s</div>'
         '<div class="game-card-info">'
         '<span class="info-label icon-playing-counts-gray"></span>'
-        '<span class="info-label playing-counts-label">0</span>'
+        '<span class="info-label playing-counts-label">%s</span>'
         "</div></a></div></li>"
-    ) % (name, href, thumb, name, name, name, name)
+    ) % (name, href, thumb, name, name, name, name, int(place.get("visits") or 0))
 
 
 def friend_card(user: dict, suffix: str) -> str:
@@ -201,7 +209,7 @@ def friend_card(user: dict, suffix: str) -> str:
     ) % (uid, suffix, uid, name, name, uid, name)
 
 
-def item_card(asset: dict, buy: bool = False) -> str:
+def item_card(asset: dict, buy: bool = False, wear: bool = False, wearing: bool = False) -> str:
     aid = asset["id"]
     name = esc(asset.get("name") or "Item")
     price = int(asset.get("price") or 0)
@@ -211,6 +219,18 @@ def item_card(asset: dict, buy: bool = False) -> str:
             '<form method="post" action="/catalog/buy" class="item-buy-form">'
             '<input type="hidden" name="id" value="%s">'
             '<button type="submit" class="btn-primary-xs">Buy</button></form>' % aid
+        )
+    elif wearing:
+        extra = (
+            '<form method="post" action="/avatar/unwear" class="item-buy-form">'
+            '<input type="hidden" name="id" value="%s">'
+            '<button type="submit" class="btn-secondary-xs">Remove</button></form>' % aid
+        )
+    elif wear:
+        extra = (
+            '<form method="post" action="/avatar/wear" class="item-buy-form">'
+            '<input type="hidden" name="id" value="%s">'
+            '<button type="submit" class="btn-secondary-xs">Wear</button></form>' % aid
         )
     return (
         '<li class="list-item item-card">'
@@ -310,6 +330,89 @@ def fill_game_detail(html: str, place: dict, suffix: str) -> str:
     html = html.replace("{{PLAYING}}", "0")
     html = html.replace("/profile.html?id=", "/profile%s?id=" % suffix)
     return html
+
+
+
+def request_card(user: dict) -> str:
+    uid = user["id"]
+    name = esc(user.get("username") or "")
+    return (
+        '<li class="list-item"><div class="list-body">'
+        '<a href="/profile-loggedin.html?id=%s">%s</a> '
+        '<form method="post" action="/friends/accept" class="inline-form">'
+        '<input type="hidden" name="userId" value="%s">'
+        '<button type="submit" class="btn-primary-xs">Accept</button></form> '
+        '<form method="post" action="/friends/decline" class="inline-form">'
+        '<input type="hidden" name="userId" value="%s">'
+        '<button type="submit" class="btn-secondary-xs">Decline</button></form>'
+        "</div></li>"
+    ) % (uid, name, uid, uid)
+
+
+def group_card(group: dict, joined=False) -> str:
+    gid = group["id"]
+    name = esc(group.get("name") or "Group")
+    desc = esc(group.get("description") or "")
+    members = int(group.get("member_count") or 0)
+    owner = esc(group.get("owner_name") or "")
+    join = ""
+    if not joined:
+        join = (
+            '<form method="post" action="/groups/join" class="inline-form">'
+            '<input type="hidden" name="groupId" value="%s">'
+            '<button type="submit" class="btn-secondary-xs">Join</button></form>' % gid
+        )
+    return (
+        '<li class="list-item group-card"><div class="list-body">'
+        '<h2><a href="/groups.html?id=%s">%s</a></h2>'
+        '<p class="list-content">%s</p>'
+        '<p class="text-label">%s · Members %s</p>%s</div></li>'
+    ) % (gid, name, desc, owner, members, join)
+
+
+def trade_card(trade: dict, user_id: int) -> str:
+    tid = trade["id"]
+    other = trade["to_id"] if trade["from_id"] == user_id else trade["from_id"]
+    other_u = db.get_user(other)
+    name = esc((other_u or {}).get("username") or "User")
+    status = esc(trade.get("status") or "open")
+    items = db.list_trade_items(tid)
+    names = ", ".join(esc(i.get("name") or "") for i in items) or "No items"
+    actions = ""
+    if status == "open" and trade["to_id"] == user_id:
+        actions = (
+            '<form method="post" action="/trades/accept" class="inline-form">'
+            '<input type="hidden" name="id" value="%s">'
+            '<button type="submit" class="btn-primary-xs">Accept</button></form> '
+            '<form method="post" action="/trades/decline" class="inline-form">'
+            '<input type="hidden" name="id" value="%s">'
+            '<button type="submit" class="btn-secondary-xs">Decline</button></form>'
+            % (tid, tid)
+        )
+    return (
+        '<li class="list-item"><div class="list-body"><h2>Trade #%s with %s</h2>'
+        '<p class="text-label">%s</p><p class="list-content">%s</p>%s</div></li>'
+    ) % (tid, name, status, names, actions)
+
+
+def message_item(m: dict, sent=False) -> str:
+    who = esc(m.get("to_name") if sent else m.get("from_name") or "")
+    label = "To" if sent else "From"
+    return (
+        '<li class="list-item"><div class="list-body"><h2>%s</h2>'
+        '<p class="text-label">%s %s</p>'
+        '<p class="list-content">%s</p></div></li>'
+        % (
+            esc(m.get("subject") or "(no subject)"),
+            label,
+            who,
+            esc(m.get("body") or ""),
+        )
+    )
+
+
+def fill_ul(html: str, class_hint: str, cards: str, count: int = 1) -> str:
+    return replace_ul_inner(html, class_hint, cards, count=count)
 
 
 def _opts(choices, current) -> str:
@@ -627,37 +730,72 @@ SITE_JS = r"""
 """
 
 
+
 def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
     logged_in = user is not None
     suffix = _suffix(logged_in)
     html = sanitize(html)
     name = (page_name or "").lower()
 
-    places = db.list_places()
-    assets = db.list_assets()
+    keyword = qs.get("keyword") or qs.get("search") or qs.get("q") or ""
+    genre = qs.get("genre") or "All"
+    sort = qs.get("sort") or "new"
+    category = qs.get("category") or qs.get("asset_type") or "All"
+
+    places = db.list_places_filtered(genre=genre if "discover" in name or name.startswith("games") else None, keyword=keyword if "discover" in name or name.startswith("games") else None, sort="visits" if sort == "visits" else "new")
+    if not ("discover" in name or name.startswith("games")):
+        places = db.list_places()
+    assets = db.list_assets_filtered(asset_type=category if "catalog" in name else None, keyword=keyword if "catalog" in name else None, sort=sort if "catalog" in name else "new")
     friends = db.list_friends(user["id"]) if user else []
 
-    if any(x in name for x in ("discover", "games", "home")):
+    html = html.replace("{{SEARCH_KEYWORD}}", esc(keyword))
+    html = html.replace("{{GENRE_OPTS}}", _opts(["All","Adventure","Building","Comedy","Fighting","FPS","Horror","Medieval","Military","Naval","RPG","Sci-Fi","Sports","Town and City","Western"], genre))
+    html = html.replace("{{SORT_OPTS}}", _opts(["new", "visits", "name"], sort))
+    html = html.replace("{{CATEGORY_OPTS}}", _opts(["All","Hat","Hair","Face","Shirt","Pants","Gear","Accessory"], category))
+    html = html.replace("{{CATALOG_SORT_OPTS}}", _opts(["new", "price", "price_desc"], sort))
+
+    if any(x in name for x in ("discover", "games")) and "game." not in name and not name.startswith("game-"):
         html = fill_games(html, places, suffix)
+    if name.startswith("game") and "games" not in name:
+        pass
+    elif "home" in name:
+        html = fill_games(html, places, suffix)
+
     if "home" in name and user:
         html = html.replace("Hello!", "Hello, {{USERNAME}}!")
         html = html.replace("{{PROFILE_ID}}", str(user["id"]))
         html = html.replace("{{STATUS}}", esc(user.get("status") or ""))
         html = fill_friends(html, friends, suffix)
+        recent = db.list_recent(user["id"])
+        favs = db.list_favorites(user["id"])
+        mine = db.places_by_creator(user["id"])
+        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in recent), count=1)
+        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in favs), count=1)
+        html = replace_ul_inner(html, "game-tile-list", "".join(game_card(p, suffix) for p in places), count=1)
+        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in mine), count=1)
     if "friend" in name:
         html = fill_friends(html, friends, suffix)
-    if "catalog" in name or "inventory" in name or "trade" in name:
-        owned = db.list_inventory(user["id"]) if user and ("inventory" in name or "trade" in name) else assets
-        if "inventory" in name:
-            wearing = db.list_wearing(user["id"]) if user else []
-            html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in wearing), count=1)
-            html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in owned), count=1)
-            if owned:
-                html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
-        elif "trade" in name:
-            html = fill_catalog(html, owned if user else [])
-        else:
-            html = fill_catalog(html, assets, buy=True)
+        reqs = db.list_friend_requests(user["id"]) if user else []
+        html = replace_ul_inner(html, "request-list", "".join(request_card(u) for u in reqs))
+        if reqs:
+            html = html.replace('<p class="list-content request-empty">No pending requests.</p>', "")
+    if "catalog" in name:
+        html = fill_catalog(html, assets, buy=True)
+    if "inventory" in name:
+        owned = db.list_inventory(user["id"]) if user else []
+        if category not in ("", "All") and owned:
+            owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        wearing = db.list_wearing(user["id"]) if user else []
+        wear_ids = {a["id"] for a in wearing}
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wearing=True) for a in wearing), count=1)
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in owned), count=1)
+        if owned:
+            html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
+    if "trade" in name:
+        owned = db.list_inventory(user["id"]) if user else []
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in owned), count=1)
+        trades = db.list_trades(user["id"]) if user else []
+        html = replace_ul_inner(html, "trade-list", "".join(trade_card(t, user["id"]) for t in trades) if user else "")
     if name.startswith("game") and "games" not in name:
         pid = 0
         try:
@@ -665,19 +803,47 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         except Exception:
             pid = 0
         place = db.get_place(pid) if pid else None
-        if not place and places:
-            place = places[-1] if places else None
+        all_places = db.list_places()
+        if not place and all_places:
+            place = all_places[-1]
         if not place:
-            place = {
-                "id": 0,
-                "name": "Untitled",
-                "description": "",
-                "creator_id": 0,
-                "max_players": 10,
-                "genre": "All",
-                "created_at": int(time.time()),
-            }
+            place = {"id": 0, "name": "Untitled", "description": "", "creator_id": 0, "max_players": 10, "genre": "All", "created_at": int(time.time()), "visits": 0}
         html = fill_game_detail(html, place, suffix)
+        fav_count = len(db.list_favorites(place["id"])) if False else 0
+        # count favorites for this place
+        con_fav = 0
+        try:
+            import sqlite3
+            from database import connect
+            c = connect()
+            row = c.execute("SELECT COUNT(*) AS c FROM favorites WHERE place_id=?", (place["id"],)).fetchone()
+            c.close()
+            con_fav = int(row["c"] or 0) if row else 0
+        except Exception:
+            con_fav = 0
+        html = html.replace("{{FAVORITE_COUNT}}", str(con_fav))
+        if user and place["id"]:
+            on = db.is_favorite(user["id"], place["id"])
+            html = html.replace(
+                "{{FAVORITE_FORM}}",
+                '<form method="post" action="/places/favorite" class="inline-form">'
+                '<input type="hidden" name="placeId" value="%s">'
+                '<button type="submit" class="btn-secondary-md">%s</button></form>'
+                % (place["id"], "Favorited" if on else "Favorite"),
+            )
+        else:
+            html = html.replace("{{FAVORITE_FORM}}", "")
+        jobs = db.list_jobs_for_place(place["id"]) if place["id"] else []
+        servers = "".join(
+            '<li class="list-item"><div class="list-body"><h2>Server</h2>'
+            '<p class="list-content">%s:%s</p></div></li>'
+            % (esc(j.get("host") or ""), esc(j.get("port") or ""))
+            for j in jobs
+        )
+        html = replace_ul_inner(html, "server-list", servers)
+        rec = [p for p in all_places if p["id"] != place["id"]][:8]
+        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in rec), count=1)
+        html = html.replace("{{PLAYING}}", str(len(jobs)))
     if "profile" in name:
         viewed = user
         try:
@@ -694,6 +860,10 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 db.places_by_creator(viewed["id"]),
                 suffix,
             )
+            wearing = db.list_wearing(viewed["id"])
+            html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in wearing), count=1)
+            html = replace_ul_inner(html, "group-list", "".join(group_card(g, True) for g in db.groups_for_user(viewed["id"])))
+            html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in db.list_favorites(viewed["id"])), count=1)
             if user and viewed["id"] != user["id"]:
                 html = html.replace(
                     "{{ADD_FRIEND}}",
@@ -707,7 +877,6 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
         else:
             html = html.replace("{{ADD_FRIEND}}", "")
     if "search" in name:
-        keyword = qs.get("keyword") or qs.get("search") or qs.get("q") or ""
         html = fill_search(
             html,
             keyword,
@@ -715,13 +884,15 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
             db.search_places(keyword) if keyword else [],
             suffix,
         )
+        cats = db.list_assets_filtered(keyword=keyword) if keyword else []
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, buy=True) for a in cats))
+        html = replace_ul_inner(html, "group-list", "".join(group_card(g) for g in (db.search_groups(keyword) if keyword else [])))
     if "create" in name:
         html = html.replace('action="create.html"', 'action="/places/create"')
         html = html.replace('action="create-loggedin.html"', 'action="/places/create"')
-        html = html.replace(
-            'action="https://www.roblox.com/places/create"',
-            'action="/places/create"',
-        )
+        html = html.replace('action="https://www.roblox.com/places/create"', 'action="/places/create"')
+        mine = db.places_by_creator(user["id"]) if user else []
+        html = replace_ul_inner(html, "game-cards", "".join(game_card(p, suffix) for p in mine), count=1)
     if "signup" in name or "login" in name or "landing" in name or "index" in name:
         if 'name="gender"' not in html:
             html = html.replace(
@@ -730,66 +901,69 @@ def prepare(html: str, page_name: str, user: dict | None, qs: dict) -> str:
                 '<div class="form-group gender-container">',
             )
     if "message" in name:
-        notes = db.list_messages(user["id"]) if user else []
-        items = []
-        for m in notes:
-            items.append(
-                '<li class="list-item"><div class="list-body"><h2>%s</h2>'
-                '<p class="text-label">From %s</p>'
-                '<p class="list-content">%s</p></div></li>'
-                % (
-                    esc(m.get("subject") or "(no subject)"),
-                    esc(m.get("from_name") or ""),
-                    esc(m.get("body") or ""),
-                )
-            )
-        html = replace_ul_inner(html, "feeds", "".join(items))
-        if user and '<form method="post" action="/messages/send"' not in html:
-            html = html.replace(
-                "</div></div></div>",
-                '<form method="post" action="/messages/send" class="section-content">'
-                '<label class="form-label">To</label>'
-                '<input class="form-control input-field" name="username" placeholder="Username">'
-                '<label class="form-label">Message</label>'
-                '<input class="form-control input-field" name="body" placeholder="Message">'
-                '<button type="submit" class="btn-primary-md">Send</button></form></div></div></div>',
-                1,
-            )
+        inbox = db.list_inbox(user["id"]) if user else []
+        sent = db.list_sent(user["id"]) if user else []
+        html = replace_ul_inner(html, "inbox-list", "".join(message_item(m) for m in inbox))
+        html = replace_ul_inner(html, "feeds", "".join(message_item(m) for m in inbox), count=1)
+        html = replace_ul_inner(html, "sent-list", "".join(message_item(m, True) for m in sent))
+        if inbox:
+            html = html.replace('<p class="list-content inbox-empty">No messages.</p>', "")
+        if sent:
+            html = html.replace('<p class="list-content sent-empty">No sent messages.</p>', "")
     if "group" in name:
-        groups = db.list_groups()
-        cards = "".join(
-            '<li class="list-item"><div class="list-body"><h2>%s</h2>'
-            '<p class="list-content">%s</p></div></li>'
-            % (esc(g.get("name") or ""), esc(g.get("description") or ""))
-            for g in groups
-        )
+        groups = db.search_groups(keyword) if keyword else db.list_groups_detailed()
+        mine = db.groups_for_user(user["id"]) if user else []
+        html = replace_ul_inner(html, "my-group-list", "".join(group_card(g, True) for g in mine))
+        html = replace_ul_inner(html, "group-list", "".join(group_card(g, any(x["id"]==g["id"] for x in mine)) for g in groups))
         if groups:
-            html = html.replace(
-                '<p class="list-content">No Search Results Found</p>',
-                '<ul class="vlist feeds">%s</ul>' % cards,
-                1,
-            )
-        if user and 'action="/groups/create"' not in html:
-            html = html.replace(
-                "</div></div></div>",
-                '<form method="post" action="/groups/create" class="section-content">'
-                '<label class="form-label">Name</label>'
-                '<input class="form-control input-field" name="name" placeholder="Group name">'
-                '<label class="form-label">Description</label>'
-                '<input class="form-control input-field" name="description" placeholder="Description">'
-                '<button type="submit" class="btn-primary-md">Create Group</button></form></div></div></div>',
-                1,
-            )
+            html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
+        gid = 0
+        try:
+            gid = int(qs.get("id") or 0)
+        except Exception:
+            gid = 0
+        g = db.get_group(gid) if gid else None
+        if g:
+            members = db.group_members(gid)
+            owner = db.get_user(g.get("creator_id") or 0)
+            html = html.replace("{{GROUP_NAME}}", esc(g.get("name") or ""))
+            html = html.replace("{{GROUP_DESC}}", esc(g.get("description") or ""))
+            html = html.replace("{{GROUP_OWNER}}", esc((owner or {}).get("username") or ""))
+            html = html.replace("{{GROUP_MEMBERS}}", str(len(members)))
+            joined = user and any(m["id"] == user["id"] for m in members)
+            if user and not joined:
+                html = html.replace(
+                    "{{GROUP_JOIN}}",
+                    '<form method="post" action="/groups/join"><input type="hidden" name="groupId" value="%s">'
+                    '<button type="submit" class="btn-primary-md">Join</button></form>' % gid,
+                )
+            else:
+                html = html.replace("{{GROUP_JOIN}}", "")
+            html = replace_ul_inner(html, "group-member-list", "".join(friend_card(m, suffix) for m in members))
+        else:
+            html = html.replace("{{GROUP_NAME}}", "Group")
+            html = html.replace("{{GROUP_DESC}}", "Select a group.")
+            html = html.replace("{{GROUP_OWNER}}", "")
+            html = html.replace("{{GROUP_MEMBERS}}", "0")
+            html = html.replace("{{GROUP_JOIN}}", "")
     if "setting" in name and user:
         html = fill_settings(html, user)
     if "avatar" in name and user:
         wearing = db.list_wearing(user["id"])
         owned = db.list_inventory(user["id"])
-        html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in wearing), count=1)
-        html = replace_ul_inner(html, "item-cards", "".join(item_card(a) for a in owned), count=1)
+        if category not in ("", "All"):
+            owned = [a for a in owned if (a.get("asset_type") or "") == category]
+        wear_ids = {a["id"] for a in wearing}
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wearing=True) for a in wearing), count=1)
+        html = replace_ul_inner(html, "item-cards", "".join(item_card(a, wear=a["id"] not in wear_ids, wearing=a["id"] in wear_ids) for a in owned), count=1)
+        html = html.replace("{{PROFILE_ID}}", str(user["id"]))
+        if owned:
+            html = html.replace('<p class="list-content">No Search Results Found</p>', "", 1)
     if "promo" in name or "redeem" in name:
         html = html.replace('action="promocodes.html"', 'action="/promo/redeem"')
         html = html.replace('action="promocodes-loggedin.html"', 'action="/promo/redeem"')
+    if "robux" in name and user:
+        html = html.replace("{{ROBUX}}", str(user.get("robux") or 0))
     if name.startswith("game") and "games" not in name:
         try:
             vid = int(qs.get("id") or qs.get("placeId") or 0)

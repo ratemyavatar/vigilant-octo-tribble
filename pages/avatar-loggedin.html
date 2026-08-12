@@ -20,10 +20,28 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="container-header"><h1>Avatar</h1></div>
+<div class="container-header"><h1>Avatar Editor</h1></div>
+<div class="avatar-editor">
+<div class="section-content avatar-preview">
+<img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{USERNAME}}">
+<p class="list-content">R6 avatar. Wear items from your inventory.</p>
+</div>
 <div class="section-content"><h2>Currently Wearing</h2><ul class="hlist item-cards" id="wearing-list"></ul></div>
-<div class="section-content"><h2>Wardrobe</h2><ul class="hlist item-cards" id="wardrobe-list"></ul>
-<p class="list-content">No Search Results Found</p></div>
+</div>
+<div class="section-content">
+<h2>Wardrobe</h2>
+<p class="menu-vertical catalog-cats">
+<a href="/avatar.html">All</a>
+<a href="/avatar.html?category=Hat">Hats</a>
+<a href="/avatar.html?category=Hair">Hair</a>
+<a href="/avatar.html?category=Face">Faces</a>
+<a href="/avatar.html?category=Shirt">Shirts</a>
+<a href="/avatar.html?category=Pants">Pants</a>
+<a href="/avatar.html?category=Gear">Gear</a>
+</p>
+<ul class="hlist item-cards" id="wardrobe-list"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>
 </div>
 </div>
 <footer class="container-footer" id="footer-container">

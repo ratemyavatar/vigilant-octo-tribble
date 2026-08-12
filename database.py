@@ -166,6 +166,22 @@ def init():
     _col("places", "visits", "visits INTEGER DEFAULT 0")
     _col("messages", "subject", "subject TEXT DEFAULT ''")
     _col("messages", "is_read", "is_read INTEGER DEFAULT 0")
+    cur.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS favorites (
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            created_at INTEGER NOT NULL,
+            PRIMARY KEY(user_id, place_id)
+        );
+        CREATE TABLE IF NOT EXISTS recently_played (
+            user_id INTEGER NOT NULL,
+            place_id INTEGER NOT NULL,
+            played_at INTEGER NOT NULL,
+            PRIMARY KEY(user_id, place_id)
+        );
+        """
+    )
     con.commit()
     con.close()
 
@@ -844,3 +860,380 @@ def list_users(limit=50):
     rows = con.execute("SELECT * FROM users ORDER BY id DESC LIMIT ?", (int(limit),)).fetchall()
     con.close()
     return [dict(r) for r in rows]
+
+
+
+def list_places_filtered(genre=None, keyword=None, sort="new"):
+    sql = "SELECT * FROM places WHERE 1=1"
+    args = []
+    if genre and genre not in ("", "All"):
+        sql += " AND IFNULL(genre,'All')=?"
+        args.append(genre)
+    if keyword:
+        sql += " AND (name LIKE ? OR description LIKE ?)"
+        args.extend(["%" + keyword + "%", "%" + keyword + "%"])
+    if sort == "visits":
+        sql += " ORDER BY IFNULL(visits,0) DESC, id DESC"
+    elif sort == "name":
+        sql += " ORDER BY name COLLATE NOCASE"
+    else:
+        sql += " ORDER BY id DESC"
+    con = connect()
+    rows = con.execute(sql, args).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def list_assets_filtered(asset_type=None, keyword=None, sort="new"):
+    sql = "SELECT * FROM assets WHERE 1=1"
+    args = []
+    if asset_type and asset_type not in ("", "All", "Featured"):
+        sql += " AND IFNULL(asset_type,'Hat')=?"
+        args.append(asset_type)
+    if keyword:
+        sql += " AND (name LIKE ? OR description LIKE ?)"
+        args.extend(["%" + keyword + "%", "%" + keyword + "%"])
+    if sort == "price":
+        sql += " ORDER BY IFNULL(price,0) ASC, id DESC"
+    elif sort == "price_desc":
+        sql += " ORDER BY IFNULL(price,0) DESC, id DESC"
+    else:
+        sql += " ORDER BY id DESC"
+    con = connect()
+    rows = con.execute(sql, args).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def request_friend(user_id, other_id):
+    try:
+        user_id = int(user_id)
+        other_id = int(other_id)
+    except (TypeError, ValueError):
+        return False, "invalid"
+    if not user_id or not other_id or user_id == other_id:
+        return False, "invalid"
+    if not get_user(other_id):
+        return False, "not found"
+    con = connect()
+    row = con.execute(
+        "SELECT * FROM friendships WHERE (user_id=? AND friend_id=?) OR (user_id=? AND friend_id=?)",
+        (user_id, other_id, other_id, user_id),
+    ).fetchone()
+    if row:
+        st = row["status"] or "accepted"
+        if st == "accepted":
+            con.close()
+            return True, "friends"
+        if int(row["user_id"]) == other_id and st == "pending":
+            con.execute("UPDATE friendships SET status='accepted' WHERE id=?", (row["id"],))
+            con.commit()
+            con.close()
+            return True, "accepted"
+        con.close()
+        return True, "pending"
+    con.execute(
+        "INSERT INTO friendships (user_id, friend_id, status) VALUES (?,?,?)",
+        (user_id, other_id, "pending"),
+    )
+    con.commit()
+    con.close()
+    return True, "requested"
+
+
+def list_friend_requests(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT u.* FROM users u
+        JOIN friendships f ON f.user_id = u.id
+        WHERE f.friend_id=? AND IFNULL(f.status,'accepted')='pending'
+        ORDER BY u.username COLLATE NOCASE
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def accept_friend(user_id, other_id):
+    con = connect()
+    con.execute(
+        "UPDATE friendships SET status='accepted' WHERE user_id=? AND friend_id=? AND IFNULL(status,'pending')='pending'",
+        (other_id, user_id),
+    )
+    con.commit()
+    con.close()
+    return True
+
+
+def decline_friend(user_id, other_id):
+    con = connect()
+    con.execute(
+        "DELETE FROM friendships WHERE user_id=? AND friend_id=? AND IFNULL(status,'pending')='pending'",
+        (other_id, user_id),
+    )
+    con.commit()
+    con.close()
+    return True
+
+
+def list_inbox(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT m.*, fu.username AS from_name, tu.username AS to_name
+        FROM messages m
+        JOIN users fu ON fu.id = m.from_id
+        JOIN users tu ON tu.id = m.to_id
+        WHERE m.to_id=?
+        ORDER BY m.id DESC LIMIT 100
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def list_sent(user_id):
+    if not user_id:
+        return []
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT m.*, fu.username AS from_name, tu.username AS to_name
+        FROM messages m
+        JOIN users fu ON fu.id = m.from_id
+        JOIN users tu ON tu.id = m.to_id
+        WHERE m.from_id=?
+        ORDER BY m.id DESC LIMIT 100
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def mark_message_read(user_id, mid):
+    con = connect()
+    con.execute("UPDATE messages SET is_read=1 WHERE id=? AND to_id=?", (mid, user_id))
+    con.commit()
+    con.close()
+
+
+def list_groups_detailed():
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT g.*, u.username AS owner_name,
+               (SELECT COUNT(*) FROM group_members gm WHERE gm.group_id=g.id) AS member_count
+        FROM groups g
+        LEFT JOIN users u ON u.id = g.creator_id
+        ORDER BY g.id DESC
+        """
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def groups_for_user(user_id):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT g.*, gm.role,
+               (SELECT COUNT(*) FROM group_members x WHERE x.group_id=g.id) AS member_count
+        FROM groups g
+        JOIN group_members gm ON gm.group_id=g.id
+        WHERE gm.user_id=?
+        ORDER BY g.name COLLATE NOCASE
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def search_groups(q):
+    q = (q or "").strip()
+    if not q:
+        return list_groups_detailed()
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT g.*, u.username AS owner_name,
+               (SELECT COUNT(*) FROM group_members gm WHERE gm.group_id=g.id) AS member_count
+        FROM groups g
+        LEFT JOIN users u ON u.id = g.creator_id
+        WHERE g.name LIKE ? OR g.description LIKE ?
+        ORDER BY g.id DESC
+        """,
+        ("%" + q + "%", "%" + q + "%"),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def toggle_favorite(user_id, place_id):
+    if not get_place(place_id):
+        return False, "missing"
+    con = connect()
+    row = con.execute(
+        "SELECT user_id FROM favorites WHERE user_id=? AND place_id=?",
+        (user_id, place_id),
+    ).fetchone()
+    if row:
+        con.execute("DELETE FROM favorites WHERE user_id=? AND place_id=?", (user_id, place_id))
+        con.commit()
+        con.close()
+        return True, "removed"
+    con.execute(
+        "INSERT INTO favorites (user_id, place_id, created_at) VALUES (?,?,?)",
+        (user_id, place_id, int(time.time())),
+    )
+    con.commit()
+    con.close()
+    return True, "added"
+
+
+def is_favorite(user_id, place_id):
+    con = connect()
+    row = con.execute(
+        "SELECT user_id FROM favorites WHERE user_id=? AND place_id=?",
+        (user_id, place_id),
+    ).fetchone()
+    con.close()
+    return bool(row)
+
+
+def list_favorites(user_id):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT p.* FROM places p
+        JOIN favorites f ON f.place_id=p.id
+        WHERE f.user_id=?
+        ORDER BY f.created_at DESC
+        """,
+        (user_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def record_play(user_id, place_id):
+    if not user_id or not place_id:
+        return
+    con = connect()
+    con.execute(
+        "INSERT OR REPLACE INTO recently_played (user_id, place_id, played_at) VALUES (?,?,?)",
+        (user_id, place_id, int(time.time())),
+    )
+    con.commit()
+    con.close()
+
+
+def list_recent(user_id, limit=12):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT p.* FROM places p
+        JOIN recently_played r ON r.place_id=p.id
+        WHERE r.user_id=?
+        ORDER BY r.played_at DESC LIMIT ?
+        """,
+        (user_id, int(limit)),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def list_jobs_for_place(place_id):
+    con = connect()
+    rows = con.execute(
+        "SELECT * FROM jobs WHERE place_id=? ORDER BY opened_at DESC LIMIT 10",
+        (place_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def add_trade_item(trade_id, user_id, asset_id):
+    if not get_asset(asset_id):
+        return False
+    con = connect()
+    owned = con.execute(
+        "SELECT id FROM inventory WHERE user_id=? AND asset_id=?",
+        (user_id, asset_id),
+    ).fetchone()
+    if not owned:
+        con.close()
+        return False
+    con.execute(
+        "INSERT INTO trade_items (trade_id, user_id, asset_id) VALUES (?,?,?)",
+        (trade_id, user_id, asset_id),
+    )
+    con.commit()
+    con.close()
+    return True
+
+
+def list_trade_items(trade_id):
+    con = connect()
+    rows = con.execute(
+        """
+        SELECT ti.*, a.name, a.asset_type, a.price
+        FROM trade_items ti
+        JOIN assets a ON a.id = ti.asset_id
+        WHERE ti.trade_id=?
+        """,
+        (trade_id,),
+    ).fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+
+def set_trade_status(trade_id, user_id, status):
+    trade = None
+    con = connect()
+    row = con.execute("SELECT * FROM trades WHERE id=?", (trade_id,)).fetchone()
+    if not row:
+        con.close()
+        return False
+    trade = dict(row)
+    if user_id not in (trade["from_id"], trade["to_id"]):
+        con.close()
+        return False
+    if status == "completed":
+        items = con.execute("SELECT * FROM trade_items WHERE trade_id=?", (trade_id,)).fetchall()
+        for it in items:
+            other = trade["to_id"] if it["user_id"] == trade["from_id"] else trade["from_id"]
+            con.execute(
+                "DELETE FROM inventory WHERE user_id=? AND asset_id=? AND id IN (SELECT id FROM inventory WHERE user_id=? AND asset_id=? LIMIT 1)",
+                (it["user_id"], it["asset_id"], it["user_id"], it["asset_id"]),
+            )
+            exists = con.execute(
+                "SELECT id FROM inventory WHERE user_id=? AND asset_id=?",
+                (other, it["asset_id"]),
+            ).fetchone()
+            if not exists:
+                con.execute(
+                    "INSERT INTO inventory (user_id, asset_id, created_at) VALUES (?,?,?)",
+                    (other, it["asset_id"], int(time.time())),
+                )
+            con.execute("DELETE FROM wearing WHERE user_id=? AND asset_id=?", (it["user_id"], it["asset_id"]))
+    con.execute("UPDATE trades SET status=? WHERE id=?", (status, trade_id))
+    con.commit()
+    con.close()
+    return True
+
+
+def iso(ts):
+    import datetime
+    try:
+        return datetime.datetime.utcfromtimestamp(int(ts or time.time())).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    except Exception:
+        return "2020-01-01T00:00:00.000Z"

@@ -20,9 +20,21 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="container-header"><h3>Inbox</h3></div>
-<div class="section-content"><ul class="vlist feeds"></ul></div>
-<div class="container-header"><h3>New Message</h3></div>
+<div class="container-header"><h1>Messages</h1></div>
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#inbox-pane" data-tab="inbox-pane">Inbox</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#sent-pane" data-tab="sent-pane">Sent</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#compose-pane" data-tab="compose-pane">New Message</a></li>
+</ul>
+<div id="inbox-pane" class="tab-pane settings-tab-pane active">
+<div class="section-content"><ul class="vlist feeds inbox-list"></ul>
+<p class="list-content inbox-empty">No messages.</p></div>
+</div>
+<div id="sent-pane" class="tab-pane settings-tab-pane">
+<div class="section-content"><ul class="vlist sent-list"></ul>
+<p class="list-content sent-empty">No sent messages.</p></div>
+</div>
+<div id="compose-pane" class="tab-pane settings-tab-pane">
 <div class="section-content">
 <form method="post" action="/messages/send">
 <label class="form-label">To</label>
@@ -33,6 +45,7 @@
 <textarea class="text-box text-area-medium" name="body" rows="4" placeholder="Write a message"></textarea>
 <button type="submit" class="btn-primary-md">Send</button>
 </form></div>
+</div>
 </div>
 </div>
 <footer class="container-footer" id="footer-container">

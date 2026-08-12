@@ -20,16 +20,30 @@
 </div>
 <div class="container-main" id="container-main">
 <div class="content">
-<div class="section home-friends">
-<div class="container-header"><h3>Friends (0)</h3></div>
+<div class="section friends-content">
+<div class="container-header"><h1>Friends</h1></div>
+<ul class="nav nav-tabs" role="tablist">
+<li class="rbx-tab active"><a class="rbx-tab-heading" href="#friends-pane" data-tab="friends-pane">Friends</a></li>
+<li class="rbx-tab"><a class="rbx-tab-heading" href="#requests-pane" data-tab="requests-pane">Requests</a></li>
+</ul>
+<div id="friends-pane" class="tab-pane settings-tab-pane active">
 <div class="section-content">
 <form method="post" action="/friends/add" class="add-friend-form">
 <label class="form-label" for="friend-username">Add a Friend</label>
 <input class="input-field" id="friend-username" name="username" placeholder="Username">
-<button type="submit" class="btn-primary-md">Add Friend</button>
+<button type="submit" class="btn-primary-md">Send Request</button>
 </form>
+<h3>Friends (0)</h3>
 <ul class="hlist friend-list"></ul>
 <p class="list-content">No Search Results Found</p>
+</div>
+</div>
+<div id="requests-pane" class="tab-pane settings-tab-pane">
+<div class="section-content">
+<h3>Friend Requests</h3>
+<ul class="vlist request-list"></ul>
+<p class="list-content request-empty">No pending requests.</p>
+</div>
 </div>
 </div>
 </div>

@@ -599,3 +599,34 @@ h3 { font-size: 18px; }
 @media (min-width: 768px) {
   .navbar-login-toggle { display: none !important; }
 }
+
+.games-filter-bar, .add-friend-form, .inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 12px;
+}
+.games-filter-bar .input-field { width: auto; min-width: 120px; flex: 1; }
+.inline-form { display: inline-flex; margin: 0; }
+.catalog-container { display: flex; flex-wrap: wrap; gap: 16px; }
+.catalog-left { width: 180px; flex: 0 0 180px; }
+.catalog-right { flex: 1; min-width: 0; }
+.menu-vertical { list-style: none; margin: 0; padding: 0; background: #232527; }
+.menu-vertical .menu-option a, .catalog-cats a {
+  display: block;
+  padding: 8px 12px;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.menu-vertical .menu-option a:hover, .catalog-cats a:hover { background: #2d2f31; }
+.catalog-cats { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 12px; }
+.catalog-cats a { background: #232527; }
+.avatar-editor { display: flex; flex-wrap: wrap; gap: 16px; }
+.avatar-preview { max-width: 240px; text-align: center; }
+.group-card h2 { margin: 0 0 6px; }
+.robux-products { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.robux-products .section-content { flex: 1; min-width: 140px; }
+@media (max-width: 767px) {
+  .catalog-left { width: 100%; flex-basis: 100%; }
+}
