@@ -38,8 +38,17 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
 echo "--- xkbcomp:"
 which xkbcomp || sudo apt-get install -y xkbcomp 2>&1 | tail -2 || true
 echo "--- xserver-xorg-core (provides libglx.so):"
-sudo apt-get install -y xserver-xorg-core 2>&1 | tail -3 || true
+sudo apt-get install -y --reinstall xvfb xserver-xorg-core mesa-utils 2>&1 | tail -3 || true
 dpkg -L xserver-xorg-core 2>/dev/null | grep glx || echo "no glx in xserver-xorg-core dpkg list"
+echo "--- GLX self-test on the runner:"
+sudo pkill -x Xvfb 2>/dev/null; sleep 1
+Xvfb :99 -screen 0 1024x1024x24 +extension GLX > /tmp/xvfb-runner.log 2>&1 &
+sleep 3
+DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 glxinfo 2>&1 | grep -E "OpenGL renderer|OpenGL version|GLX version" | head -5 || true
+DISPLAY=:99 glxinfo 2>&1 | head -3 || true
+echo "--- xvfb runner log:"
+head -5 /tmp/xvfb-runner.log 2>/dev/null || true
+sudo pkill -x Xvfb 2>/dev/null || true
 echo "[1/5] apt done"
 
 echo "[2/5] display binaries"
