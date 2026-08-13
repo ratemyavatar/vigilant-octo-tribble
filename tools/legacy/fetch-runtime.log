@@ -1,24 +1,37 @@
-=== fetch-runtime start Thu Aug 13 02:53:05 UTC 2026 ===
+=== fetch-runtime start Thu Aug 13 02:56:59 UTC 2026 ===
 [1/5] apt packages
-E: Unable to locate package xkbcomp
+Fetched 27.6 MB in 3s (8518 kB/s)
+Reading package lists...
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+--- xkbcomp:
+/usr/bin/xkbcomp
+--- xserver-xorg-core (provides libglx.so):
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+/usr/lib/xorg/modules/extensions/libglx.so
 [1/5] apt done
 [2/5] display binaries
 [2/5] display binaries done: 20M
 [3/5] mesa GL stack
 [3.2/5] xorg GLX module (Xvfb needs it to serve GLX)
-glx module found at: NOWHERE
-0
-no /usr/lib/xorg/modules
-total 8
-drwxr-xr-x 2 runner runner 4096 Aug 13 02:53 .
-drwxr-xr-x 7 runner runner 4096 Aug 13 02:53 ..
-[3/5] mesa done: 49 libs + 2 drivers
+glx module found at: /usr/lib/xorg/modules/extensions/libglx.so
+1
+libglx.so
+total 312
+drwxr-xr-x 3 runner runner   4096 Aug 13 02:57 .
+drwxr-xr-x 7 runner runner   4096 Aug 13 02:57 ..
+-rw-r--r-- 1 runner runner 306600 Aug 13 02:57 libglx.so
+drwxr-xr-x 5 runner runner   4096 Aug 13 02:57 modules
+[3/5] mesa done: 55 libs + 2 drivers
 [4/5] wine tarball
--rw-r--r-- 1 runner runner 98634028 Aug 13 02:53 tools/legacy/wine.tar.xz
+-rw-r--r-- 1 runner runner 98634028 Aug 13 02:56 tools/legacy/wine.tar.xz
 [5/5] bundle + push
-[arena/019ff872-vigilant-octo-tribble 11b692b] transient: display runtime + mesa bundle
+[arena/019ff872-vigilant-octo-tribble 5d7a696] transient: display runtime + mesa bundle
  1 file changed, 0 insertions(+), 0 deletions(-)
 To https://github.com/ratemyavatar/vigilant-octo-tribble
-   a066aec..11b692b  HEAD -> arena/019ff872-vigilant-octo-tribble
-=== fetch-runtime DONE Thu Aug 13 02:54:25 UTC 2026 ===
-=== trap: pushing log Thu Aug 13 02:54:25 UTC 2026 ===
+   a558822..5d7a696  HEAD -> arena/019ff872-vigilant-octo-tribble
+=== fetch-runtime DONE Thu Aug 13 02:58:14 UTC 2026 ===
+=== trap: pushing log Thu Aug 13 02:58:14 UTC 2026 ===
