@@ -6,6 +6,7 @@ RCC:  set rcc_enabled and rcc_soap in config.json after you install RCCService.e
 """
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
@@ -285,6 +286,77 @@ def fill_lua(name: str, mapping: dict) -> str:
     for k, v in mapping.items():
         text = text.replace("{{" + k + "}}", str(v))
     return text
+
+
+# Legacy asset type ids for the avatar payload sent to RCC.
+ASSET_TYPE_IDS = {
+    "Image": 1, "TShirt": 2, "Audio": 3, "Mesh": 4, "Lua": 5,
+    "Hat": 8, "Place": 9, "Model": 10, "Shirt": 11, "Pants": 12,
+    "Decal": 13, "Head": 17, "Face": 18, "Gear": 19, "Package": 19,
+    "Torso": 27, "LeftArm": 28, "RightArm": 29, "LeftLeg": 30,
+    "RightLeg": 31, "HairAccessory": 41, "FaceAccessory": 42,
+    "NeckAccessory": 43, "ShoulderAccessory": 44, "FrontAccessory": 45,
+    "BackAccessory": 46, "WaistAccessory": 47,
+}
+
+
+def avatar_json(user_id: int) -> dict:
+    """Economy-simulator-shaped avatar payload for the render script."""
+    settings = db.get_user_settings(db.get_user(user_id))
+    body_colors = {
+        "Head": settings.get("head_color") or "#F5CD30",
+        "Torso": settings.get("torso_color") or "#F5CD30",
+        "Left Arm": settings.get("left_arm_color") or "#F5CD30",
+        "Right Arm": settings.get("right_arm_color") or "#F5CD30",
+        "Left Leg": settings.get("left_leg_color") or "#F5CD30",
+        "Right Leg": settings.get("right_leg_color") or "#F5CD30",
+    }
+    assets = []
+    for a in db.list_wearing(user_id):
+        assets.append(
+            {
+                "id": a.get("id"),
+                "name": a.get("name") or "",
+                "assetType": ASSET_TYPE_IDS.get(a.get("asset_type") or "", 8),
+            }
+        )
+    return {"assets": assets, "bodyColors": body_colors}
+
+
+def queue_render(kind: str, key, asset_id: int = 0, user_id: int = 0) -> bool:
+    """Dispatch a thumbnail render job to RCCService (or the local mock)."""
+    if not CONFIG.get("rcc_enabled"):
+        print("render skipped (rcc_enabled=false) kind=%s key=%s" % (kind, key))
+        return False
+    if int(user_id or 0) > 0:
+        upload_url = PUBLIC + "/thumbs/headshot.ashx?userId=" + str(int(user_id))
+    else:
+        upload_url = PUBLIC + "/thumbs/" + kind + ".ashx?id=" + str(key)
+    tokens = {
+        "BASE_URL": PUBLIC,
+        "ASSET_ID": int(asset_id or 0),
+        "USER_ID": int(user_id or 0),
+        "KIND": kind,
+        "KEY": key,
+        "UPLOAD_URL": upload_url,
+        "AVATAR_JSON": json.dumps(
+            avatar_json(user_id) if user_id else {"assets": [], "bodyColors": {}}
+        ),
+    }
+    lua = fill_lua("render.lua", tokens)
+    try:
+        rcc.open_job(
+            CONFIG["rcc_soap"],
+            "Render",
+            lua,
+            expiration=300,
+            timeout=int(CONFIG.get("rcc_timeout", 15)),
+        )
+        print("render job queued kind=%s key=%s" % (kind, key))
+        return True
+    except Exception as e:
+        print("render job failed kind=%s key=%s: %s" % (kind, key, e))
+        return False
 
 
 RENDERS = DATA / "renders"
@@ -619,6 +691,7 @@ class Handler(BaseHTTPRequestHandler):
             if not u:
                 return text_bytes("Username taken or invalid", status=400)
             sid = db.create_session(u["id"])
+            queue_render("headshot", u["id"], user_id=u["id"])
             self.redirect("/home", set_cookie=sid)
             return False
 
@@ -658,15 +731,7 @@ class Handler(BaseHTTPRequestHandler):
                 "",
                 form.get("price") or 0,
             )
-            if CONFIG.get("rcc_enabled"):
-                try:
-                    lua = fill_lua(
-                        "render.lua",
-                        {"BASE_URL": PUBLIC, "ASSET_ID": aid, "USER_ID": 0},
-                    )
-                    rcc.open_job(CONFIG["rcc_soap"], "Render", lua, timeout=int(CONFIG.get("rcc_timeout", 15)))
-                except Exception as e:
-                    print("render job", e)
+            queue_render("asset", aid, asset_id=aid)
             accept = (self.headers.get("Accept") or "").lower()
             if "application/json" in accept:
                 return json_bytes({"id": aid})
@@ -890,6 +955,7 @@ class Handler(BaseHTTPRequestHandler):
                 return False
             form = self.parse_form()
             db.wear_outfit(user["id"], form.get("id") or 0)
+            queue_render("headshot", user["id"], user_id=user["id"])
             self.redirect("/avatar?tab=outfits")
             return False
 
@@ -926,6 +992,7 @@ class Handler(BaseHTTPRequestHandler):
                     updates[allowed[part]] = color
             if updates:
                 db.save_user_settings(user["id"], updates)
+            queue_render("headshot", user["id"], user_id=user["id"])
             self.redirect("/avatar")
             return False
 
@@ -947,6 +1014,7 @@ class Handler(BaseHTTPRequestHandler):
                 return False
             form = self.parse_form()
             db.wear_asset(user["id"], form.get("id") or 0)
+            queue_render("headshot", user["id"], user_id=user["id"])
             self.redirect("/avatar")
             return False
 
@@ -956,6 +1024,7 @@ class Handler(BaseHTTPRequestHandler):
                 return False
             form = self.parse_form()
             db.unwear_asset(user["id"], form.get("id") or 0)
+            queue_render("headshot", user["id"], user_id=user["id"])
             self.redirect("/avatar")
             return False
 
@@ -1162,11 +1231,20 @@ class Handler(BaseHTTPRequestHandler):
             )
             if method == "POST":
                 body = self.read_body()
+                png = body
+                # RCC render scripts POST {"thumbnail": "<base64 png>", ...};
+                # plain clients may POST the raw PNG bytes instead.
+                if body[:1] == b"{":
+                    try:
+                        payload = json.loads(body.decode("utf-8", "replace"))
+                        png = base64.b64decode(payload.get("thumbnail") or "")
+                    except Exception:
+                        png = body
                 folder = "headshots" if kind == "headshot" else ("places" if kind == "place" else "assets")
                 dest = RENDERS / folder
                 dest.mkdir(parents=True, exist_ok=True)
                 safe = re.sub(r"[^a-zA-Z0-9_-]", "", str(key)) or "0"
-                (dest / (safe + ".png")).write_bytes(body)
+                (dest / (safe + ".png")).write_bytes(png)
                 return json_bytes({"ok": True, "url": "/thumbs/%s.ashx?id=%s" % (kind, safe)})
             return 200, "image/png", render_png(kind, key)
 
@@ -1313,7 +1391,50 @@ class Handler(BaseHTTPRequestHandler):
             ok = False
             if CONFIG.get("rcc_enabled"):
                 ok = rcc.hello(CONFIG["rcc_soap"], timeout=3)
-            return json_bytes({"rcc_enabled": bool(CONFIG.get("rcc_enabled")), "reachable": ok, "soap": CONFIG.get("rcc_soap")})
+            return json_bytes(
+                {
+                    "rcc_enabled": bool(CONFIG.get("rcc_enabled")),
+                    "rcc_mode": CONFIG.get("rcc_mode", "unknown"),
+                    "reachable": ok,
+                    "soap": CONFIG.get("rcc_soap"),
+                }
+            )
+
+        if low in ("/rcc", "/rcc/"):
+            ok = False
+            if CONFIG.get("rcc_enabled"):
+                ok = rcc.hello(CONFIG["rcc_soap"], timeout=3)
+            mode = CONFIG.get("rcc_mode", "unknown")
+            headshots = (RENDERS / "headshots").glob("*.png")
+            recent = sorted(
+                [p.name for p in headshots if p.stat().st_size > 0],
+                key=lambda n: (RENDERS / "headshots" / n).stat().st_mtime,
+                reverse=True,
+            )[:5]
+            rows = "".join(
+                '<li><a href="/thumbs/headshot.ashx?userId=%s">%s</a></li>'
+                % (n[:-4], n)
+                for n in recent
+            ) or "<li>none yet</li>"
+            return text_bytes(
+                "<!DOCTYPE html><html><head><title>RCC status</title>"
+                "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+                "</head><body style='font-family:monospace;padding:16px'>"
+                "<h1>RCC status</h1>"
+                "<p>enabled: <b>%s</b></p>"
+                "<p>mode: <b>%s</b> (mock = local fake renderer, wine = real RCCService.exe)</p>"
+                "<p>soap: %s</p>"
+                "<p>reachable: <b>%s</b></p>"
+                "<h2>recent headshot renders</h2><ul>%s</ul>"
+                "</body></html>"
+                % (
+                    bool(CONFIG.get("rcc_enabled")),
+                    mode,
+                    CONFIG.get("rcc_soap"),
+                    ok,
+                    rows,
+                ),
+            )
 
         if low == "/api/places":
             return json_bytes(db.list_places())

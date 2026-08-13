@@ -16,18 +16,45 @@ config.json:
 
 - port: site listen port (default 8080)
 - public_url: URL the client and RCC use to reach this site
-- rcc_enabled: true after RCCService is running
+- rcc_enabled: true after RCCService (or the mock) is running
+- rcc_mode: "mock" (local fake renderer) or "wine" (real RCCService.exe)
 - rcc_soap: RCC SOAP URL, usually http://127.0.0.1:64989
 - game_port_start: first game listen port RCC should bind
 
-## RCCService (you install this)
+## Rendering (RCC)
 
-RCCService.exe is Roblox's game/render process. This repo does not include it. Put your copy on a Windows machine.
+Headshots and asset thumbs are rendered through RCCService:
 
-1. Start RCCService so it listens for SOAP (common port 64989).
+1. The site dispatches a render job (SOAP OpenJobEx to rcc_soap) on signup,
+   avatar wear/unwear/color changes, and catalog upload.
+2. The RCC process runs scripts/render.lua, which draws the avatar with
+   ThumbnailGenerator:Click and POSTs the PNG back to /thumbs/... (JSON with
+   a base64 "thumbnail" field — the site also accepts raw PNG POSTs).
+3. The PNG lands in data/renders/{headshots,assets,places}/ and is served by
+   /thumbs/headshot.ashx?userId=... (placeholder until the first render).
+
+Status: http://127.0.0.1:8080/rcc (human page) and /rcc/hello (JSON).
+
+### Without the real binary (mock)
+
+This repo does not include RCCService.exe (proprietary Roblox software — put
+your copy on a Windows machine, or under Wine). For local testing there is a
+SOAP-compatible stand-in that generates placeholder PNGs and POSTs them back
+exactly like the real RCC:
+
+    python3 tools/rcc_mock.py 64989
+
+Set "rcc_mode": "mock" in config.json (or change it to "wine" once the real
+RCCService is running).
+
+### With the real RCCService.exe
+
+1. Start RCCService so it listens for SOAP (common port 64989), e.g. on
+   Windows `RCCService.exe -console -verbose`, or on Linux under Wine:
+   `xvfb-run -a wine RCCService.exe -console -verbose`.
 2. Point rcc_soap at that host (http://WINDOWS_IP:64989).
 3. Set public_url to a URL RCC can open (not 127.0.0.1 if RCC is on another PC).
-4. Set rcc_enabled to true.
+4. Set rcc_enabled to true and rcc_mode to "wine".
 5. Restart python3 server.py.
 6. Check http://127.0.0.1:8080/rcc/hello — reachable should be true.
 
