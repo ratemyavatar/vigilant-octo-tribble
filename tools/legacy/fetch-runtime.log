@@ -1,4 +1,4 @@
-=== fetch-runtime start Thu Aug 13 02:48:58 UTC 2026 ===
+=== fetch-runtime start Thu Aug 13 02:53:05 UTC 2026 ===
 [1/5] apt packages
 E: Unable to locate package xkbcomp
 [1/5] apt done
@@ -6,14 +6,19 @@ E: Unable to locate package xkbcomp
 [2/5] display binaries done: 20M
 [3/5] mesa GL stack
 [3.2/5] xorg GLX module (Xvfb needs it to serve GLX)
-WARN: no glx module
+glx module found at: NOWHERE
+0
+no /usr/lib/xorg/modules
+total 8
+drwxr-xr-x 2 runner runner 4096 Aug 13 02:53 .
+drwxr-xr-x 7 runner runner 4096 Aug 13 02:53 ..
 [3/5] mesa done: 49 libs + 2 drivers
 [4/5] wine tarball
--rw-r--r-- 1 runner runner 98634028 Aug 13 02:48 tools/legacy/wine.tar.xz
+-rw-r--r-- 1 runner runner 98634028 Aug 13 02:53 tools/legacy/wine.tar.xz
 [5/5] bundle + push
-[arena/019ff872-vigilant-octo-tribble 573f7e0] transient: display runtime + mesa bundle
+[arena/019ff872-vigilant-octo-tribble 11b692b] transient: display runtime + mesa bundle
  1 file changed, 0 insertions(+), 0 deletions(-)
 To https://github.com/ratemyavatar/vigilant-octo-tribble
-   14d6cfe..573f7e0  HEAD -> arena/019ff872-vigilant-octo-tribble
-=== fetch-runtime DONE Thu Aug 13 02:49:47 UTC 2026 ===
-=== trap: pushing log Thu Aug 13 02:49:47 UTC 2026 ===
+   a066aec..11b692b  HEAD -> arena/019ff872-vigilant-octo-tribble
+=== fetch-runtime DONE Thu Aug 13 02:54:25 UTC 2026 ===
+=== trap: pushing log Thu Aug 13 02:54:25 UTC 2026 ===
