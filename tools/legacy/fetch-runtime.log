@@ -1,6 +1,6 @@
-=== fetch-runtime start Thu Aug 13 03:04:13 UTC 2026 ===
+=== fetch-runtime start Thu Aug 13 03:11:06 UTC 2026 ===
 [1/5] apt packages
-Fetched 24.6 MB in 8s (3179 kB/s)
+Fetched 27.6 MB in 3s (8709 kB/s)
 Reading package lists...
 No user sessions are running outdated binaries.
 
@@ -13,6 +13,11 @@ No user sessions are running outdated binaries.
 No VM guests are running outdated hypervisor (qemu) binaries on this host.
 /usr/lib/xorg/modules/extensions/libglx.so
 --- GLX self-test on the runner:
+Xvfb diag: -rwxr-xr-x 1 root root 2073056 Oct 23  2025 /usr/bin/Xvfb
+Xvfb md5: 0804e4a02601e93b1d421d750a3e23e8  /usr/bin/Xvfb
+Xvfb DRI2 exports: 0
+Xvfb LoaderSymbol exports: 0
+Xvfb is symlink: /usr/bin/Xvfb
 GLX version: 1.4
 OpenGL renderer string: llvmpipe (LLVM 15.0.7, 256 bits)
 OpenGL version string: 4.5 (Compatibility Profile) Mesa 23.2.1-1ubuntu3.1~22.04.4
@@ -29,17 +34,17 @@ glx module found at: /usr/lib/xorg/modules/extensions/libglx.so
 1
 libglx.so
 total 312
-drwxr-xr-x 3 runner runner   4096 Aug 13 03:05 .
-drwxr-xr-x 7 runner runner   4096 Aug 13 03:04 ..
--rw-r--r-- 1 runner runner 306600 Aug 13 03:05 libglx.so
-drwxr-xr-x 5 runner runner   4096 Aug 13 03:05 modules
+drwxr-xr-x 3 runner runner   4096 Aug 13 03:11 .
+drwxr-xr-x 7 runner runner   4096 Aug 13 03:11 ..
+-rw-r--r-- 1 runner runner 306600 Aug 13 03:11 libglx.so
+drwxr-xr-x 5 runner runner   4096 Aug 13 03:11 modules
 [3/5] mesa done: 55 libs + 2 drivers
 [4/5] wine tarball
--rw-r--r-- 1 runner runner 98634028 Aug 13 03:04 tools/legacy/wine.tar.xz
+-rw-r--r-- 1 runner runner 98634028 Aug 13 03:11 tools/legacy/wine.tar.xz
 [5/5] bundle + push
-[arena/019ff872-vigilant-octo-tribble 0433a90] transient: display runtime + mesa bundle
+[arena/019ff872-vigilant-octo-tribble 5098e72] transient: display runtime + mesa bundle
  1 file changed, 0 insertions(+), 0 deletions(-)
 To https://github.com/ratemyavatar/vigilant-octo-tribble
-   354f549..0433a90  HEAD -> arena/019ff872-vigilant-octo-tribble
-=== fetch-runtime DONE Thu Aug 13 03:05:41 UTC 2026 ===
-=== trap: pushing log Thu Aug 13 03:05:41 UTC 2026 ===
+   318b181..5098e72  HEAD -> arena/019ff872-vigilant-octo-tribble
+=== fetch-runtime DONE Thu Aug 13 03:12:34 UTC 2026 ===
+=== trap: pushing log Thu Aug 13 03:12:34 UTC 2026 ===
