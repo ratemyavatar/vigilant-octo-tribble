@@ -63,12 +63,12 @@ def open_job(url: str, script_name: str, lua: str, expiration=120, timeout=15) -
       <job>
         <id>{job_id}</id>
         <expirationInSeconds>{int(expiration)}</expirationInSeconds>
-        <category>1</category>
+        <category>0</category>
         <cores>1</cores>
       </job>
       <script>
         <name>{script_name}</name>
-        <script>{lua_xml}</script>
+        <script><![CDATA[{lua}]]></script>
       </script>
     </OpenJobEx>"""
     soap_call(url, "OpenJobEx", body, timeout)

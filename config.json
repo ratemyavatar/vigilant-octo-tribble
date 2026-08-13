@@ -4,7 +4,7 @@
   "public_url": "http://127.0.0.1:8080",
   "rcc_enabled": true,
   "rcc_mode": "mock",
-  "rcc_soap": "http://127.0.0.1:64989",
+  "rcc_soap": "http://127.0.0.1:64990",
   "rcc_timeout": 15,
   "game_port_start": 53640,
   "site_name": "ROBLOX",
