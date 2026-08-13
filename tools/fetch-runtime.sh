@@ -28,7 +28,7 @@ mkdir -p "$BUNDLE_DIR/display/bin" "$BUNDLE_DIR/display/lib" "$BUNDLE_DIR/displa
 echo "[1/5] apt packages"
 sudo apt-get update -qq || true
 sudo apt-get install -y -qq \
-    xvfb xkb-data xkbcomp \
+    xvfb xkb-data xkbcomp xserver-xorg-core \
     libgl1 libglx-mesa0 libgl1-mesa-dri libosmesa6 libglvnd0 libegl1 \
     libx11-6 libxkbfile1 libxkbcommon0 libxkbcommon-x11-0 libxcb1 \
     libxcb-keysyms1 libxcb-xkb1 libxcb-randr0 libxcb-shape0 libxcb-xfixes0 \
