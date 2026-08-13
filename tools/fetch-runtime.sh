@@ -56,12 +56,19 @@ cp -L /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so "$M/" 2>/dev/null || true
 cp -L /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so "$M/" 2>/dev/null || true
 echo "[3.2/5] xorg GLX module (Xvfb needs it to serve GLX)"
 mkdir -p "$BUNDLE_DIR/display/xorg"
+GLXMOD=$(find /usr/lib -name "libglx.so" 2>/dev/null | head -1)
+echo "glx module found at: ${GLXMOD:-NOWHERE}"
+dpkg -L xserver-xorg-core 2>/dev/null | grep -c glx || true
+ls /usr/lib/xorg/modules/extensions/ 2>/dev/null || ls /usr/lib/xorg/modules/ 2>/dev/null || echo "no /usr/lib/xorg/modules"
+if [ -n "$GLXMOD" ]; then
+    cp -L "$GLXMOD" "$BUNDLE_DIR/display/xorg/" 2>/dev/null || true
+fi
 cp -rL /usr/lib/xorg/modules "$BUNDLE_DIR/display/xorg/" 2>/dev/null || true
-for lib in $(ldd /usr/lib/xorg/modules/extensions/libglx.so 2>/dev/null | awk '{print $3}' | grep '^/'); do
+for lib in $(ldd "$GLXMOD" 2>/dev/null | awk '{print $3}' | grep '^/'); do
     mkdir -p "$BUNDLE_DIR/display/$(dirname "${lib#/}")"
     cp -L "$lib" "$BUNDLE_DIR/display/${lib#/}" 2>/dev/null || true
 done
-ls "$BUNDLE_DIR/display/xorg/modules/extensions/" 2>/dev/null || echo "WARN: no glx module"
+ls -la "$BUNDLE_DIR/display/xorg/" 2>/dev/null | head -8
 for lib in \
     libGL.so.1.7.0 libGLX_mesa.so.0.0.0 libGLdispatch.so.0.0.0 libGLX.so.0.0.0 \
     libOSMesa.so.8.0.0 libEGL_mesa.so.0.0.0 libglapi.so.0.0.0 libxatracker.so.2.5.0 \
