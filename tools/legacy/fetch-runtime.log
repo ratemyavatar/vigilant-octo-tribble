@@ -1,6 +1,6 @@
-=== fetch-runtime start Thu Aug 13 03:15:17 UTC 2026 ===
+=== fetch-runtime start Thu Aug 13 03:26:41 UTC 2026 ===
 [1/5] apt packages
-Fetched 27.6 MB in 3s (8869 kB/s)
+Fetched 24.6 MB in 3s (8232 kB/s)
 Reading package lists...
 No user sessions are running outdated binaries.
 
@@ -30,32 +30,36 @@ direct rendering: Yes
 [2/5] display binaries done: 20M
 [3/5] mesa GL stack
 [3.3/5] swrast driver deps (libLLVM, libdrm, ...)
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
 libLLVM-15.so.1
+libXfixes.so.3
 libdrm.so.2
 libdrm_amdgpu.so.1
 libdrm_intel.so.1
 libdrm_nouveau.so.2
 libdrm_radeon.so.1
 libsensors.so.5
+libxcb-shm.so.0
+libxcb-xfixes.so.0
 [3.2/5] xorg GLX module (Xvfb needs it to serve GLX)
 glx module found at: /usr/lib/xorg/modules/extensions/libglx.so
 1
 libglx.so
 total 312
-drwxr-xr-x 3 runner runner   4096 Aug 13 03:16 .
-drwxr-xr-x 7 runner runner   4096 Aug 13 03:15 ..
--rw-r--r-- 1 runner runner 306600 Aug 13 03:16 libglx.so
-drwxr-xr-x 5 runner runner   4096 Aug 13 03:16 modules
-[3/5] mesa done: 85 libs + 2 drivers
+drwxr-xr-x 3 runner runner   4096 Aug 13 03:27 .
+drwxr-xr-x 7 runner runner   4096 Aug 13 03:27 ..
+-rw-r--r-- 1 runner runner 306600 Aug 13 03:27 libglx.so
+drwxr-xr-x 5 runner runner   4096 Aug 13 03:27 modules
+[3/5] mesa done: 101 libs + 2 drivers
 [4/5] wine tarball
--rw-r--r-- 1 runner runner 98634028 Aug 13 03:15 tools/legacy/wine.tar.xz
+-rw-r--r-- 1 runner runner 98634028 Aug 13 03:26 tools/legacy/wine.tar.xz
 [5/5] bundle + push
-[arena/019ff872-vigilant-octo-tribble 9564b9d] transient: display runtime + mesa bundle
+[arena/019ff872-vigilant-octo-tribble fbdf75b] transient: display runtime + mesa bundle
  1 file changed, 0 insertions(+), 0 deletions(-)
 remote: warning: See https://gh.io/lfs for more information.        
-remote: warning: File tools/legacy/display-runtime.tar.xz is 59.14 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: File tools/legacy/display-runtime.tar.xz is 59.38 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
 remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
 To https://github.com/ratemyavatar/vigilant-octo-tribble
-   675d2ba..9564b9d  HEAD -> arena/019ff872-vigilant-octo-tribble
-=== fetch-runtime DONE Thu Aug 13 03:17:37 UTC 2026 ===
-=== trap: pushing log Thu Aug 13 03:17:37 UTC 2026 ===
+   4fc3125..fbdf75b  HEAD -> arena/019ff872-vigilant-octo-tribble
+=== fetch-runtime DONE Thu Aug 13 03:29:20 UTC 2026 ===
+=== trap: pushing log Thu Aug 13 03:29:20 UTC 2026 ===
