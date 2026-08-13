@@ -72,6 +72,11 @@ echo "[3/5] mesa GL stack"
 M="$BUNDLE_DIR/display/mesa"
 cp -L /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so "$M/" 2>/dev/null || true
 cp -L /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so "$M/" 2>/dev/null || true
+echo "[3.3/5] swrast driver deps (libLLVM, libdrm, ...)"
+for lib in $(ldd /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so 2>/dev/null | awk '{print $3}' | grep '^/'); do
+    cp -L "$lib" "$M/" 2>/dev/null || true
+done
+ls "$M" | grep -iE "llvm|drm|sensors" | head -8
 echo "[3.2/5] xorg GLX module (Xvfb needs it to serve GLX)"
 mkdir -p "$BUNDLE_DIR/display/xorg"
 GLXMOD=$(find /usr/lib -name "libglx.so" 2>/dev/null | head -1)
