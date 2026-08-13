@@ -26,16 +26,20 @@ rm -rf "$BUNDLE_DIR"
 mkdir -p "$BUNDLE_DIR/display/bin" "$BUNDLE_DIR/display/lib" "$BUNDLE_DIR/display/mesa"
 
 echo "[1/5] apt packages"
-sudo apt-get update -qq || true
-sudo apt-get install -y -qq \
-    xvfb xkb-data xkbcomp xserver-xorg-core \
-    libgl1 libglx-mesa0 libgl1-mesa-dri libosmesa6 libglvnd0 libegl1 \
+sudo apt-get update 2>&1 | tail -2 || true
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    xvfb xkb-data libgl1 libglx-mesa0 libgl1-mesa-dri libosmesa6 libglvnd0 libegl1 \
     libx11-6 libxkbfile1 libxkbcommon0 libxkbcommon-x11-0 libxcb1 \
     libxcb-keysyms1 libxcb-xkb1 libxcb-randr0 libxcb-shape0 libxcb-xfixes0 \
     libxau6 libxdmcp6 libxfont2 libfontenc1 libfreetype6 libpng16-16 \
     libbz2-1.0 liblzma5 libzstd1 libbsd0 libmd0 libxshmfence1 libxxf86vm1 \
     libunwind8 libpixman-1-0 libjpeg-turbo8 libtiff5 libpcre3 libselinux1 \
-    libexpat1 libuuid1 libz1 || true
+    libexpat1 libuuid1 libz1 2>&1 | tail -3 || true
+echo "--- xkbcomp:"
+which xkbcomp || sudo apt-get install -y xkbcomp 2>&1 | tail -2 || true
+echo "--- xserver-xorg-core (provides libglx.so):"
+sudo apt-get install -y xserver-xorg-core 2>&1 | tail -3 || true
+dpkg -L xserver-xorg-core 2>/dev/null | grep glx || echo "no glx in xserver-xorg-core dpkg list"
 echo "[1/5] apt done"
 
 echo "[2/5] display binaries"
