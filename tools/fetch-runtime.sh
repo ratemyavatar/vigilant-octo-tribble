@@ -73,10 +73,18 @@ M="$BUNDLE_DIR/display/mesa"
 cp -L /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so "$M/" 2>/dev/null || true
 cp -L /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so "$M/" 2>/dev/null || true
 echo "[3.3/5] swrast driver deps (libLLVM, libdrm, ...)"
-for lib in $(ldd /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so 2>/dev/null | awk '{print $3}' | grep '^/'); do
-    cp -L "$lib" "$M/" 2>/dev/null || true
+for src in /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so \
+           /usr/lib/x86_64-linux-gnu/glvnd/libGLX_mesa.so.0 \
+           /usr/lib/x86_64-linux-gnu/glvnd/libEGL_mesa.so.0 \
+           /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0 \
+           /usr/lib/x86_64-linux-gnu/libEGL_mesa.so.0.0.0 ; do
+    [ -f "$src" ] || continue
+    for lib in $(ldd "$src" 2>/dev/null | awk '{print $3}' | grep '^/'); do
+        cp -L "$lib" "$M/" 2>/dev/null || true
+    done
 done
-ls "$M" | grep -iE "llvm|drm|sensors" | head -8
+sudo apt-get install -y libxfixes3 libxcb-shm0 libxrender1 libxxf86vm1 2>&1 | tail -1 || true
+ls "$M" | grep -iE "llvm|drm|sensors|Xfixes|xcb-shm|Xrender" | head -10
 echo "[3.2/5] xorg GLX module (Xvfb needs it to serve GLX)"
 mkdir -p "$BUNDLE_DIR/display/xorg"
 GLXMOD=$(find /usr/lib -name "libglx.so" 2>/dev/null | head -1)
