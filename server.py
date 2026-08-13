@@ -1238,8 +1238,12 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         payload = json.loads(body.decode("utf-8", "replace"))
                         png = base64.b64decode(payload.get("thumbnail") or "")
+                        if payload.get("error"):
+                            print("RCC render error kind=%s key=%s: %s" % (kind, key, payload.get("error")))
                     except Exception:
                         png = body
+                if "error=" in q:
+                    print("RCC render error kind=%s key=%s: %s" % (kind, key, q.get("error")))
                 folder = "headshots" if kind == "headshot" else ("places" if kind == "place" else "assets")
                 dest = RENDERS / folder
                 dest.mkdir(parents=True, exist_ok=True)

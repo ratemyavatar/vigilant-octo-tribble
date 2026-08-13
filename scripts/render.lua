@@ -20,7 +20,7 @@ pcall(function() game:GetService("Lighting").Outlines = false end)
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl .. "/") end)
 pcall(function() InsertService:SetAssetUrl(baseUrl .. "/asset/?id=%d") end)
 pcall(function() InsertService:SetAssetVersionUrl(baseUrl .. "/asset/?assetversionid=%d") end)
-ThumbnailGenerator.GraphicsMode = 2
+ThumbnailGenerator.GraphicsMode = 4
 HttpService.HttpEnabled = true
 
 local uploadUrl = "{{UPLOAD_URL}}"
@@ -65,7 +65,7 @@ local function renderHeadshot()
 
     -- Avatar data comes from the site in the same shape Economy Simulator
     -- sends (assets + bodyColors), filled into {{AVATAR_JSON}}.
-    local av = {{AVATAR_JSON}}
+    local av = HttpService:JSONDecode('{{AVATAR_JSON}}')
 
     -- Body colors
     local char = player.Character
@@ -176,4 +176,10 @@ local ok, err = pcall(function()
 end)
 if not ok then
     print("[render] failed: " .. tostring(err))
+    -- report the failure back to the site so it can be logged
+    pcall(function()
+        local msg = tostring(err)
+        msg = msg:gsub("[^%w%s%-_%.%:]", "-")
+        HttpService:PostAsync(uploadUrl .. (string.find(uploadUrl, "?", 1, true) and "&" or "?") .. "error=" .. msg, "", Enum.HttpContentType.TextPlain)
+    end)
 end
