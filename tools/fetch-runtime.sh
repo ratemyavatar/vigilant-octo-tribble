@@ -54,6 +54,14 @@ echo "[3/5] mesa GL stack"
 M="$BUNDLE_DIR/display/mesa"
 cp -L /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so "$M/" 2>/dev/null || true
 cp -L /usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so "$M/" 2>/dev/null || true
+echo "[3.2/5] xorg GLX module (Xvfb needs it to serve GLX)"
+mkdir -p "$BUNDLE_DIR/display/xorg"
+cp -rL /usr/lib/xorg/modules "$BUNDLE_DIR/display/xorg/" 2>/dev/null || true
+for lib in $(ldd /usr/lib/xorg/modules/extensions/libglx.so 2>/dev/null | awk '{print $3}' | grep '^/'); do
+    mkdir -p "$BUNDLE_DIR/display/$(dirname "${lib#/}")"
+    cp -L "$lib" "$BUNDLE_DIR/display/${lib#/}" 2>/dev/null || true
+done
+ls "$BUNDLE_DIR/display/xorg/modules/extensions/" 2>/dev/null || echo "WARN: no glx module"
 for lib in \
     libGL.so.1.7.0 libGLX_mesa.so.0.0.0 libGLdispatch.so.0.0.0 libGLX.so.0.0.0 \
     libOSMesa.so.8.0.0 libEGL_mesa.so.0.0.0 libglapi.so.0.0.0 libxatracker.so.2.5.0 \
