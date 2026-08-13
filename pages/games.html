@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Games - ROBLOX</title>
+<link rel="icon" href="/static/ecs/logo_R.svg">
+<link rel="stylesheet" href="/static/site.css">
+
+</head>
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
+<div id="wrap" class="wrap no-gutter-ads dark-theme">
+<div id="header" class="navbar-fixed-top rbx-header" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
+    </div>
+  </div>
+</div>
+<div class="container-main" id="container-main">
+<div class="content">
+<div class="games-list-container ecs-games">
+<div class="ecs-games-bar">
+<form class="games-filter-bar" method="get" action="/games">
+<input class="input-field" name="keyword" placeholder="Search games" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="genre">{{GENRE_OPTS}}</select>
+<select class="input-field rbx-select" name="sort">{{SORT_OPTS}}</select>
+<button type="submit" class="btn-primary-md">Search</button>
+</form>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Popular</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-popular"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Recommended</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-spotlight"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Top Favorite</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-fresh"></ul>
+</div>
+<div class="container-list games-shelf">
+<div class="container-header"><h3 class="ecs-row-title">Top Rated</h3></div>
+<ul class="hlist games game-cards game-tile-list" id="games-rated"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>
+</div>
+</div>
+</div>
+<footer class="container-footer" id="footer-container">
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
+</div></footer>
+</div>
+</body>
+</html>

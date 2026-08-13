@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings - ROBLOX</title>
+<link rel="icon" href="/static/ecs/logo_R.svg">
+<link rel="stylesheet" href="/static/site.css">
+
+</head>
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
+<div id="wrap" class="wrap no-gutter-ads dark-theme">
+<div id="header" class="navbar-fixed-top rbx-header" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
+    </div>
+  </div>
+</div>
+<div class="container-main" id="container-main">
+<div class="content">
+<div class="my-settings">
+<h1 class="user-account-header">My Settings</h1>
+<ul class="settings-tabs">
+<li class="{{TAB_ACCOUNT}}"><a href="/settings?tab=account">Account Info</a></li>
+<li class="{{TAB_SECURITY}}"><a href="/settings?tab=security">Security</a></li>
+<li class="{{TAB_PRIVACY}}"><a href="/settings?tab=privacy">Privacy</a></li>
+<li class="{{TAB_BILLING}}"><a href="/settings?tab=billing">Billing</a></li>
+</ul>
+
+<div class="settings-pane" {{PANE_ACCOUNT}}>
+  <h3 class="settings-sub">Account Info</h3>
+  <div class="settings-card">
+    <p class="acct-row">Username: <span class="acct-val">{{USERNAME}}</span></p>
+    <p class="acct-row">Password: <span class="acct-val">**********</span></p>
+    <p class="acct-row">Email Address: <span class="acct-val">{{EMAIL}}</span></p>
+  </div>
+  <h3 class="settings-sub">Personal</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/update">
+      <input type="hidden" name="tab" value="account-info">
+      <textarea class="desc-input" name="blurb" rows="3" placeholder="About">{{BLURB}}</textarea>
+      <p class="list-content">Do not provide any details that can be used to identify you outside ROBLOX.</p>
+      <div class="bday-grid">
+        <input class="input-field disabled-fake" value="Birthday" readonly>
+        <input class="input-field" name="birthday" value="{{BIRTHDAY}}" placeholder="Month/Day/Year">
+      </div>
+      <div class="gender-grid">
+        <input class="input-field disabled-fake" value="Gender" readonly>
+        <label class="gender-card {{GENDER_MALE}}"><input type="radio" name="gender" value="Male" {{GENDER_MALE_CHECKED}}> Male</label>
+        <label class="gender-card {{GENDER_FEMALE}}"><input type="radio" name="gender" value="Female" {{GENDER_FEMALE_CHECKED}}> Female</label>
+      </div>
+      <div class="form-group"><label class="form-label">Display Name</label>
+      <input class="input-field" name="display_name" value="{{DISPLAY_NAME}}"></div>
+      <div class="form-group"><label class="form-label">Status</label>
+      <input class="input-field" name="status" value="{{STATUS}}"></div>
+      <div class="save-right"><button type="submit" class="btn-settings-save">Save</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="settings-pane" {{PANE_SECURITY}}>
+  <h3 class="settings-sub">Password</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/password">
+      <div class="form-group"><label class="form-label">Current Password</label>
+      <input class="input-field" name="current_password" type="password"></div>
+      <div class="form-group"><label class="form-label">New Password</label>
+      <input class="input-field" name="new_password" type="password"></div>
+      <button type="submit" class="btn-settings-save">Change Password</button>
+    </form>
+  </div>
+  <h3 class="settings-sub">Secure Sign Out</h3>
+  <div class="settings-card settings-row-split">
+    <p>Sign out of all other sessions</p>
+    <form method="post" action="/settings/sessions/logout"><button type="submit" class="btn-settings-save">Sign Out</button></form>
+  </div>
+</div>
+
+<div class="settings-pane" {{PANE_PRIVACY}}>
+  <h3 class="settings-sub">Privacy Setting</h3>
+  <div class="settings-card">
+    <form method="post" action="/settings/update">
+      <input type="hidden" name="tab" value="privacy">
+      <p class="acct-row">Who can message me:</p>
+      <select class="input-field" name="who_message">{{WHO_MESSAGE_OPTS}}</select>
+      <p class="acct-row">Who can Invite me to VIP Servers:</p>
+      <select class="input-field" name="who_join">{{WHO_JOIN_OPTS}}</select>
+      <p class="acct-row">Who can follow me into the game:</p>
+      <select class="input-field" name="who_chat_game">{{WHO_CHAT_GAME_OPTS}}</select>
+      <p class="acct-row">Who can see my inventory:</p>
+      <select class="input-field" name="who_inventory">{{WHO_INVENTORY_OPTS}}</select>
+      <p class="acct-row">Who can trade with me:</p>
+      <select class="input-field" name="who_trade">{{WHO_TRADE_OPTS}}</select>
+      <div class="save-right"><button type="submit" class="btn-settings-save">Save</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="settings-pane" {{PANE_BILLING}}>
+  <h3 class="settings-sub">Billing</h3>
+  <div class="settings-card">
+    <p class="list-content">Premium is not sold on this private server.</p>
+    <p class="list-content">Robux balance: <span class="text-robux"><span class="icon-robux-16x16"></span> R$ {{ROBUX}}</span></p>
+    <p class="list-content">No live payments. This page does not take cards.</p>
+    <a class="btn-secondary-md" href="/promocodes">Redeem Code</a>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<footer class="container-footer" id="footer-container">
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
+</div></footer>
+</div>
+</body>
+</html>

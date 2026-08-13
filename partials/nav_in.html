@@ -1,0 +1,81 @@
+<div id="wrap" class="wrap no-gutter-ads logged-in dark-theme theme-2016">
+<div id="header" class="navbar-fixed-top rbx-header" data-isauthenticated="true" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu" aria-expanded="false" aria-controls="navigation">
+        <span class="icon-nav-menu"></span>
+      </div>
+      <a class="navbar-brand" id="header-logo" href="/home"><span class="icon-logo">ROBLOX</span><span class="icon-logo-r">R</span></a>
+    </div>
+    <ul class="nav rbx-navbar rbx-navbar-top hidden-xs hidden-sm">
+      <li><a class="font-header-2 nav-menu-title text-header" href="/games">Games</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/catalog">Catalog</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/develop">Develop</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/download">Download</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/robux">ROBUX</a></li>
+    </ul>
+    <div id="navbar-universal-search" class="navbar-left rbx-navbar-search" role="search">
+      <form class="navbar-search" action="/search" method="get">
+        <input id="navbar-search-input" name="keyword" class="form-control input-field" type="search" placeholder="Search" maxlength="120" autocomplete="off">
+        <button type="submit" class="input-addon-btn" aria-label="Search"><span class="icon-nav-search"></span></button>
+      </form>
+    </div>
+    <ul class="nav navbar-right rbx-navbar-right rbx-navbar-icon-group">
+      <li id="navbar-robux" class="navbar-icon-item">
+        <a class="rbx-menu-item" href="/robux" title="Robux">
+          <span class="icon-nav-robux"></span>
+          <span class="rbx-text-navbar-right text-header robux-amount">{{ROBUX}}</span>
+        </a>
+      </li>
+      <li class="navbar-icon-item nav-download-item">
+        <a class="rbx-menu-item nav-download-btn" href="/download" title="Download">Download</a>
+      </li>
+      <li id="navbar-setting" class="navbar-icon-item">
+        <button type="button" class="rbx-menu-item settings-gear-btn" id="nav-settings" title="Settings" aria-haspopup="true" aria-expanded="false">
+          <span class="icon-nav-settings"></span>
+        </button>
+        <div class="dropdown-menu settings-dropdown ecs-settings-drop" id="settings-popover" role="menu">
+          <a class="settings-drop-item" href="/settings">Settings</a>
+          <a class="settings-drop-item" href="/help">Help</a>
+          {{ADMIN_LINK}}
+          <a class="settings-drop-item" href="/logout">Logout</a>
+        </div>
+      </li>
+    </ul>
+    <ul class="nav rbx-navbar rbx-navbar-phone">
+      <li><a class="font-header-2 nav-menu-title text-header" href="/games">Games</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/catalog">Catalog</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/develop">Develop</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/download">Download</a></li>
+      <li><a class="font-header-2 nav-menu-title text-header" href="/robux">ROBUX</a></li>
+    </ul>
+  </div>
+</div>
+<div id="navigation-overlay" class="navigation-overlay"></div>
+<div id="navigation-container">
+  <div id="navigation" class="rbx-left-col">
+    <ul class="left-col-list">
+      <li class="rbx-nav-user">
+        <a id="nav-roblox" href="/profile" class="text-nav dynamic-overflow-container">
+          <span class="avatar avatar-headshot-xs">
+            <img class="avatar-card-image" src="/thumbs/headshot.ashx?userId={{USER_ID}}" alt="{{USERNAME}}">
+          </span>
+          <span class="font-header-2 text-overflow">{{USERNAME}}</span>{{NAV_VERIFIED}}
+        </a>
+      </li>
+      <li class="nav-divider"></li>
+      <li><a id="nav-home" href="/home" class="text-nav"><span class="icon-nav-home"></span><span>Home</span></a></li>
+      <li><a id="nav-profile" href="/profile" class="text-nav"><span class="icon-nav-profile"></span><span>Profile</span></a></li>
+      <li><a id="nav-message" href="/messages" class="text-nav"><span class="icon-nav-message"></span><span>Messages</span></a></li>
+      <li><a id="nav-friends" href="/friends" class="text-nav"><span class="icon-nav-friends"></span><span>Friends</span></a></li>
+      <li><a id="nav-character" href="/avatar" class="text-nav"><span class="icon-nav-charactercustomizer"></span><span>Character</span></a></li>
+      <li><a id="nav-inventory" href="/inventory" class="text-nav"><span class="icon-nav-inventory"></span><span>Inventory</span></a></li>
+      <li><a id="nav-trade" href="/trades" class="text-nav"><span class="icon-nav-trade"></span><span>Trade</span></a></li>
+      <li><a id="nav-group" href="/groups" class="text-nav"><span class="icon-nav-group"></span><span>Groups</span></a></li>
+      <li><a id="nav-forum" href="/blog" class="text-nav"><span class="icon-nav-forum"></span><span>Forums</span></a></li>
+      <li><a id="nav-blog" href="/blog" class="text-nav"><span class="icon-nav-blog"></span><span>Blog</span></a></li>
+      <li><a id="nav-download" href="/download" class="text-nav"><span class="icon-nav-shop"></span><span>Download</span></a></li>
+      <li class="nav-upgrade"><a href="/premium" class="upgrade-now">Upgrade Now</a></li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+{
+  "host": "0.0.0.0",
+  "port": 8080,
+  "public_url": "http://127.0.0.1:8080",
+  "rcc_enabled": false,
+  "rcc_soap": "http://127.0.0.1:64989",
+  "rcc_timeout": 15,
+  "game_port_start": 53640,
+  "site_name": "ROBLOX",
+  "default_place_id": 1,
+  "client_prefix": "rbxeconsim:"
+}

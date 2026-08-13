@@ -1,0 +1,152 @@
+/* Economy Simulator / 2016 Roblox sprites. Dark site colors stay in site.css. */
+.icon-nav-menu,
+.icon-nav-robux,
+.icon-nav-tix,
+.icon-nav-settings,
+.icon-nav-search,
+.icon-nav-home,
+.icon-nav-profile,
+.icon-nav-message,
+.icon-nav-friends,
+.icon-nav-charactercustomizer,
+.icon-nav-inventory,
+.icon-nav-trade,
+.icon-nav-group,
+.icon-nav-forum,
+.icon-nav-blog,
+.icon-nav-search-white,
+.icon-nav-shop {
+  background-image: url(/static/ecs/navigation_02012016.svg);
+  background-repeat: no-repeat;
+  background-size: auto auto;
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-nav-menu { background-position: 0 0; }
+.icon-nav-menu:hover, a:hover .icon-nav-menu, button:hover .icon-nav-menu { background-position: -28px 0; }
+.icon-nav-robux { background-position: 0 -28px; }
+.icon-nav-robux:hover, a:hover .icon-nav-robux { background-position: -28px -28px; }
+.icon-nav-tix { background-position: 0 -56px; }
+.icon-nav-tix:hover, a:hover .icon-nav-tix { background-position: -28px -56px; }
+.icon-nav-settings { background-position: 0 -84px; }
+.icon-nav-settings:hover, a:hover .icon-nav-settings { background-position: -28px -84px; }
+.icon-nav-search { background-position: 0 -112px; }
+.icon-nav-search:hover, a:hover .icon-nav-search { background-position: -28px -112px; }
+.icon-nav-home { background-position: 0 -140px; }
+.icon-nav-home:hover, a:hover .icon-nav-home { background-position: -28px -140px; }
+.icon-nav-profile { background-position: 0 -168px; }
+.icon-nav-profile:hover, a:hover .icon-nav-profile { background-position: -28px -168px; }
+.icon-nav-message { background-position: 0 -196px; }
+.icon-nav-message:hover, a:hover .icon-nav-message { background-position: -28px -196px; }
+.icon-nav-friends { background-position: 0 -224px; }
+.icon-nav-friends:hover, a:hover .icon-nav-friends { background-position: -28px -224px; }
+.icon-nav-charactercustomizer { background-position: 0 -252px; }
+.icon-nav-charactercustomizer:hover, a:hover .icon-nav-charactercustomizer { background-position: -28px -252px; }
+.icon-nav-inventory { background-position: 0 -280px; }
+.icon-nav-inventory:hover, a:hover .icon-nav-inventory { background-position: -28px -280px; }
+.icon-nav-trade { background-position: 0 -308px; }
+.icon-nav-trade:hover, a:hover .icon-nav-trade { background-position: -28px -308px; }
+.icon-nav-group { background-position: 0 -336px; }
+.icon-nav-group:hover, a:hover .icon-nav-group { background-position: -28px -336px; }
+.icon-nav-forum { background-position: 0 -364px; }
+.icon-nav-forum:hover, a:hover .icon-nav-forum { background-position: -28px -364px; }
+.icon-nav-blog { background-position: 0 -392px; }
+.icon-nav-blog:hover, a:hover .icon-nav-blog { background-position: -28px -392px; }
+.icon-nav-search-white { background-position: 0 -420px; }
+.icon-nav-shop { background-position: 0 -448px; }
+.icon-nav-shop:hover, a:hover .icon-nav-shop { background-position: -28px -448px; }
+
+.icon-male, .icon-female, .icon-edit, .icon-close, .icon-checkmark, .icon-play,
+.icon-home, .icon-search, .icon-settings, .icon-right, .icon-left, .icon-up, .icon-down,
+.icon-moreinfo, .icon-additem, .icon-games-carousel-right, .icon-games-carousel-left {
+  background-image: url(/static/ecs/generic_03112016.svg);
+  background-repeat: no-repeat;
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-edit { background-position: 0 -84px; }
+.icon-male { background-position: 0 -140px; }
+.icon-male:hover, button:hover .icon-male { background-position: -28px -140px; }
+.icon-female { background-position: 0 -168px; }
+.icon-female:hover, button:hover .icon-female { background-position: -28px -168px; }
+.icon-play { background-position: 0 -308px; }
+.icon-checkmark { background-position: 0 -560px; }
+.icon-close { background-position: 0 -588px; }
+.icon-right { background-position: 0 -392px; }
+.icon-left { background-position: 0 -420px; }
+.icon-games-carousel-right { background-position: 0 -952px; }
+.icon-games-carousel-left { background-position: 0 -980px; }
+
+.icon-robux-16x16 {
+  background-image: url(/static/ecs/img-robux.png);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-thumbs-up, .icon-thumbs-down {
+  background-image: url(/static/ecs/thumbs.svg);
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-thumbs-up { background-position: 0 0; }
+.icon-thumbs-up:hover, .icon-thumbs-up.colored { background-position: -16px 0; }
+.icon-thumbs-down { background-position: 0 -16px; }
+.icon-thumbs-down:hover, .icon-thumbs-down.colored { background-position: -16px -16px; }
+
+.icon-bc, .icon-tbc, .icon-obc {
+  background-image: url(/static/ecs/bc.svg);
+  background-repeat: no-repeat;
+  width: 52px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-bc { background-position: 0 0; }
+.icon-tbc { background-position: 0 -28px; }
+.icon-obc { background-position: 0 -56px; }
+
+.icon-online, .icon-game, .icon-studio {
+  background-image: url(/static/ecs/FriendsStatus.svg);
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.icon-game { background-position: 0 0; }
+.icon-studio { background-position: 0 -28px; }
+.icon-online { background-position: 0 -56px; }
+
+.icon-logo {
+  display: block;
+  width: 118px;
+  height: 30px;
+  background: url(/static/ecs/roblox_logo.svg) no-repeat center / contain;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+.icon-logo-r {
+  display: none;
+  width: 30px;
+  height: 30px;
+  background: url(/static/ecs/logo_R.svg) no-repeat center / contain;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+.item-overlay-limited { background: url(/static/ecs/limitedOverlay_small.png) no-repeat; width: 60px; height: 16px; display: inline-block; }
+.item-overlay-limitedu { background: url(/static/ecs/limitedUOverlay_small.png) no-repeat; width: 80px; height: 16px; display: inline-block; }
+.item-overlay-new { background: url(/static/ecs/CatalogOverlays/New.png) no-repeat; width: 40px; height: 16px; display: inline-block; }
+.item-overlay-sale { background: url(/static/ecs/CatalogOverlays/Sale.png) no-repeat; width: 40px; height: 16px; display: inline-block; }

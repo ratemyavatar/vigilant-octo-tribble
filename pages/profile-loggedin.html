@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile - ROBLOX</title>
+<link rel="icon" href="/static/ecs/logo_R.svg">
+<link rel="stylesheet" href="/static/site.css">
+
+</head>
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
+<div id="wrap" class="wrap no-gutter-ads dark-theme">
+<div id="header" class="navbar-fixed-top rbx-header" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
+    </div>
+  </div>
+</div>
+<div class="container-main" id="container-main">
+<div class="content">
+<div class="ecs-profile">
+<div class="section profile-header">
+<div class="section-content profile-header-content">
+<div class="profile-header-top">
+<div class="avatar avatar-headshot-lg card-plain profile-avatar-image">
+<img class="avatar-card-image profile-avatar-thumb" src="/thumbs/headshot.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
+</div>
+<div class="header-caption">
+<div class="header-title">
+<h2>{{PROFILE_NAME}}{{VERIFIED_BADGE}}</h2>
+<div class="profile-dots-wrap">
+<button type="button" class="profile-dots" id="profile-gear" aria-haspopup="true" aria-expanded="false">...</button>
+<div class="profile-gear-menu" id="profile-gear-menu">{{PROFILE_GEAR}}</div>
+</div>
+</div>
+<div class="header-details">
+<ul class="details-info">
+<li><div class="text-label">Friends</div><a class="text-name" href="/friends"><h3>{{FRIEND_COUNT}}</h3></a></li>
+<li><div class="text-label">Followers</div><h3 class="text-name">{{FOLLOWER_COUNT}}</h3></li>
+<li><div class="text-label">Following</div><h3 class="text-name">{{FOLLOWING_COUNT}}</h3></li>
+</ul>
+<div class="profile-actions">{{MESSAGE_BTN}}{{ADD_FRIEND}}</div>
+</div>
+<p class="profile-status-quote" id="profile-status-text">{{PROFILE_STATUS_DISPLAY}}</p>
+<form id="profile-status-form" class="profile-status-form" method="post" action="/settings/update" hidden>
+<input class="input-field" name="status" maxlength="255" value="{{PROFILE_STATUS}}" placeholder="What are you doing?">
+<button type="submit" class="profile-status-save">Save Status</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<div class="profile-tabs-card">
+<a class="profile-tab active" href="#about-pane" data-tab="about-pane">About</a>
+<a class="profile-tab" href="#creations-pane" data-tab="creations-pane">Creations</a>
+</div>
+
+<div id="about-pane" class="tab-pane settings-tab-pane active">
+<h3 class="ecs-subtitle">About</h3>
+<div class="ecs-card about-card">
+<p class="about-body profile-blurb">{{PROFILE_BLURB}}</p>
+<div class="divider-top"></div>
+<p class="prev-names">Past usernames stay on this page when someone changes theirs.</p>
+</div>
+
+<h3 class="ecs-subtitle">Currently Wearing</h3>
+<div class="wearing-row">
+<div class="wearing-avatar ecs-card">
+<img class="cc-avatar-img" src="/thumbs/avatar.ashx?userId={{PROFILE_ID}}" alt="{{PROFILE_NAME}}">
+</div>
+<div class="wearing-items">
+<ul class="hlist item-cards" id="profile-wearing"></ul>
+</div>
+</div>
+
+<div class="section home-friends">
+<div class="container-header"><h3 class="ecs-subtitle">Friends (0)</h3><a href="/friends" class="see-all">See All</a></div>
+<div class="ecs-card"><ul class="hlist friend-list"></ul></div>
+</div>
+
+<h3 class="ecs-subtitle">Collections</h3>
+<div class="ecs-card"><ul class="vlist group-list"></ul></div>
+
+<h3 class="ecs-subtitle">Favorite Games</h3>
+<ul class="hlist games game-cards profile-fav-list" id="profile-favorites"></ul>
+
+<h3 class="ecs-subtitle">Player Badges</h3>
+<div class="ecs-card badge-row">
+<p class="list-content">Badges earned on this server show up here.</p>
+</div>
+
+<h3 class="ecs-subtitle">Statistics</h3>
+<div class="ecs-card stats-row">
+<div class="stat-cell"><p class="stat-label">Join Date</p><p class="stat-value">{{PROFILE_JOINED}}</p></div>
+<div class="stat-cell"><p class="stat-label">Place Visits</p><p class="stat-value">{{PLACE_VISITS}}</p></div>
+<div class="stat-cell"><p class="stat-label">Forum Posts</p><p class="stat-value">0</p></div>
+</div>
+</div>
+
+<div id="creations-pane" class="tab-pane settings-tab-pane">
+<h3 class="ecs-subtitle">Games</h3>
+<ul class="hlist games game-cards profile-create-list" id="profile-creations"></ul>
+</div>
+</div>
+</div>
+</div>
+<footer class="container-footer" id="footer-container">
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
+</div></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalog - ROBLOX</title>
+<link rel="icon" href="/static/ecs/logo_R.svg">
+<link rel="stylesheet" href="/static/site.css">
+
+</head>
+<body id="rbx-body" class="rbx-body dark-theme theme-2016">
+<div id="wrap" class="wrap no-gutter-ads dark-theme">
+<div id="header" class="navbar-fixed-top rbx-header" role="navigation">
+  <div class="container-fluid">
+    <div class="rbx-navbar-header">
+      <div id="header-menu-icon" class="rbx-nav-collapse" role="button" tabindex="0" aria-label="Menu"></div>
+      <a class="navbar-brand" href="/"><span class="icon-logo">ROBLOX</span></a>
+    </div>
+  </div>
+</div>
+<div class="container-main" id="container-main">
+<div class="content">
+<div class="ecs-catalog">
+<div class="ecs-catalog-top">
+<h1 class="ecs-page-title">Catalog</h1>
+<form class="games-filter-bar catalog-search" method="get" action="/catalog">
+<input class="input-field" name="keyword" placeholder="Search" value="{{SEARCH_KEYWORD}}">
+<select class="input-field rbx-select" name="category">{{CATEGORY_OPTS}}</select>
+<button type="submit" class="btn-legacy">Search</button>
+</form>
+</div>
+<div class="catalog-container">
+<aside class="menu-vertical catalog-left">
+<p class="browse-by">Browse by</p>
+<h2 class="browse-cat">Category</h2>
+<ul class="menu-vertical"><li class="menu-option"><a href="/catalog?category=">Featured</a></li><li class="menu-option"><a href="/catalog?category=Hat">Hats</a></li><li class="menu-option"><a href="/catalog?category=Hair">Hair</a></li><li class="menu-option"><a href="/catalog?category=Face">Faces</a></li><li class="menu-option"><a href="/catalog?category=Shirt">Shirts</a></li><li class="menu-option"><a href="/catalog?category=Pants">Pants</a></li><li class="menu-option"><a href="/catalog?category=Gear">Gear</a></li><li class="menu-option"><a href="/catalog?category=Accessory">Accessories</a></li></ul>
+<div class="catalog-legend">
+<details open>
+<summary>Legend</summary>
+<div class="legend-entry"><img src="/static/ecs/overlay_bcCatalog.png" alt=""><p class="legend-title">Builders Club Only</p><p class="legend-desc">Only purchasable by Builders Club members.</p></div>
+<div class="legend-entry"><img src="/static/ecs/limitedOverlay_small.png" alt=""><p class="legend-title">Limited Items</p><p class="legend-desc">Owners of these discontinued items can re-sell them to other users at any price.</p></div>
+<div class="legend-entry"><img src="/static/ecs/limitedUOverlay_small.png" alt=""><p class="legend-title">Limited Unique Items</p><p class="legend-desc">A limited supply originally sold by ROBLOX. Each unit is labeled with a serial number.</p></div>
+</details>
+</div>
+</aside>
+<div class="catalog-right">
+<div class="catalog-results-head">
+<h2 class="catalog-showing">FEATURED ITEMS ON ROBLOX</h2>
+<form method="get" action="/catalog" class="sort-by-form">
+<span class="sort-by-label">Sort By:</span>
+<select class="input-field rbx-select" name="sort">{{CATALOG_SORT_OPTS}}</select>
+</form>
+</div>
+<div id="catalog-results" class="section-content ecs-catalog-grid">
+<ul class="hlist item-cards"></ul>
+<p class="list-content">No Search Results Found</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="container-footer" id="footer-container">
+<div class="footer ecs-footer">
+<div class="footer-link-row">
+<a class="text-footer-nav" href="/about">About Us</a>
+<a class="text-footer-nav" href="/jobs">Jobs</a>
+<a class="text-footer-nav" href="/blog">Blog</a>
+<a class="text-footer-nav" href="/privacy">Privacy</a>
+<a class="text-footer-nav" href="/help">Help</a>
+<a class="text-footer-nav" href="/terms">Terms</a>
+<a class="text-footer-nav" href="/credits">Credits</a>
+</div>
+<p class="text-footer footer-note">ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of their respective owners. This is a private revival. Use of this site signifies your acceptance of the <a href="/terms">Terms and Conditions</a>.</p>
+</div></footer>
+</div>
+</body>
+</html>
