@@ -65,6 +65,27 @@ Without the exe, start.sh falls back to the mock renderer, so the site still
 works end to end. A cheap Linux VPS works the same way (`./start.sh` after
 installing wine/xvfb) and stays up 24/7.
 
+### Real RCC under wine (Linux) — how far it got
+
+The whole chain was proven working in a sandbox with zero apt access:
+
+- Wine 11.15 wow64 + Xvfb + Mesa llvmpipe (software GL) — `wine` renders
+  OpenGL 4.5, D3D9 devices create fine.
+- The sandbox lacked the glvnd **EGL dispatcher**, so `tools/setup-sandbox-rcc.sh`
+  builds it from source with X11 support (uses `tools/pkg-config-shim.py`).
+- RCCService 0.285 boots, SOAP `OpenJobEx` works, jobs run, core scripts load,
+  `ThumbnailGenerator::Click` starts.
+- The engine's **trust check** (blocks all content fetches from a self-hosted
+  site) was removed with a two-byte patch — see `tools/patch-trust.py`
+  (auto-applied by `tools/fetch-rcc-kit.sh`).
+- Remaining blocker: the per-job render child process (spawned with `-d`)
+  crashes on startup under wine; on Windows it works unchanged. Until that
+  is fixed, use the mock renderer or a Windows box.
+
+One-command bring-up (fresh sandbox): `tools/setup-sandbox-rcc.sh` then
+`tools/fetch-rcc-kit.sh`, then start RCC and set `rcc_mode: "wine"` +
+`rcc_soap: http://127.0.0.1:64989` in config.json.
+
 ### With the real RCCService.exe
 
 1. Start RCCService so it listens for SOAP (common port 64989), e.g. on
