@@ -42,6 +42,11 @@ sudo apt-get install -y --reinstall xvfb xserver-xorg-core mesa-utils 2>&1 | tai
 dpkg -L xserver-xorg-core 2>/dev/null | grep glx || echo "no glx in xserver-xorg-core dpkg list"
 echo "--- GLX self-test on the runner:"
 sudo pkill -x Xvfb 2>/dev/null; sleep 1
+echo "Xvfb diag: $(ls -la /usr/bin/Xvfb)"
+echo "Xvfb md5: $(md5sum /usr/bin/Xvfb)"
+echo "Xvfb DRI2 exports: $(nm -D /usr/bin/Xvfb 2>/dev/null | grep -c DRI2)"
+echo "Xvfb LoaderSymbol exports: $(nm -D /usr/bin/Xvfb 2>/dev/null | grep -c LoaderSymbol)"
+echo "Xvfb is symlink: $(readlink -f /usr/bin/Xvfb)"
 Xvfb :99 -screen 0 1024x1024x24 +extension GLX > /tmp/xvfb-runner.log 2>&1 &
 sleep 3
 DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 glxinfo 2>&1 | grep -E "OpenGL renderer|OpenGL version|GLX version" | head -5 || true
