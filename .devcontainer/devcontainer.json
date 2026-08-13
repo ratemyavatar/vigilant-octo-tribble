@@ -1,0 +1,20 @@
+# Codespaces / devcontainer setup for the ROBLOX site + RCC backend.
+# One click: Code -> Codespaces -> Create codespace on this branch.
+# Installs Wine + Xvfb (for a real RCCService.exe) and the Python server.
+{
+  "name": "roblox-site",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "forwardPorts": [8080, 64989],
+  "portsAttributes": {
+    "8080": {
+      "label": "ROBLOX site",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "sudo dpkg --add-architecture i386 && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine32 xvfb python3 && echo 'Ready. Run: ./start.sh'",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}

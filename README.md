@@ -6,6 +6,10 @@ Static pages from the HTML dump, plus a local API so a Roblox client and RCCServ
 
     python3 server.py
 
+Or the whole stack (site + render backend) in one shot:
+
+    ./start.sh
+
 Open http://127.0.0.1:8080
 
 Landing is the Sign Up form with Log In in the navbar. There is no default account — sign up; that writes a row to `data/site.db`.
@@ -46,6 +50,20 @@ exactly like the real RCC:
 
 Set "rcc_mode": "mock" in config.json (or change it to "wine" once the real
 RCCService is running).
+
+### Running on a phone (Codespace)
+
+No PC needed: open this repo on GitHub in your phone's browser and create a
+Codespace (Code -> Codespaces). The included `.devcontainer` installs
+Wine + Xvfb automatically. Then:
+
+1. Drop your RCCService.exe into `tools/legacy/` (Codespace file tree).
+2. Run `./start.sh` in the terminal.
+3. Open port 8080 from the Ports tab.
+
+Without the exe, start.sh falls back to the mock renderer, so the site still
+works end to end. A cheap Linux VPS works the same way (`./start.sh` after
+installing wine/xvfb) and stays up 24/7.
 
 ### With the real RCCService.exe
 
